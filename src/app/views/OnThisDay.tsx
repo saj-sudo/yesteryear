@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { addDays, isLocalDate, monthDayOf, yearOf } from '../../engine/dates';
+import type { DailyNoteRef } from '../../engine/temporal';
 import type { LocalDate } from '../../engine/types';
-import type { DailyNoteMap } from '../../storage/cache';
 import { Markdown } from '../components/Markdown';
 
 /**
@@ -21,7 +21,7 @@ function prettyDay(date: LocalDate): string {
 
 export function OnThisDay(props: {
   today: LocalDate;
-  notes: DailyNoteMap;
+  notes: Map<string, DailyNoteRef>;
   getMarkdown: (id: string) => Promise<string | null>;
   deepLink: (id: string) => string;
   isDemo: boolean;
@@ -30,7 +30,7 @@ export function OnThisDay(props: {
   const [bodies, setBodies] = useState<Record<string, string | null>>({});
 
   const years = useMemo(() => {
-    const noteYears = Object.keys(props.notes).map((d) => Number(d.slice(0, 4)));
+    const noteYears = [...props.notes.keys()].map((d) => Number(d.slice(0, 4)));
     if (noteYears.length === 0) return [];
     const first = Math.min(...noteYears);
     const current = yearOf(day);
@@ -43,7 +43,7 @@ export function OnThisDay(props: {
     () =>
       years.map((year) => {
         const date = `${year}-${monthDayOf(day)}`;
-        const note = isLocalDate(date) ? props.notes[date] ?? null : null;
+        const note = isLocalDate(date) ? props.notes.get(date) ?? null : null;
         return { year, date, note };
       }),
     [years, day, props.notes],

@@ -1,7 +1,3 @@
-import { parseDailyNoteTitle } from '../engine/dates';
-import type { Provider } from '../engine/provider';
-import type { DailyNoteRef } from '../engine/temporal';
-
 /**
  * Browser-storage cache (spec §10.1 secondary store): keeps the app fast
  * and readable offline. Everything here is disposable — the source of
@@ -44,21 +40,3 @@ export function clearSpaceCache(spaceId: string): void {
   }
 }
 
-export type DailyNoteMap = Record<string, DailyNoteRef>;
-
-/**
- * Full daily-note map for the space: date → {id, title}. The listing is
- * summaries-only (cheap, paginated); unparseable titles are skipped per
- * §8.2. The API offers no delta, so refresh is a relist — the cached
- * copy exists for fast paint and offline reads, not to avoid the sweep.
- */
-export async function refreshDailyNoteMap(provider: Provider): Promise<DailyNoteMap> {
-  const map: DailyNoteMap = {};
-  for await (const note of provider.listObjectsByStructure(
-    provider.dailyNoteStructureId,
-  )) {
-    const date = parseDailyNoteTitle(note.title);
-    if (date) map[date] = { id: note.id, title: note.title };
-  }
-  return map;
-}

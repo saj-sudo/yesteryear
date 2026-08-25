@@ -3,10 +3,13 @@ import { beginAuthorization, type StoredTokens } from '../auth/oauth';
 import { clearTokens, loadTokens, saveTokens } from '../auth/tokens';
 import type { Provider, StateStore } from '../engine/provider';
 import { CapacitiesAdapter } from '../providers/capacities/adapter';
+import { CapacitiesStateStore } from '../providers/capacities/stateStore';
 import { FixtureProvider } from '../providers/fixture/fixtureProvider';
 import { buildMinimalSpace } from '../providers/fixture/minimalSpace';
 import { buildStrangersSpace } from '../providers/fixture/strangersSpace';
+import { normalizeConfig } from '../engine/config';
 import { todayInZone } from '../engine/dates';
+import { emptyDoc } from '../engine/state';
 import type { LocalDate } from '../engine/types';
 
 /**
@@ -23,8 +26,8 @@ export type DemoFlavor = 'strangers' | 'minimal';
 export interface Session {
   kind: 'live' | 'demo';
   provider: Provider;
-  /** Present in demo mode (FixtureProvider is also the state store). */
-  demoStore: StateStore | null;
+  /** State store for the space; call once spaceId is known. */
+  makeStore: (spaceId: string) => StateStore;
 }
 
 const DEMO_KEY = 'yesteryear.demo';
@@ -67,7 +70,30 @@ export function createSession(): Session | null {
     const today = todayLocal(null);
     const space = demo === 'strangers' ? buildStrangersSpace(today) : buildMinimalSpace(today);
     const provider = new FixtureProvider(space);
-    return { kind: 'demo', provider, demoStore: provider };
+    if (demo === 'strangers') {
+      // The demo starts as a user would be after onboarding: the invented
+      // schema mapped, tags picked, the daily-note surface on.
+      void provider.save(
+        emptyDoc(
+          normalizeConfig({
+            types: { project: 'Expedition', person: 'Correspondent', note: 'Field Note' },
+            properties: {
+              projectStart: 'Set Off',
+              projectTarget: 'Summit Day',
+              projectStatus: 'Phase',
+              personBirthday: 'Born On',
+            },
+            activeStatusValues: ['Underway', 'Basecamp'],
+            recall: { tags: ['spark', 'keeper', 'thread'], tagWeights: { spark: 1.5 } },
+            rotation: { enabled: true, groupBy: 'tag', groups: ['spark', 'thread'] },
+            surfaces: { dailyNote: { enabled: true } },
+          }),
+          new Date().toISOString(),
+        ),
+        null,
+      );
+    }
+    return { kind: 'demo', provider, makeStore: () => provider };
   }
 
   const tokens = loadTokens();
@@ -79,7 +105,12 @@ export function createSession(): Session | null {
         onTokenRefreshed: (next) => saveTokens(next as StoredTokens),
       },
     });
-    return { kind: 'live', provider: new CapacitiesAdapter(client), demoStore: null };
+    return {
+      kind: 'live',
+      provider: new CapacitiesAdapter(client),
+      makeStore: (spaceId) =>
+        new CapacitiesStateStore(client, spaceId, () => new Date().toISOString()),
+    };
   }
   return null;
 }

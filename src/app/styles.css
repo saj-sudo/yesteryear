@@ -258,3 +258,215 @@ a {
     width: 100%;
   }
 }
+
+/* ---------- heatmap ---------- */
+
+.heatmap-head {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.year-picker {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.year-picker .active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.heat-grid {
+  overflow-x: auto;
+  padding: 0.75rem 0;
+}
+
+.heat-row {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 3px;
+  align-items: center;
+}
+
+.heat-month {
+  width: 2.6rem;
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.heat-cell {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  border-radius: 3px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 0;
+}
+
+.heat-cell.written {
+  background: var(--accent);
+  border-color: var(--accent);
+  cursor: pointer;
+}
+
+.heat-cell.open {
+  outline: 2px solid var(--focus);
+}
+
+.heat-cell.void,
+.heat-cell.future {
+  background: transparent;
+  border-color: transparent;
+}
+
+.heat-detail {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  max-width: 40rem;
+}
+
+/* ---------- queue ---------- */
+
+.queue-section {
+  margin-bottom: 1.75rem;
+}
+
+.queue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.queue-list li {
+  display: flex;
+  gap: 0.9rem;
+  align-items: baseline;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.queue-title {
+  flex: 1 1 14rem;
+}
+
+.queue-when,
+.queue-mode {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.queue-actions {
+  display: flex;
+  gap: 0.3rem;
+}
+
+/* ---------- preview ---------- */
+
+.preview-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  max-width: 44rem;
+}
+
+/* ---------- settings ---------- */
+
+.settings {
+  max-width: 46rem;
+}
+
+.settings h3 {
+  margin: 1.75rem 0 0.5rem;
+}
+
+.field-row {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0.4rem 0;
+  min-width: 12rem;
+}
+
+.field.checkbox {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.field select,
+.field input[type='text'],
+.field input[type='number'] {
+  font: inherit;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  max-width: 16rem;
+}
+
+.field small {
+  color: var(--ink-soft);
+}
+
+.tag-grid {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 0.4rem 0;
+}
+
+.tag-chip {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.15rem 0.7rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tag-chip.on {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tag-chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.settings-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.transfer textarea {
+  width: 100%;
+  font-family: ui-monospace, monospace;
+  font-size: 0.8rem;
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  margin-bottom: 0.6rem;
+  padding: 0.5rem;
+}
