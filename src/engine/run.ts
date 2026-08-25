@@ -1,3 +1,4 @@
+import { diffDays } from './dates';
 import {
   applyLearnResponse,
   dueLearn,
@@ -119,9 +120,15 @@ export function chooseDay(input: {
   });
 }
 
-function labelFor(candidate: Candidate): string {
+function labelFor(candidate: Candidate, today: LocalDate): string {
   if (candidate.temporalReason) return labelForReason(candidate.temporalReason);
-  if (candidate.source === 'learn') return 'Review';
+  if (candidate.source === 'learn') {
+    if (!candidate.targetDate) return 'Review';
+    const days = diffDays(candidate.targetDate, today);
+    return days <= 0
+      ? 'Review · target today'
+      : `Review · ${days} day${days === 1 ? '' : 's'} to target`;
+  }
   return 'From your notes';
 }
 
@@ -148,7 +155,7 @@ export function finalizeRun(
       title: candidate.title,
       excerpt: candidate.excerpt,
       source: candidate.source,
-      label: labelFor(candidate),
+      label: labelFor(candidate, today),
       group: candidate.group,
     };
   });

@@ -1,8 +1,9 @@
 import type { JSX } from 'preact';
 import { useEffect, useMemo, useState } from 'preact/hooks';
-import { formatLocalDate, parseDailyNoteTitle } from '../../engine/dates';
-import { parseKey } from '../../engine/state';
-import type { ItemKey, ItemState } from '../../engine/types';
+import { formatLocalDate, isLocalDate, parseDailyNoteTitle } from '../../engine/dates';
+import { ensureLearnScheduled, stopLearning } from '../../engine/learn';
+import { learnKey, parseKey } from '../../engine/state';
+import type { ItemKey, ItemState, LocalDate } from '../../engine/types';
 import type { AppData } from '../App';
 
 /**
@@ -46,14 +47,27 @@ export function Queue({ data }: { data: AppData }) {
   const [, setTick] = useState(0);
   const [titles, setTitles] = useState<Record<string, string>>({});
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [learnDraft, setLearnDraft] = useState<{ key: ItemKey; date: string } | null>(null);
   const state = data.manager.current.state;
+  const learnEnabled = data.manager.current.config.learn.enabled;
 
+  const learning = useMemo(
+    () =>
+      rowsOf(
+        state.items,
+        (i) => (i.mode === 'learn' ? i.nextDue : null),
+        (i) => i.mode === 'learn',
+        true,
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [state.items, state.updatedAt],
+  );
   const upcoming = useMemo(
     () =>
       rowsOf(
         state.items,
-        (i) => (i.mode === 'learn' ? i.nextDue : i.nextEligible),
-        (i) => (i.mode === 'learn' ? i.nextDue !== null : !i.retired && i.nextEligible !== null),
+        (i) => (i.mode === 'recall' ? i.nextEligible : null),
+        (i) => i.mode === 'recall' && !i.retired && i.nextEligible !== null,
         true,
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,7 +99,7 @@ export function Queue({ data }: { data: AppData }) {
   // Resolve titles for the visible rows, a handful at a time.
   useEffect(() => {
     let cancelled = false;
-    const wanted = [...new Set([...upcoming, ...recent, ...retired].map((r) => r.objectId))]
+    const wanted = [...new Set([...learning, ...upcoming, ...recent, ...retired].map((r) => r.objectId))]
       .filter((id) => titles[id] === undefined)
       .slice(0, 60);
     if (wanted.length === 0) return;
@@ -102,7 +116,7 @@ export function Queue({ data }: { data: AppData }) {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [upcoming, recent, retired]);
+  }, [learning, upcoming, recent, retired]);
 
   const change = (fn: (items: Record<ItemKey, ItemState>) => void): void => {
     data.manager.mutate((doc) => fn(doc.state.items));
@@ -138,6 +152,31 @@ export function Queue({ data }: { data: AppData }) {
     change((items) => {
       delete items[key];
     });
+  const reviewNow = (key: ItemKey) => () =>
+    change((items) => {
+      const item = items[key];
+      if (item?.mode === 'learn') item.nextDue = data.today;
+    });
+  const unlearn = (key: ItemKey) => () => {
+    data.manager.mutate((doc) => stopLearning(doc.state, key, doc.config.recall));
+    setTick((t) => t + 1);
+    data.manager.flush().catch(() => {
+      setSaveError('Saving the change failed — it will retry on the next run.');
+    });
+  };
+  const startLearn = (): void => {
+    if (!learnDraft || !isLocalDate(learnDraft.date)) return;
+    const targetDate = learnDraft.date as LocalDate;
+    const key = learnKey(learnDraft.key);
+    data.manager.mutate((doc) => {
+      ensureLearnScheduled(doc.state, key, targetDate, data.today, doc.config.learn);
+    });
+    setLearnDraft(null);
+    setTick((t) => t + 1);
+    data.manager.flush().catch(() => {
+      setSaveError('Saving the change failed — it will retry on the next run.');
+    });
+  };
 
   const title = (row: Row): string => {
     const raw = titles[row.objectId] ?? row.objectId;
@@ -172,10 +211,78 @@ export function Queue({ data }: { data: AppData }) {
     </section>
   );
 
+  const learnThis = (row: Row): JSX.Element | null => {
+    if (!learnEnabled || state.items[learnKey(row.key)]) return null;
+    return (
+      <button
+        class="subtle"
+        onClick={() => setLearnDraft({ key: row.key, date: '' })}
+      >
+        learn this
+      </button>
+    );
+  };
+
+  const learnDraftRow = (row: Row): JSX.Element | null => {
+    if (learnDraft?.key !== row.key) return null;
+    return (
+      <div class="learn-draft">
+        <label>
+          Target date
+          <input
+            type="date"
+            value={learnDraft.date}
+            onInput={(e) =>
+              setLearnDraft({ key: row.key, date: (e.target as HTMLInputElement).value })
+            }
+          />
+        </label>
+        <button onClick={startLearn} disabled={!isLocalDate(learnDraft.date)}>
+          Start learning
+        </button>
+        <button class="subtle" onClick={() => setLearnDraft(null)}>
+          cancel
+        </button>
+      </div>
+    );
+  };
+
   return (
     <section class="queue">
       <h2>Queue</h2>
       {saveError && <div class="notice">{saveError}</div>}
+
+      {learnEnabled && (
+        <section class="queue-section">
+          <h3>Learning toward a date</h3>
+          <p class="fineprint">
+            The specific cadence: reviews tighten as each target date approaches.
+          </p>
+          {learning.length === 0 ? (
+            <p class="empty-note">
+              Nothing in Learn mode. Flag any item below with “learn this”, or
+              assign a tag or type in Settings.
+            </p>
+          ) : (
+            <ul class="queue-list">
+              {learning.map((row) => (
+                <li key={row.key}>
+                  <span class="queue-title">{title(row)}</span>
+                  <span class="queue-when">
+                    {row.item.mode === 'learn' &&
+                      `next review ${row.item.nextDue ?? '—'} · target ${row.item.targetDate}`}
+                  </span>
+                  <span class="queue-actions">
+                    <button class="subtle" onClick={reviewNow(row.key)}>review now</button>
+                    <button class="subtle" onClick={unlearn(row.key)}>stop learning</button>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
       {section(
         'Scheduled next',
         upcoming,
@@ -183,10 +290,10 @@ export function Queue({ data }: { data: AppData }) {
         (row) => (
           <>
             <button class="subtle" onClick={bringForward(row.key)}>bring forward</button>
-            {row.item.mode === 'recall' && (
-              <button class="subtle" onClick={retire(row.key)}>retire</button>
-            )}
+            <button class="subtle" onClick={retire(row.key)}>retire</button>
+            {learnThis(row)}
             <button class="subtle" onClick={reset(row.key)}>reset</button>
+            {learnDraftRow(row)}
           </>
         ),
       )}
@@ -199,6 +306,8 @@ export function Queue({ data }: { data: AppData }) {
             {row.item.mode === 'recall' && (
               <button class="subtle" onClick={retire(row.key)}>retire</button>
             )}
+            {row.item.mode === 'recall' && learnThis(row)}
+            {learnDraftRow(row)}
           </>
         ),
       )}

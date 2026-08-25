@@ -119,6 +119,35 @@ export function applyLearnResponse(
 }
 
 /**
+ * Convert one learn entry back into a recall entry, keeping its history.
+ * Used when the user stops learning an item from the UI, and by the
+ * automatic revert below.
+ */
+export function stopLearning(
+  state: YesteryearState,
+  key: ItemKey,
+  recallConfig: RecallConfig,
+): void {
+  const item = learnState(state, key);
+  if (!item) return;
+  const baseKey = key.endsWith('#learn') ? key.slice(0, -'#learn'.length) : key;
+  delete state.items[key];
+  if (!state.items[baseKey]) {
+    state.items[baseKey] = {
+      mode: 'recall',
+      lastSurfaced: item.lastSurfaced,
+      nextEligible: item.lastSurfaced
+        ? addDays(item.lastSurfaced, recallConfig.cooldownDays)
+        : null,
+      surfaceCount: item.surfaceCount,
+      lastResponse: null,
+      group: null,
+      retired: false,
+    };
+  }
+}
+
+/**
  * After the target passes, the item reverts to Recall rather than
  * disappearing (§8.3): nothing that mattered enough to study should
  * vanish the day after it was needed. Returns the reverted keys.
@@ -133,21 +162,7 @@ export function revertExpiredLearn(
   const reverted: ItemKey[] = [];
   for (const [key, item] of Object.entries(state.items)) {
     if (item.mode !== 'learn' || item.targetDate >= today) continue;
-    const baseKey = key.endsWith('#learn') ? key.slice(0, -'#learn'.length) : key;
-    delete state.items[key];
-    if (!state.items[baseKey]) {
-      state.items[baseKey] = {
-        mode: 'recall',
-        lastSurfaced: item.lastSurfaced,
-        nextEligible: item.lastSurfaced
-          ? addDays(item.lastSurfaced, recallConfig.cooldownDays)
-          : null,
-        surfaceCount: item.surfaceCount,
-        lastResponse: null,
-        group: null,
-        retired: false,
-      };
-    }
+    stopLearning(state, key, recallConfig);
     reverted.push(key);
   }
   return reverted;

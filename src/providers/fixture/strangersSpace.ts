@@ -249,7 +249,7 @@ export function buildStrangersSpace(today: LocalDate): FixtureSpace {
     .map((o) => o.id);
   const tagAssignments: Record<string, string[]> = {
     't-spark': fieldNoteIds.filter((_, i) => i % 2 === 0),
-    't-keeper': fieldNoteIds.filter((_, i) => i % 3 === 0).concat(['x-tern']),
+    't-keeper': fieldNoteIds.filter((_, i) => i % 3 === 0).concat(['x-tern', 'x-larkspur']),
     't-thread': fieldNoteIds.filter((_, i) => i % 2 === 1),
     't-ember': [fieldNoteIds[1]!, 'c-cordelia'],
   };

@@ -386,6 +386,38 @@ async function computeDay(
 
   const pools = await gatherPools(provider, config, resolved, notesByDate, today, warnings);
 
+  // Learn items flagged per-item in the UI (§8.3's third assignment
+  // path) live only in state — no tag or type sweep will find them, so
+  // fold the due ones into the pool here.
+  if (config.learn.enabled) {
+    const poolKeys = new Set(pools.learn.map((c) => c.key));
+    for (const [key, item] of Object.entries(manager.current.state.items)) {
+      if (item.mode !== 'learn' || poolKeys.has(key)) continue;
+      if (!item.nextDue || item.nextDue > today) continue;
+      const parsed = parseKey(key);
+      if (!parsed) continue;
+      const obj = await provider.getObject(parsed.objectId);
+      if (!obj) {
+        manager.mutate((doc) => {
+          delete doc.state.items[key]; // deleted object: pruned silently (§11)
+        });
+        continue;
+      }
+      pools.learn.push({
+        key,
+        objectId: obj.id,
+        blockId: parsed.blockId,
+        title: obj.title,
+        excerpt: null,
+        source: 'learn',
+        temporalReason: null,
+        tags: [],
+        group: null,
+        targetDate: item.targetDate,
+      });
+    }
+  }
+
   // Prune state entries for objects that vanished from every pool we can
   // see; full pruning happens opportunistically when a fetch 404s.
   manager.mutate((doc) => prepareLearn(doc.state, doc.config, today, pools.learn));

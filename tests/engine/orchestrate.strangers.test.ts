@@ -135,6 +135,35 @@ describe('a full day on the stranger space', () => {
     expect(entry?.mode === 'learn' && entry.nextDue).toBe(addDays(TODAY, 7));
   });
 
+  it('an item flagged for Learn in the UI surfaces when due — no tag or type needed', async () => {
+    const provider = new FixtureProvider(buildStrangersSpace(TODAY));
+    const learnConfig = normalizeConfig({
+      ...strangersConfig,
+      learn: { enabled: true }, // no assignByTag, no assignByType
+    });
+    const manager = await StateManager.open(provider, nowIso, learnConfig);
+    // The user flagged a field note from the queue with a manual target date.
+    manager.mutate((doc) => {
+      doc.state.items['obj:fn-4#learn'] = {
+        mode: 'learn',
+        targetDate: addDays(TODAY, 40),
+        lastSurfaced: addDays(TODAY, -9),
+        nextDue: TODAY,
+        surfaceCount: 1,
+        lastResponse: null,
+      };
+    });
+    const report = await runDaily({ provider, manager, today: TODAY, rng: seededRng(1) });
+
+    const learnItem = report.surfaced.find((s) => s.source === 'learn');
+    expect(learnItem).toBeDefined();
+    expect(learnItem!.key).toBe('obj:fn-4#learn');
+    expect(learnItem!.label).toContain('to target');
+    // Surfacing rescheduled it at the contracting ratio.
+    const entry = manager.current.state.items['obj:fn-4#learn'];
+    expect(entry?.mode === 'learn' && entry.nextDue).toBe(addDays(TODAY, 7)); // 40×0.15 → floor 7
+  });
+
   it('block granularity surfaces individual blocks with block keys', async () => {
     const provider = new FixtureProvider(buildStrangersSpace(TODAY));
     const blockConfig = normalizeConfig({

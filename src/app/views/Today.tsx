@@ -1,10 +1,20 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
+import { applyLearnResponse } from '../../engine/learn';
 import { gatherPairingPool } from '../../engine/orchestrate';
 import { drawPairing, type Pairing, type PairingCandidate } from '../../engine/pairing';
+import { applyRecallResponse } from '../../engine/recall';
 import { parseKey } from '../../engine/state';
-import type { SurfacedItem } from '../../engine/types';
+import type { ItemResponse, SurfacedItem } from '../../engine/types';
 import type { AppData } from '../App';
 import { Markdown } from '../components/Markdown';
+
+const RESPONSE_LABELS: Record<ItemResponse, string> = {
+  keep: 'keep',
+  dismiss: 'dismiss',
+  retire: 'retire',
+  gotIt: 'got it',
+  missedIt: 'missed it',
+};
 
 /**
  * Today (the default view). The core comes first: the day's resurfaced
@@ -57,6 +67,29 @@ export function Today({ data }: { data: AppData }) {
   const [pool, setPool] = useState<PairingCandidate[] | null>(null);
   const [pairing, setPairing] = useState<Pairing | null>(null);
   const [bodies, setBodies] = useState<Record<string, string | null>>({});
+  const [responses, setResponses] = useState<Record<string, ItemResponse>>(() => {
+    // Reflect responses already recorded (an earlier visit today, or the note).
+    const out: Record<string, ItemResponse> = {};
+    for (const item of data.manager.current.state.lastRunItems) {
+      const s = data.manager.current.state.items[item.key];
+      if (s?.lastResponse) out[item.key] = s.lastResponse;
+    }
+    return out;
+  });
+
+  const respond = (item: SurfacedItem, response: ItemResponse): void => {
+    data.manager.mutate((doc) => {
+      if (response === 'gotIt' || response === 'missedIt') {
+        applyLearnResponse(doc.state, item.key, response, doc.config.learn);
+      } else {
+        applyRecallResponse(doc.state, item.key, response, doc.config.recall);
+      }
+    });
+    setResponses((prev) => ({ ...prev, [item.key]: response }));
+    void data.manager.flush().catch(() => {
+      // A failed save is retried on the next flush; the local mark stands.
+    });
+  };
 
   // Build the pool once, then draw.
   useEffect(() => {
@@ -129,24 +162,44 @@ export function Today({ data }: { data: AppData }) {
         <p class="empty-note">Nothing surfaced today — a quiet day is a normal day.</p>
       ) : (
         <ul class="mix-list">
-          {surfaced.map((item) => (
-            <li key={item.key} class="mix-item">
-              <span class="mix-label">{item.label}</span>
-              {data.session.kind === 'demo' ? (
-                <span class="note-title">{item.title}</span>
-              ) : (
-                <a
-                  class="note-title"
-                  href={data.session.provider.deepLink(item.objectId)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {item.title}
-                </a>
-              )}
-              {item.excerpt && <p class="mix-excerpt">{item.excerpt}</p>}
-            </li>
-          ))}
+          {surfaced.map((item) => {
+            const answered = responses[item.key];
+            const options: ItemResponse[] =
+              item.source === 'learn' ? ['gotIt', 'missedIt'] : ['keep', 'dismiss', 'retire'];
+            return (
+              <li key={item.key} class="mix-item">
+                <span class="mix-label">{item.label}</span>
+                {data.session.kind === 'demo' ? (
+                  <span class="note-title">{item.title}</span>
+                ) : (
+                  <a
+                    class="note-title"
+                    href={data.session.provider.deepLink(item.objectId)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {item.title}
+                  </a>
+                )}
+                {item.excerpt && <p class="mix-excerpt">{item.excerpt}</p>}
+                <div class="mix-responses">
+                  {answered ? (
+                    <span class="mix-answered">{RESPONSE_LABELS[answered]}</span>
+                  ) : (
+                    options.map((response) => (
+                      <button
+                        key={response}
+                        class="mix-response"
+                        onClick={() => respond(item, response)}
+                      >
+                        {RESPONSE_LABELS[response]}
+                      </button>
+                    ))
+                  )}
+                </div>
+              </li>
+            );
+          })}
         </ul>
       )}
 

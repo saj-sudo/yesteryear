@@ -8,7 +8,7 @@ import { FixtureProvider } from '../providers/fixture/fixtureProvider';
 import { buildMinimalSpace } from '../providers/fixture/minimalSpace';
 import { buildStrangersSpace } from '../providers/fixture/strangersSpace';
 import { normalizeConfig } from '../engine/config';
-import { todayInZone } from '../engine/dates';
+import { addDays, todayInZone } from '../engine/dates';
 import { emptyDoc } from '../engine/state';
 import type { LocalDate } from '../engine/types';
 
@@ -72,26 +72,39 @@ export function createSession(): Session | null {
     const provider = new FixtureProvider(space);
     if (demo === 'strangers') {
       // The demo starts as a user would be after onboarding: the invented
-      // schema mapped, tags picked, the daily-note surface on.
-      void provider.save(
-        emptyDoc(
-          normalizeConfig({
-            types: { project: 'Expedition', person: 'Correspondent', note: 'Field Note' },
-            properties: {
-              projectStart: 'Set Off',
-              projectTarget: 'Summit Day',
-              projectStatus: 'Phase',
-              personBirthday: 'Born On',
-            },
-            activeStatusValues: ['Underway', 'Basecamp'],
-            recall: { tags: ['spark', 'keeper', 'thread'], tagWeights: { spark: 1.5 } },
-            rotation: { enabled: true, groupBy: 'tag', groups: ['spark', 'thread'] },
-            surfaces: { dailyNote: { enabled: true } },
-          }),
-          new Date().toISOString(),
-        ),
-        null,
+      // schema mapped, tags picked, the daily-note surface on, and Learn
+      // mode mid-flight so its cadence is visible from the first visit.
+      const doc = emptyDoc(
+        normalizeConfig({
+          types: { project: 'Expedition', person: 'Correspondent', note: 'Field Note' },
+          properties: {
+            projectStart: 'Set Off',
+            projectTarget: 'Summit Day',
+            projectStatus: 'Phase',
+            personBirthday: 'Born On',
+          },
+          activeStatusValues: ['Underway', 'Basecamp'],
+          recall: { tags: ['spark', 'keeper', 'thread'], tagWeights: { spark: 1.5 } },
+          rotation: { enabled: true, groupBy: 'tag', groups: ['spark', 'thread'] },
+          learn: {
+            enabled: true,
+            assignByTag: ['keeper'],
+            targetDateProperty: 'Summit Day',
+          },
+          surfaces: { dailyNote: { enabled: true } },
+        }),
+        new Date().toISOString(),
       );
+      // The Larkspur survey was reviewed ten days ago and is due again now.
+      doc.state.items['obj:x-larkspur#learn'] = {
+        mode: 'learn',
+        targetDate: addDays(today, 45),
+        lastSurfaced: addDays(today, -10),
+        nextDue: today,
+        surfaceCount: 1,
+        lastResponse: 'gotIt',
+      };
+      void provider.save(doc, null);
     }
     return { kind: 'demo', provider, makeStore: () => provider };
   }

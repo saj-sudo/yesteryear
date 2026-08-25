@@ -395,6 +395,58 @@ a:hover {
   margin: 0.4rem 0 0;
 }
 
+.mix-responses {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.mix-response {
+  font-size: 0.78rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  box-shadow: none;
+  color: var(--ink-soft);
+}
+
+.mix-response:hover {
+  color: var(--accent);
+}
+
+.mix-answered {
+  font-size: 0.78rem;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+}
+
+.learn-draft {
+  flex-basis: 100%;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.4rem 0;
+  font-size: 0.85rem;
+}
+
+.learn-draft label {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  color: var(--ink-soft);
+}
+
+.learn-draft input {
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.25rem 0.5rem;
+}
+
 @media (max-width: 720px) {
   .pairing {
     flex-direction: column;
