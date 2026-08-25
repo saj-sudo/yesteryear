@@ -129,15 +129,27 @@ export function rankAndMerge(input: {
       .sort((a, b) => b.score - a.score || a.candidate.key.localeCompare(b.candidate.key))
       .map((s) => s.candidate);
 
-  // Temporal items are date-bound — missed today is missed forever — so
-  // they place ahead of recall, which can always wait. One slot stays
-  // reserved for recall so lookback-heavy days don't crowd it out fully.
-  const temporalRanked = byScore(temporal);
+  // The sampled pool is the product's center of gravity — unexpected
+  // connections — so it gets at least half the slots. Two temporal tiers
+  // sit around it: birthdays, target dates, and anniversaries are rare
+  // and have a real cost when missed, so they always land; same-day
+  // lookbacks connect things the calendar already connected, so they
+  // compete for what's left.
+  const critical = byScore(
+    temporal.filter((c) => c.temporalReason && c.temporalReason.kind !== 'lookback'),
+  );
+  const lookbacks = byScore(
+    temporal.filter((c) => !c.temporalReason || c.temporalReason.kind === 'lookback'),
+  );
   const recallRanked = byScore(recall);
-  const remaining = slots - chosen.length;
-  const recallReserve = recallRanked.length > 0 && remaining > 1 ? 1 : 0;
-  chosen.push(...temporalRanked.slice(0, Math.max(0, remaining - recallReserve)));
-  for (const candidate of [...recallRanked, ...temporalRanked]) {
+
+  chosen.push(...critical.slice(0, Math.max(0, slots - chosen.length)));
+  const recallTake = Math.min(
+    recallRanked.length,
+    Math.max(0, Math.min(slots - chosen.length, Math.ceil(slots / 2))),
+  );
+  chosen.push(...recallRanked.slice(0, recallTake));
+  for (const candidate of [...lookbacks, ...recallRanked]) {
     if (chosen.length >= slots) break;
     if (!chosen.includes(candidate)) chosen.push(candidate);
   }

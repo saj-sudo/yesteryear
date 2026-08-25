@@ -117,6 +117,56 @@ describe('minimal mode (§8.1)', () => {
   });
 });
 
+describe('sampled-pool-first merge', () => {
+  it('recall gets at least half the slots; lookbacks compete for the rest', () => {
+    const lookback = (id: string, daysAgo: number): Candidate =>
+      cand(id, {
+        source: 'temporal',
+        temporalReason: { kind: 'lookback', daysAgo, date: '2026-05-27' },
+      });
+    const merged = rankAndMerge({
+      temporal: [lookback('lb1', 30), lookback('lb2', 90), lookback('lb3', 365)],
+      recall: [cand('r1'), cand('r2'), cand('r3')],
+      learn: [],
+      state: emptyState('now'),
+      config, // maxItems 4
+      today: TODAY,
+    });
+    expect(merged).toHaveLength(4);
+    expect(merged.filter((c) => c.source === 'recall')).toHaveLength(2); // ceil(4/2)
+    expect(merged.filter((c) => c.source === 'temporal')).toHaveLength(2);
+  });
+
+  it('birthdays and target dates always land, even in a full day', () => {
+    const merged = rankAndMerge({
+      temporal: [
+        cand('bday', {
+          source: 'temporal',
+          temporalReason: { kind: 'birthday', inDays: 2, name: 'X' },
+        }),
+        cand('due', {
+          source: 'temporal',
+          temporalReason: { kind: 'targetDate', inDays: 3 },
+        }),
+        cand('lb', {
+          source: 'temporal',
+          temporalReason: { kind: 'lookback', daysAgo: 365, date: '2025-08-25' },
+        }),
+      ],
+      recall: [cand('r1'), cand('r2'), cand('r3'), cand('r4')],
+      learn: [],
+      state: emptyState('now'),
+      config, // maxItems 4
+      today: TODAY,
+    });
+    const ids = merged.map((c) => c.objectId);
+    expect(ids).toContain('bday');
+    expect(ids).toContain('due');
+    expect(merged.filter((c) => c.source === 'recall')).toHaveLength(2);
+    expect(ids).not.toContain('lb'); // the calendar-connected item is what yields
+  });
+});
+
 describe('edges', () => {
   it('zero candidates is a normal state', () => {
     expect(

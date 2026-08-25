@@ -1,9 +1,10 @@
-import { addDays, localDateFromIso, parseDailyNoteTitle } from './dates';
+import { addDays, formatLocalDate, localDateFromIso, parseDailyNoteTitle } from './dates';
+import type { PairingCandidate } from './pairing';
 import { refineToBlock } from './granularity';
 import { renderSection } from './markdown';
 import { parseResponses } from './parseResponses';
 import type { FullObject, Provider, PropertyValue } from './provider';
-import { resolveSchema, type ResolvedSchema } from './resolve';
+import { referencedTagNames, resolveSchema, type ResolvedSchema } from './resolve';
 import { learnKey, objKey, parseKey, StateManager } from './state';
 import { temporalCandidates, type DailyNoteRef, type PersonInput, type ProjectInput } from './temporal';
 import { chooseDay, finalizeRun, prepareLearn, applyResponses, type CandidatePools } from './run';
@@ -294,6 +295,55 @@ async function resolveTargetDate(
 }
 
 /* ------------------------------------------------------------------ */
+
+/**
+ * The serendipity pool (Today view): every daily note plus everything
+ * carrying a configured tag. Summaries only — nothing is enriched until
+ * a drawn pairing is actually displayed.
+ */
+export async function gatherPairingPool(
+  provider: Provider,
+  config: YesteryearConfig,
+  notesByDate: ReadonlyMap<string, DailyNoteRef>,
+): Promise<PairingCandidate[]> {
+  const pool: PairingCandidate[] = [];
+  for (const [date, note] of notesByDate) {
+    pool.push({
+      key: objKey(note.id),
+      objectId: note.id,
+      title: formatLocalDate(date as LocalDate),
+      structureId: provider.dailyNoteStructureId,
+      tags: [],
+      date: date as LocalDate,
+    });
+  }
+
+  const wanted = new Set(referencedTagNames(config));
+  if (wanted.size > 0) {
+    const tags = await provider.listTags();
+    const byObject = new Map<string, PairingCandidate>();
+    for (const tag of tags) {
+      if (!wanted.has(tag.name)) continue;
+      for await (const summary of provider.listObjectsByTag(tag.id)) {
+        const existing = byObject.get(summary.id);
+        if (existing) {
+          existing.tags.push(tag.name);
+        } else {
+          byObject.set(summary.id, {
+            key: objKey(summary.id),
+            objectId: summary.id,
+            title: summary.title,
+            structureId: summary.structureId,
+            tags: [tag.name],
+            date: null,
+          });
+        }
+      }
+    }
+    pool.push(...byObject.values());
+  }
+  return pool;
+}
 
 interface DayComputation {
   chosen: Candidate[];
