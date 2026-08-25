@@ -155,6 +155,14 @@ export class FixtureProvider implements Provider, StateStore {
     return this.dailyBodies.get(date) ?? null;
   }
 
+  /** Replace a daily note's body — simulates the user editing it. */
+  setDailyNoteBody(date: LocalDate, markdown: string): void {
+    if (!this.dailyByDate.has(date)) {
+      this.dailyByDate.set(date, { id: `dn-${date}`, title: dailyNoteTitle(date) });
+    }
+    this.dailyBodies.set(date, markdown);
+  }
+
   dailyNoteIdForDate(date: LocalDate): string | null {
     return this.dailyByDate.get(date)?.id ?? null;
   }
