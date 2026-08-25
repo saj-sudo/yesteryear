@@ -59,3 +59,202 @@ body {
   margin: 0 auto;
   padding: 3rem 1.25rem;
 }
+
+/* ---------- shared ---------- */
+
+button {
+  font: inherit;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+}
+
+button.primary {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  font-size: 1.05rem;
+  padding: 0.6rem 1.4rem;
+}
+
+button.subtle {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  text-decoration: underline;
+  padding: 0.2rem 0.4rem;
+}
+
+a {
+  color: var(--accent);
+}
+
+.fineprint {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.notice {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  margin: 0.75rem 0;
+}
+
+.loading,
+.empty-note {
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+/* ---------- connect ---------- */
+
+.connect {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 4rem 1.25rem;
+}
+
+.connect .tagline {
+  color: var(--ink-soft);
+  margin-top: -0.75rem;
+}
+
+.demo-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+/* ---------- app shell ---------- */
+
+.app-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.app-header .brand {
+  font-weight: 700;
+}
+
+.app-header nav {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.app-header nav a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding-bottom: 2px;
+}
+
+.app-header nav a.active {
+  color: var(--ink);
+  border-bottom: 2px solid var(--accent);
+}
+
+.app-header .space-name {
+  margin-left: auto;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.demo-banner {
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  padding: 0.4rem 1.25rem;
+}
+
+.app-main {
+  padding: 1.25rem;
+  max-width: 75rem;
+  margin: 0 auto;
+}
+
+/* ---------- on this day ---------- */
+
+.day-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.day-nav h2 {
+  margin: 0;
+}
+
+.today-btn {
+  font-size: 0.8rem;
+  vertical-align: middle;
+}
+
+.year-columns {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  align-items: flex-start;
+  padding: 1rem 0 1.5rem;
+}
+
+.year-column {
+  flex: 0 0 18rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.9rem 1.1rem;
+  min-height: 8rem;
+}
+
+.year-column h3 {
+  margin: 0 0 0.4rem;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.note-title {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.md blockquote {
+  margin: 0.5rem 0;
+  padding-left: 0.8rem;
+  border-left: 3px solid var(--line);
+  color: var(--ink-soft);
+}
+
+.md ul {
+  padding-left: 1.2rem;
+  margin: 0.4rem 0;
+}
+
+.md .wikilink {
+  font-style: normal;
+  color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .year-columns {
+    flex-direction: column;
+  }
+  .year-column {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+}
