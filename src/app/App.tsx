@@ -1,0 +1,237 @@
+import { useEffect, useMemo, useState } from 'preact/hooks';
+import { buildDailyNoteMap, runDaily, type RunReport } from '../engine/orchestrate';
+import type { Provider, SpaceInfo } from '../engine/provider';
+import { StateManager } from '../engine/state';
+import type { DailyNoteRef } from '../engine/temporal';
+import type { LocalDate } from '../engine/types';
+import { loadCached, saveCached } from '../storage/cache';
+import { HASH_FOR, useView, type View } from './router';
+import {
+  createSession,
+  disconnect,
+  endDemo,
+  isAuthLoss,
+  todayLocal,
+  type Session,
+} from './session';
+import { Icon } from './components/Icon';
+import { Connect } from './views/Connect';
+import { Heatmap } from './views/Heatmap';
+import { Learn } from './views/Learn';
+import { OnThisDay } from './views/OnThisDay';
+import { Preview } from './views/Preview';
+import { Recall } from './views/Recall';
+import { Settings } from './views/Settings';
+import { Today } from './views/Today';
+
+const NAV_GROUPS: { label: string | null; items: { view: View; label: string }[] }[] = [
+  {
+    label: null,
+    items: [{ view: 'today', label: 'Today' }],
+  },
+  {
+    label: 'Cadences',
+    items: [
+      { view: 'recall', label: 'Recall' },
+      { view: 'learn', label: 'Learn' },
+    ],
+  },
+  {
+    label: 'Lenses',
+    items: [
+      { view: 'onThisDay', label: 'On This Day' },
+      { view: 'heatmap', label: 'Calendar' },
+      { view: 'preview', label: 'Preview' },
+    ],
+  },
+  {
+    label: null,
+    items: [{ view: 'settings', label: 'Settings' }],
+  },
+];
+
+export interface AppData {
+  session: Session;
+  space: SpaceInfo;
+  manager: StateManager;
+  notes: Map<string, DailyNoteRef>;
+  today: LocalDate;
+  report: RunReport | null;
+}
+
+type CachedNotes = Record<string, DailyNoteRef>;
+
+export function App() {
+  const [session, setSession] = useState<Session | null>(() => createSession());
+  const [data, setData] = useState<AppData | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [ranNote, setRanNote] = useState<string | null>(null);
+  const view = useView('today');
+  const today: LocalDate = useMemo(() => todayLocal(null), []);
+
+  useEffect(() => {
+    if (!session) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const space = await session.provider.spaceInfo();
+        const manager = await StateManager.open(
+          session.makeStore(space.spaceId),
+          () => new Date().toISOString(),
+        );
+        if (cancelled) return;
+
+        // Fast paint from cache while the fresh listing runs.
+        const cached = loadCached<CachedNotes>(space.spaceId, 'dailyNotes');
+        if (cached) {
+          setData({
+            session, space, manager,
+            notes: new Map(Object.entries(cached)),
+            today,
+            report: null,
+          });
+        }
+        const notes = await buildDailyNoteMap(session.provider);
+        if (cancelled) return;
+        if (session.kind === 'live') {
+          saveCached(space.spaceId, 'dailyNotes', Object.fromEntries(notes));
+        }
+        setData({ session, space, manager, notes, today, report: null });
+
+        // The lazy daily run (§9.2): first visit of the local day computes
+        // the allocation, advances the queue, and — only when opted in —
+        // writes the Resurfaced section into today's daily note.
+        const report = await runDaily({
+          provider: session.provider,
+          manager,
+          today,
+          rng: Math.random,
+          notesByDate: notes,
+        });
+        if (cancelled) return;
+        setData({ session, space, manager, notes, today, report });
+        if (report.wrote) {
+          setRanNote('Today’s Resurfaced section was added to your daily note.');
+        }
+      } catch (err) {
+        if (cancelled) return;
+        if (isAuthLoss(err)) {
+          disconnect();
+          setSession(null);
+          setData(null);
+        } else {
+          setLoadError(
+            'Could not reach Capacities right now. Cached content may still be shown.',
+          );
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [session, today]);
+
+  if (!session) {
+    return (
+      <Connect
+        onDemo={() => setSession(createSession())}
+        onConnected={() => setSession(createSession())}
+      />
+    );
+  }
+
+  const exitDemo = (): void => {
+    endDemo();
+    setData(null);
+    setSession(createSession());
+  };
+
+  const signOut = (): void => {
+    disconnect();
+    setData(null);
+    setSession(null);
+  };
+
+  return (
+    <div class="app">
+      <aside class="sidebar">
+        <a class="brand" href="#/today">
+          <span class="brand-mark" aria-hidden="true" />
+          Yesteryear
+        </a>
+        <nav>
+          {NAV_GROUPS.map((group, gi) => (
+            <div class="nav-group" key={gi}>
+              {group.label && <span class="nav-group-label">{group.label}</span>}
+              {group.items.map((item) => (
+                <a
+                  key={item.view}
+                  href={HASH_FOR[item.view]}
+                  class={view === item.view ? 'active' : ''}
+                >
+                  <Icon name={item.view} />
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          ))}
+        </nav>
+        <div class="sidebar-foot">
+          {session.kind === 'demo' && (
+            <div class="demo-badge">
+              <span>Demo space</span>
+              <button class="subtle" onClick={exitDemo}>
+                exit
+              </button>
+            </div>
+          )}
+          <span class="space-name">{data?.space.title ?? ''}</span>
+        </div>
+      </aside>
+
+      <div class="content">
+        {session.kind === 'demo' && (
+          <div class="demo-banner">
+            Every note here is synthetic, and nothing leaves this tab.
+          </div>
+        )}
+        {loadError && <div class="notice">{loadError}</div>}
+        {ranNote && <div class="notice">{ranNote}</div>}
+
+        <main class="app-main">
+          {data === null ? (
+            <p class="loading">Reading the space…</p>
+          ) : view === 'today' ? (
+            <Today data={data} />
+          ) : view === 'onThisDay' ? (
+            <OnThisDay
+              today={data.today}
+              notes={data.notes}
+              getMarkdown={(id) => data.session.provider.getObjectMarkdown(id)}
+              deepLink={(id) => data.session.provider.deepLink(id)}
+              isDemo={session.kind === 'demo'}
+            />
+          ) : view === 'heatmap' ? (
+            <Heatmap
+              today={data.today}
+              notes={data.notes}
+              getMarkdown={(id) => data.session.provider.getObjectMarkdown(id)}
+              deepLink={(id) => data.session.provider.deepLink(id)}
+              isDemo={session.kind === 'demo'}
+            />
+          ) : view === 'recall' ? (
+            <Recall data={data} />
+          ) : view === 'learn' ? (
+            <Learn data={data} />
+          ) : view === 'preview' ? (
+            <Preview data={data} />
+          ) : (
+            <Settings data={data} onSignOut={signOut} />
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+export type { Provider };

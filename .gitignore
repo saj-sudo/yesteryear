@@ -1,0 +1,13 @@
+# Never commit user config, state, tokens, or real space data (spec §0b)
+config.json
+state.json
+.env
+.env.local
+*.token
+fixtures/real/
+
+# Build and tooling
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
