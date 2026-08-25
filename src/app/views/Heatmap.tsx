@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'preact/hooks';
-import { isLocalDate, yearOf } from '../../engine/dates';
+import { formatLocalDate, isLocalDate, yearOf } from '../../engine/dates';
 import type { DailyNoteRef } from '../../engine/temporal';
 import type { LocalDate } from '../../engine/types';
 import { Markdown } from '../components/Markdown';
@@ -91,10 +91,10 @@ export function Heatmap(props: {
         <article class="heat-detail">
           <h3>
             {props.isDemo ? (
-              open.note.title
+              formatLocalDate(open.date)
             ) : (
               <a href={props.deepLink(open.note.id)} target="_blank" rel="noreferrer">
-                {open.note.title}
+                {formatLocalDate(open.date)}
               </a>
             )}
           </h3>

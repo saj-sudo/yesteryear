@@ -1,4 +1,4 @@
-import { addDays, yearOf } from '../../engine/dates';
+import { addDays } from '../../engine/dates';
 import type { LocalDate } from '../../engine/types';
 
 /**
@@ -18,16 +18,13 @@ export function seededRng(seed: number): () => number {
   };
 }
 
-const MONTH_ABBR = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-] as const;
-
-/** Capacities-style daily note title: "Aug 27, 2025". */
+/**
+ * The API's actual daily-note title format, verified against a real
+ * space: an ISO datetime at UTC midnight. Fixtures mirror it so every
+ * end-to-end test exercises what production parsing really sees.
+ */
 export function dailyNoteTitle(date: LocalDate): string {
-  const month = MONTH_ABBR[Number(date.slice(5, 7)) - 1]!;
-  const day = Number(date.slice(8));
-  return `${month} ${day}, ${yearOf(date)}`;
+  return `${date}T00:00:00.000Z`;
 }
 
 export interface GeneratedDailyNote {

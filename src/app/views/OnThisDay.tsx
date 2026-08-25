@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
-import { addDays, isLocalDate, monthDayOf, yearOf } from '../../engine/dates';
+import { addDays, formatLocalDate, isLocalDate, monthDayOf, yearOf } from '../../engine/dates';
 import type { DailyNoteRef } from '../../engine/temporal';
 import type { LocalDate } from '../../engine/types';
 import { Markdown } from '../components/Markdown';
@@ -98,7 +98,7 @@ export function OnThisDay(props: {
               {col.note ? (
                 <>
                   {props.isDemo ? (
-                    <span class="note-title">{col.note.title}</span>
+                    <span class="note-title">{formatLocalDate(col.date as LocalDate)}</span>
                   ) : (
                     <a
                       class="note-title"
@@ -106,7 +106,7 @@ export function OnThisDay(props: {
                       target="_blank"
                       rel="noreferrer"
                     >
-                      {col.note.title}
+                      {formatLocalDate(col.date as LocalDate)}
                     </a>
                   )}
                   {bodies[col.note.id] === undefined ? (

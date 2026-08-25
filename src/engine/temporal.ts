@@ -1,4 +1,4 @@
-import { addDays, diffDays, monthDayOf, nextOccurrence, yearOf } from './dates';
+import { addDays, diffDays, formatLocalDate, monthDayOf, nextOccurrence, yearOf } from './dates';
 import type { Candidate, LocalDate, TemporalConfig } from './types';
 
 /**
@@ -58,7 +58,9 @@ export function dailyNoteLookbacks(
       out.push(
         candidate({
           objectId: note.id,
-          title: note.title,
+          // Raw API titles are ISO datetimes; surface the human form,
+          // which is also how the note is addressed in markdown links.
+          title: formatLocalDate(date),
           temporalReason: { kind: 'lookback', daysAgo, date },
         }),
       );

@@ -4,6 +4,7 @@ import { exportDoc, importDoc } from '../../engine/state';
 import type { StructureDef, TagDef } from '../../engine/provider';
 import { resolveSchema } from '../../engine/resolve';
 import type { PropertyRole, TypeRole, YesteryearConfig } from '../../engine/types';
+import { isBasicStructure } from '../../providers/capacities/constants';
 import type { AppData } from '../App';
 
 /**
@@ -14,14 +15,6 @@ import type { AppData } from '../App';
  */
 
 const BLOCK_TYPES = ['TextBlock', 'QuoteBlock', 'CodeBlock', 'MathBlock'];
-
-const BASIC_STRUCTURE_IDS = new Set([
-  'RootDailyNote', 'RootTag', 'RootPage', 'RootDatabase', 'RootStructure',
-  'RootSpace', 'RootQuery', 'RootEntity', 'RootBlocksTemplate', 'RootAIChat',
-  'RootSimpleTable', 'RootTask', 'UtilDate', 'User', 'UserPersonal',
-  'MediaImage', 'MediaPDF', 'MediaAudio', 'MediaVideo', 'MediaFile',
-  'MediaWebResource', 'MediaTweet',
-]);
 
 export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => void }) {
   const [structures, setStructures] = useState<StructureDef[] | null>(null);
@@ -56,7 +49,7 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
 
   if (!structures || !tags) return <p class="loading">Reading your space’s types and tags…</p>;
 
-  const customTypes = structures.filter((s) => !BASIC_STRUCTURE_IDS.has(s.id));
+  const customTypes = structures.filter((s) => !isBasicStructure(s.id));
   const typeByName = (name: string | undefined): StructureDef | undefined =>
     name
       ? structures.find((s) => s.title.trim().toLowerCase() === name.trim().toLowerCase())

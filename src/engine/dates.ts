@@ -122,17 +122,31 @@ function monthFromName(name: string): number | null {
 }
 
 /**
- * Parse a daily-note title into a LocalDate. Titles are locale-formatted
- * dates ("Aug 27, 2025", "27 Aug 2025", "2025-08-27", "27.08.2025", …).
- * Parsing is deliberately forgiving, and anything unrecognized — including
- * ambiguous numeric forms like 03/04/2025 — returns null so the caller
- * skips the note instead of failing the run (§8.2).
+ * Parse a daily-note title into a LocalDate.
+ *
+ * Verified against a real space: the API returns daily-note titles as
+ * ISO datetimes at UTC midnight ("2026-04-23T00:00:00.000Z") — the
+ * pretty "Aug 23, 2026" form only appears in the app UI and markdown
+ * frontmatter. Both are accepted, along with locale-formatted dates.
+ * Parsing is deliberately forgiving, and anything unrecognized — a
+ * hand-titled note like "Weekdays", ambiguous numerics like 03/04/2025 —
+ * returns null so the caller skips the note instead of failing (§8.2).
  */
 export function parseDailyNoteTitle(title: string): LocalDate | null {
   const t = title.trim();
 
-  // ISO: 2025-08-27
-  let m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(t);
+  // ISO datetime at UTC midnight (the API's actual title format):
+  // the date part IS the calendar date the note belongs to.
+  let m = /^(\d{4})-(\d{2})-(\d{2})T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?$/.exec(t);
+  if (m) {
+    const [, y, mo, d] = m;
+    return isRealDate(Number(y), Number(mo), Number(d))
+      ? fromYmd(Number(y), Number(mo), Number(d))
+      : null;
+  }
+
+  // ISO date: 2025-08-27
+  m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(t);
   if (m) {
     const [, y, mo, d] = m;
     return isRealDate(Number(y), Number(mo), Number(d))
@@ -173,6 +187,17 @@ export function parseDailyNoteTitle(title: string): LocalDate | null {
 
   // Slash numeric (03/04/2025) is ambiguous between DMY and MDY: skip.
   return null;
+}
+
+const MONTH_ABBR = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+] as const;
+
+/** Human display form, matching the app's own: "Aug 23, 2026". */
+export function formatLocalDate(date: LocalDate): string {
+  const month = MONTH_ABBR[Number(date.slice(5, 7)) - 1]!;
+  return `${month} ${Number(date.slice(8))}, ${yearOf(date)}`;
 }
 
 /**

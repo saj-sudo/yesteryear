@@ -9,3 +9,21 @@ export const PAGE_STRUCTURE_ID = 'RootPage';
 
 /** Known deep-link base (spec V5 fallback). */
 export const APP_BASE = 'https://app.capacities.io';
+
+const BASIC_STRUCTURE_IDS = new Set([
+  'RootDailyNote', 'RootTag', 'RootPage', 'RootDatabase', 'RootStructure',
+  'RootSpace', 'RootQuery', 'RootEntity', 'RootBlocksTemplate', 'RootAIChat',
+  'RootSimpleTable', 'RootTask', 'UtilDate', 'User', 'UserPersonal',
+  'MediaImage', 'MediaPDF', 'MediaAudio', 'MediaVideo', 'MediaFile',
+  'MediaWebResource', 'MediaTweet',
+]);
+
+/**
+ * Is this structure one of the API's built-ins rather than a user type?
+ * Verified against a real space: basic structures can also appear under
+ * internal near-zero UUIDs (e.g. 00000000-0000-0100-…), so both forms
+ * count. These are API constants, not user schema.
+ */
+export function isBasicStructure(structureId: string): boolean {
+  return BASIC_STRUCTURE_IDS.has(structureId) || structureId.startsWith('00000000-0000-');
+}

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   addDays,
   diffDays,
+  formatLocalDate,
   isLocalDate,
   localDateFromIso,
   nextOccurrence,
@@ -66,8 +67,19 @@ describe('nextOccurrence', () => {
 });
 
 describe('parseDailyNoteTitle', () => {
-  it('parses the documented Capacities format', () => {
+  it('parses the real API title format: ISO datetime at UTC midnight', () => {
+    // Verified against a live space — this is what listings actually return.
+    expect(parseDailyNoteTitle('2026-04-23T00:00:00.000Z')).toBe('2026-04-23');
+    expect(parseDailyNoteTitle('2026-08-23T00:00:00Z')).toBe('2026-08-23');
+    expect(parseDailyNoteTitle('2026-08-23T00:00:00+02:00')).toBe('2026-08-23');
+  });
+
+  it('parses the app display format', () => {
     expect(parseDailyNoteTitle('Aug 27, 2025')).toBe('2025-08-27');
+  });
+
+  it('skips hand-titled daily notes like "Weekdays" (seen in a real space)', () => {
+    expect(parseDailyNoteTitle('Weekdays')).toBeNull();
   });
 
   it('parses locale-varied formats', () => {
@@ -85,6 +97,13 @@ describe('parseDailyNoteTitle', () => {
     expect(parseDailyNoteTitle('03/04/2025')).toBeNull(); // DMY/MDY ambiguous
     expect(parseDailyNoteTitle('Feb 30, 2025')).toBeNull();
     expect(parseDailyNoteTitle('')).toBeNull();
+  });
+});
+
+describe('formatLocalDate', () => {
+  it('round-trips with parsing', () => {
+    expect(formatLocalDate('2026-08-23')).toBe('Aug 23, 2026');
+    expect(parseDailyNoteTitle(formatLocalDate('2026-01-05'))).toBe('2026-01-05');
   });
 });
 

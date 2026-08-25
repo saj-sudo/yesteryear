@@ -1,5 +1,6 @@
 import type { JSX } from 'preact';
 import { useEffect, useMemo, useState } from 'preact/hooks';
+import { formatLocalDate, parseDailyNoteTitle } from '../../engine/dates';
 import { parseKey } from '../../engine/state';
 import type { ItemKey, ItemState } from '../../engine/types';
 import type { AppData } from '../App';
@@ -139,7 +140,10 @@ export function Queue({ data }: { data: AppData }) {
     });
 
   const title = (row: Row): string => {
-    const base = titles[row.objectId] ?? row.objectId;
+    const raw = titles[row.objectId] ?? row.objectId;
+    // Daily-note titles arrive as ISO datetimes; show the human form.
+    const parsed = parseDailyNoteTitle(raw);
+    const base = parsed ? formatLocalDate(parsed) : raw;
     return row.blockId ? `${base} · one block` : base;
   };
 
