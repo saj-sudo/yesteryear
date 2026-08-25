@@ -68,8 +68,10 @@ what was missing and lists what your space actually has.
 3. You land on **Today**: the day's resurfaced mix, with an unlikely pair
    alongside. That already works with zero configuration — daily notes alone
    make a pool.
-4. In **Settings**, pick your own object types, date properties, and tags —
-   everything is optional, and tags are what make the mix rich.
+4. The two cadences have their own sidebar homes: **Recall** walks you through
+   picking resurfacing tags right in the view, and **Learn** turns on with one
+   click and shows its three ways in (flag an item, a tag, a type). **Settings**
+   holds the full mapping — object types, date properties, granularity.
 5. Check **Preview** to see exactly what tomorrow would surface, before
    anything is written.
 6. If you like it, enable the **daily note** surface. On your first visit each

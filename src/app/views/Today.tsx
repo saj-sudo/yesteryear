@@ -167,7 +167,7 @@ export function Today({ data }: { data: AppData }) {
             const options: ItemResponse[] =
               item.source === 'learn' ? ['gotIt', 'missedIt'] : ['keep', 'dismiss', 'retire'];
             return (
-              <li key={item.key} class="mix-item">
+              <li key={item.key} class={`mix-item src-${item.source}`}>
                 <span class="mix-label">{item.label}</span>
                 {data.session.kind === 'demo' ? (
                   <span class="note-title">{item.title}</span>

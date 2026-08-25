@@ -31,7 +31,11 @@ Initial release.
   with day navigation. Works on any space with zero configuration.
 - **Calendar heatmap**: a year of daily notes at a glance, every written day
   clickable.
-- **Queue**: scheduled, recently surfaced, and retired items — editable.
+- **Recall and Learn views**, one per cadence: each explains its rhythm with
+  the live config numbers, offers inline setup (pick resurfacing tags, turn
+  Learn on, assign by tag) when nothing is configured, and shows its slice of
+  the schedule — scheduled/recent/retired for Recall, next-review and target
+  countdowns for Learn — editable in place.
 - **Preview**: exactly what a run right now would surface, computed on a
   throwaway state copy.
 - **Settings/onboarding** built live from the space's own types, properties,

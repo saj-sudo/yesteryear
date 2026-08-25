@@ -14,21 +14,40 @@ import {
   todayLocal,
   type Session,
 } from './session';
+import { Icon } from './components/Icon';
 import { Connect } from './views/Connect';
 import { Heatmap } from './views/Heatmap';
+import { Learn } from './views/Learn';
 import { OnThisDay } from './views/OnThisDay';
 import { Preview } from './views/Preview';
-import { Queue } from './views/Queue';
+import { Recall } from './views/Recall';
 import { Settings } from './views/Settings';
 import { Today } from './views/Today';
 
-const NAV: { view: View; label: string }[] = [
-  { view: 'today', label: 'Today' },
-  { view: 'onThisDay', label: 'On This Day' },
-  { view: 'heatmap', label: 'Calendar' },
-  { view: 'queue', label: 'Queue' },
-  { view: 'preview', label: 'Preview' },
-  { view: 'settings', label: 'Settings' },
+const NAV_GROUPS: { label: string | null; items: { view: View; label: string }[] }[] = [
+  {
+    label: null,
+    items: [{ view: 'today', label: 'Today' }],
+  },
+  {
+    label: 'Cadences',
+    items: [
+      { view: 'recall', label: 'Recall' },
+      { view: 'learn', label: 'Learn' },
+    ],
+  },
+  {
+    label: 'Lenses',
+    items: [
+      { view: 'onThisDay', label: 'On This Day' },
+      { view: 'heatmap', label: 'Calendar' },
+      { view: 'preview', label: 'Preview' },
+    ],
+  },
+  {
+    label: null,
+    items: [{ view: 'settings', label: 'Settings' }],
+  },
 ];
 
 export interface AppData {
@@ -137,17 +156,24 @@ export function App() {
     <div class="app">
       <aside class="sidebar">
         <a class="brand" href="#/today">
+          <span class="brand-mark" aria-hidden="true" />
           Yesteryear
         </a>
         <nav>
-          {NAV.map((item) => (
-            <a
-              key={item.view}
-              href={HASH_FOR[item.view]}
-              class={view === item.view ? 'active' : ''}
-            >
-              {item.label}
-            </a>
+          {NAV_GROUPS.map((group, gi) => (
+            <div class="nav-group" key={gi}>
+              {group.label && <span class="nav-group-label">{group.label}</span>}
+              {group.items.map((item) => (
+                <a
+                  key={item.view}
+                  href={HASH_FOR[item.view]}
+                  class={view === item.view ? 'active' : ''}
+                >
+                  <Icon name={item.view} />
+                  {item.label}
+                </a>
+              ))}
+            </div>
           ))}
         </nav>
         <div class="sidebar-foot">
@@ -193,8 +219,10 @@ export function App() {
               deepLink={(id) => data.session.provider.deepLink(id)}
               isDemo={session.kind === 'demo'}
             />
-          ) : view === 'queue' ? (
-            <Queue data={data} />
+          ) : view === 'recall' ? (
+            <Recall data={data} />
+          ) : view === 'learn' ? (
+            <Learn data={data} />
           ) : view === 'preview' ? (
             <Preview data={data} />
           ) : (
