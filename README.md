@@ -1,10 +1,14 @@
 # Yesteryear
 
-**Resurfacing for Capacities.** See what you wrote on this day across every
-past year, rotate gently through the notes you tagged as worth meeting again,
-and — if you opt in — space a few things toward a real date.
+**Resurfacing for Capacities.** Your notes, coming back around — a gentle
+rotation through what you tagged as worth meeting again, spread across the
+year, headlined each day by an *unlikely pair*: two things from different
+corners of your space put side by side, because the connections worth having
+are the ones no filing system would have made. Time-based lenses (on this day
+across years, birthdays, project dates) are here too — as lenses, not the
+product.
 
-![On This Day: one column per year for today's date](docs/on-this-day.png)
+![Today: an unlikely pair of notes, and the day's resurfaced mix](docs/today.png)
 
 > **Disclaimer:** Yesteryear is an independent community tool. It is not
 > affiliated with, endorsed by, or sponsored by Capacities. Capacities is a
@@ -12,11 +16,13 @@ and — if you opt in — space a few things toward a real date.
 
 Notes go into a PKM tool far more easily than they come back out. Capacities
 is excellent at capture and connection, but nothing brings your older writing
-back in front of you at the right moment — the insight you tagged in March, the
-project you started a year ago today, the friend whose birthday is Thursday.
-Yesteryear is that other half: a resurfacing engine that reads your space and
-puts your own past back into view, on the site and (optionally) as a small
-`Resurfaced` section in the daily note you already open every morning.
+back in front of you — the insight you tagged in March, the meeting note that
+suddenly rhymes with it, the friend whose birthday is Thursday. Yesteryear is
+that other half: a resurfacing engine that reads your space and puts your own
+past back into view, on the site and (optionally) as a small `Resurfaced`
+section in the daily note you already open every morning. The daily mix leans
+deliberately on sampled and random draws rather than calendar echoes: the
+calendar only connects things it already connected.
 
 ## No backend, no telemetry
 
@@ -58,14 +64,24 @@ what was missing and lists what your space actually has.
    first — it runs on a synthetic space, no account needed).
 2. Approve access and pick which space to share — that choice happens on
    Capacities' side.
-3. You land on **On This Day**: today's date across every past year. That
-   already works, with zero configuration.
+3. You land on **Today**: an unlikely pair drawn from your space, and the
+   day's resurfaced mix. That already works with zero configuration — daily
+   notes alone make a pool.
 4. In **Settings**, pick your own object types, date properties, and tags —
-   everything is optional.
+   everything is optional, and tags are what make the mix rich.
 5. Check **Preview** to see exactly what tomorrow would surface, before
    anything is written.
 6. If you like it, enable the **daily note** surface. On your first visit each
    day, a `Resurfaced` section is appended to that day's note.
+
+### Try it today with a personal token
+
+The one-click connect needs an OAuth client id issued by Capacities. Until
+that lands, or for your own self-hosted build, use the advanced path: in the
+Capacities app create a token under **Settings → Capacities API** (read +
+write), run the site (`npm install && npm run dev`), and paste the token under
+**Advanced** on the Connect screen. The token stays in your browser's storage
+— treat it like a password, and revoke it in the same settings screen anytime.
 
 Responding is optional, in the note itself: check the box (or strike `keep`)
 to keep something in rotation, strike `dismiss` to rest it three times longer,
@@ -79,8 +95,11 @@ parser treats hand-edited notes as normal, not as errors.
 **Recall** (default) is not spaced repetition, on purpose: personal notes have
 no deadline, so there is no memory schedule to optimize. Instead: a 45-day
 cooldown, weighted sampling that favors neglected groups and less-recently-seen
-items, and a deliberate 20% slice of pure randomness — surprising juxtaposition
-is where the insight comes from.
+items, and a deliberate 20% slice of pure randomness. The sampled pool gets at
+least half of every day's slots; date-bound items with a real cost (birthdays,
+target dates) always land, and same-day-lookbacks compete for what's left —
+surprising juxtaposition is where the insight comes from, and the Today view's
+re-drawable pairing exists for exactly that.
 
 **Learn** (opt-in) is for the few notes you want fluent before a known date —
 a talk, an exam, a trip. Gaps are computed as a ratio of the time remaining
@@ -100,9 +119,10 @@ state.
 
 Yesteryear uses the official Capacities HTTP API via the official
 [`@capacities/api`](https://www.npmjs.com/package/@capacities/api) TypeScript
-SDK, with OAuth 2.1 + PKCE — no static API tokens, and none of the app's
-internal/undocumented interfaces that some community tools depend on. That
-choice is about durability: when the API evolves, this keeps working.
+SDK — none of the app's internal/undocumented interfaces that some community
+tools depend on. OAuth 2.1 + PKCE is the primary flow; the personal-token path
+exists for self-hosters and early testing. That choice is about durability:
+when the API evolves, this keeps working.
 
 ## Deploying your own
 

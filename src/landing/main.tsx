@@ -1,5 +1,5 @@
 import { render } from 'preact';
-import onThisDayShot from '../../docs/on-this-day.png';
+import todayShot from '../../docs/today.png';
 import calendarShot from '../../docs/calendar.png';
 
 /**
@@ -13,10 +13,12 @@ function Landing() {
       <h1>Yesteryear</h1>
       <p class="tagline">Resurfacing for Capacities.</p>
       <p>
-        You already wrote the good stuff. Yesteryear brings it back: what you
-        wrote on this day across every past year, gentle rotation through the
-        notes you tagged as worth meeting again, and — if you opt in — spaced
-        review of the few things you want fluent before a real date.
+        You already wrote the good stuff — it just never comes back. Yesteryear
+        brings your notes back around: a gentle rotation through what you tagged
+        as worth meeting again, spread across the year, plus the pairs you would
+        never think to file together. Every day it puts two things from
+        different corners of your space side by side, because the connections
+        worth having are the ones no filing system would have made.
       </p>
 
       <p>
@@ -24,7 +26,7 @@ function Landing() {
         <a class="cta-secondary" href="/app/">Try the demo — no account needed</a>
       </p>
 
-      <img src={onThisDayShot} alt="On This Day: one column per year for today's date" />
+      <img src={todayShot} alt="Today: an unlikely pair of notes, and the day's resurfaced mix" />
 
       <h2>No backend. Really none.</h2>
       <p>
@@ -43,7 +45,16 @@ function Landing() {
         contains and lets you map it: which types count as projects or people,
         which tags mark something worth resurfacing, whether whole pages or
         single paragraphs are the unit. A space with nothing configured still
-        gets “on this day”, because daily notes exist everywhere.
+        works, because daily notes exist everywhere.
+      </p>
+
+      <h2>Time as one lens, not the whole story</h2>
+      <p>
+        Birthdays, project target dates, and “what was I writing a year ago
+        today” are all here — On This Day columns, a calendar heatmap of your
+        writing. But the calendar only connects things it already connected.
+        The daily mix leans deliberately on sampled and random draws, because
+        surprising juxtaposition is where the insight lives.
       </p>
 
       <img src={calendarShot} alt="Calendar heatmap: a year of daily notes at a glance" />

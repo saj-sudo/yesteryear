@@ -10,6 +10,20 @@ Initial release.
 
 ### Added
 
+- **Today view** (default): a re-drawable *serendipity pairing* — two items
+  deliberately drawn from different tags, types, and eras — above the day's
+  resurfaced mix. Pairings are a lens: they never touch scheduling state.
+- Sampled-pool-first daily allocation: the sampled pool gets at least half
+  the slots; rare high-cost date-bound items (birthdays, target dates,
+  anniversaries) always land; same-day lookbacks compete for the rest.
+- Personal-API-token connect path (advanced, secondary to OAuth) for
+  self-hosted builds and early testing.
+- Capacities-style design: left sidebar shell, neutral surfaces, blue-violet
+  accent, dark mode, mobile collapse.
+- Daily-note titles parse in the API's real format (ISO datetime at UTC
+  midnight), verified against a live space; hand-titled daily notes skip
+  cleanly.
+
 - Static single-page app with no backend: OAuth 2.1 + PKCE entirely in the
   browser, tokens in browser storage, all API calls browser → Capacities.
 - **On This Day**: today's date across every past year, one column per year,
