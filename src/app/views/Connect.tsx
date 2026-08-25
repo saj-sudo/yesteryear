@@ -35,10 +35,12 @@ export function Connect(props: {
       <h1>Yesteryear</h1>
       <p class="tagline">Resurfacing for Capacities.</p>
       <p>
-        Your notes, coming back around — including the pairs you would never
-        think to file together. Yesteryear reads your space from this browser
-        only: there is no server, no account, and no tracking. Notes travel
-        from your browser to Capacities and nowhere else.
+        Your notes, coming back on a gentle cadence — the note you tagged three
+        months ago returns when its time comes, and material with a real date
+        attached tightens toward it. On the side, an unlikely pair each day.
+        Yesteryear reads your space from this browser only: there is no server,
+        no account, and no tracking. Notes travel from your browser to
+        Capacities and nowhere else.
       </p>
 
       {CLIENT_ID ? (

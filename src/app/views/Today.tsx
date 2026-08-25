@@ -7,10 +7,13 @@ import type { AppData } from '../App';
 import { Markdown } from '../components/Markdown';
 
 /**
- * Today (the default view): a serendipity pairing up top — two things
- * from different corners of the space that had no reason to meet — and
- * the day's resurfaced mix below it. Drawing a pairing is a lens: it
- * never touches scheduling state.
+ * Today (the default view). The core comes first: the day's resurfaced
+ * mix, produced by the cadence engine — Recall's cooldown-and-sampling
+ * rhythm, Learn's contracting ladder toward real dates, and the
+ * date-bound items worth never missing. Below it, a serendipity
+ * pairing: two things from different corners of the space that had no
+ * reason to meet. Drawing a pairing is a lens: it never touches
+ * scheduling state.
  */
 
 const EXCERPT_LIMIT = 320;
@@ -117,12 +120,43 @@ export function Today({ data }: { data: AppData }) {
 
   return (
     <section class="today">
+      <h2>Resurfaced today</h2>
+      <p class="fineprint">
+        What the cadence brought back — items return when their time comes, not
+        when the calendar rhymes.
+      </p>
+      {surfaced.length === 0 ? (
+        <p class="empty-note">Nothing surfaced today — a quiet day is a normal day.</p>
+      ) : (
+        <ul class="mix-list">
+          {surfaced.map((item) => (
+            <li key={item.key} class="mix-item">
+              <span class="mix-label">{item.label}</span>
+              {data.session.kind === 'demo' ? (
+                <span class="note-title">{item.title}</span>
+              ) : (
+                <a
+                  class="note-title"
+                  href={data.session.provider.deepLink(item.objectId)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {item.title}
+                </a>
+              )}
+              {item.excerpt && <p class="mix-excerpt">{item.excerpt}</p>}
+            </li>
+          ))}
+        </ul>
+      )}
+
       <div class="pairing-head">
         <div>
           <h2>An unlikely pair</h2>
           <p class="fineprint">
-            Two things from different corners of your space. Sometimes nothing —
-            sometimes exactly the connection you would never have filed.
+            And on the side: two things from different corners of your space.
+            Sometimes nothing — sometimes exactly the connection you would never
+            have filed.
           </p>
         </div>
         <button onClick={redraw} disabled={!pool || pool.length < 2}>
@@ -154,32 +188,6 @@ export function Today({ data }: { data: AppData }) {
             isDemo={data.session.kind === 'demo'}
           />
         </div>
-      )}
-
-      <h2 class="today-mix-head">Today’s mix</h2>
-      {surfaced.length === 0 ? (
-        <p class="empty-note">Nothing surfaced today — a quiet day is a normal day.</p>
-      ) : (
-        <ul class="mix-list">
-          {surfaced.map((item) => (
-            <li key={item.key} class="mix-item">
-              <span class="mix-label">{item.label}</span>
-              {data.session.kind === 'demo' ? (
-                <span class="note-title">{item.title}</span>
-              ) : (
-                <a
-                  class="note-title"
-                  href={data.session.provider.deepLink(item.objectId)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {item.title}
-                </a>
-              )}
-              {item.excerpt && <p class="mix-excerpt">{item.excerpt}</p>}
-            </li>
-          ))}
-        </ul>
       )}
     </section>
   );

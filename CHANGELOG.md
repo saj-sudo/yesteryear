@@ -10,9 +10,10 @@ Initial release.
 
 ### Added
 
-- **Today view** (default): a re-drawable *serendipity pairing* — two items
-  deliberately drawn from different tags, types, and eras — above the day's
-  resurfaced mix. Pairings are a lens: they never touch scheduling state.
+- **Today view** (default): the day's resurfaced mix — the cadence engine's
+  output — with a re-drawable *serendipity pairing* alongside: two items
+  deliberately drawn from different tags, types, and eras. Pairings are a
+  lens: they never touch scheduling state.
 - Sampled-pool-first daily allocation: the sampled pool gets at least half
   the slots; rare high-cost date-bound items (birthdays, target dates,
   anniversaries) always land; same-day lookbacks compete for the rest.

@@ -14,11 +14,14 @@ function Landing() {
       <p class="tagline">Resurfacing for Capacities.</p>
       <p>
         You already wrote the good stuff — it just never comes back. Yesteryear
-        brings your notes back around: a gentle rotation through what you tagged
-        as worth meeting again, spread across the year, plus the pairs you would
-        never think to file together. Every day it puts two things from
-        different corners of your space side by side, because the connections
-        worth having are the ones no filing system would have made.
+        brings it back <em>on a cadence</em>: the notes you tagged as worth
+        meeting again return when their time comes — a month out, six months
+        out, whenever they are due — not when the calendar happens to rhyme.
+        Material with a real date attached (a talk, an exam, a trip) gets its
+        own tightening schedule toward that date. And alongside the cadence,
+        one unlikely pair a day: two things from different corners of your
+        space, side by side, because some connections no filing system would
+        have made.
       </p>
 
       <p>
@@ -26,7 +29,7 @@ function Landing() {
         <a class="cta-secondary" href="/app/">Try the demo — no account needed</a>
       </p>
 
-      <img src={todayShot} alt="Today: an unlikely pair of notes, and the day's resurfaced mix" />
+      <img src={todayShot} alt="Today: the day's resurfaced mix, with an unlikely pair alongside" />
 
       <h2>No backend. Really none.</h2>
       <p>

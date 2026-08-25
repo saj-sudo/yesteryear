@@ -1,14 +1,15 @@
 # Yesteryear
 
-**Resurfacing for Capacities.** Your notes, coming back around — a gentle
-rotation through what you tagged as worth meeting again, spread across the
-year, headlined each day by an *unlikely pair*: two things from different
-corners of your space put side by side, because the connections worth having
-are the ones no filing system would have made. Time-based lenses (on this day
-across years, birthdays, project dates) are here too — as lenses, not the
-product.
+**Resurfacing for Capacities.** Your notes, coming back **on a cadence**: the
+notes you tagged as worth meeting again return when their time comes — a month
+out, six months out, whenever they are due — and material with a real date
+attached (a talk, an exam) gets its own tightening schedule toward that date.
+Alongside the cadence, one *unlikely pair* a day: two things from different
+corners of your space, side by side, because some connections no filing system
+would have made. Time-based lenses (on this day across years, birthdays,
+project dates) are here too — as lenses, not the product.
 
-![Today: an unlikely pair of notes, and the day's resurfaced mix](docs/today.png)
+![Today: the day's resurfaced mix, with an unlikely pair alongside](docs/today.png)
 
 > **Disclaimer:** Yesteryear is an independent community tool. It is not
 > affiliated with, endorsed by, or sponsored by Capacities. Capacities is a
@@ -64,9 +65,9 @@ what was missing and lists what your space actually has.
    first — it runs on a synthetic space, no account needed).
 2. Approve access and pick which space to share — that choice happens on
    Capacities' side.
-3. You land on **Today**: an unlikely pair drawn from your space, and the
-   day's resurfaced mix. That already works with zero configuration — daily
-   notes alone make a pool.
+3. You land on **Today**: the day's resurfaced mix, with an unlikely pair
+   alongside. That already works with zero configuration — daily notes alone
+   make a pool.
 4. In **Settings**, pick your own object types, date properties, and tags —
    everything is optional, and tags are what make the mix rich.
 5. Check **Preview** to see exactly what tomorrow would surface, before
@@ -92,14 +93,15 @@ parser treats hand-edited notes as normal, not as errors.
 
 ## The two modes
 
-**Recall** (default) is not spaced repetition, on purpose: personal notes have
-no deadline, so there is no memory schedule to optimize. Instead: a 45-day
-cooldown, weighted sampling that favors neglected groups and less-recently-seen
-items, and a deliberate 20% slice of pure randomness. The sampled pool gets at
-least half of every day's slots; date-bound items with a real cost (birthdays,
-target dates) always land, and same-day-lookbacks compete for what's left —
-surprising juxtaposition is where the insight comes from, and the Today view's
-re-drawable pairing exists for exactly that.
+**Recall** (default) is the general cadence — not spaced repetition, on
+purpose: personal notes have no deadline, so there is no memory schedule to
+optimize. Instead: a 45-day cooldown, weighted sampling that favors neglected
+groups and less-recently-seen items, and a deliberate 20% slice of pure
+randomness. The cadence pool gets at least half of every day's slots;
+date-bound items with a real cost (birthdays, target dates) always land, and
+same-day lookbacks compete for what's left. The Today view's re-drawable
+pairing sits alongside the cadence as a complement — surprising juxtaposition
+is a documented source of insight — without ever touching the schedule.
 
 **Learn** (opt-in) is for the few notes you want fluent before a known date —
 a talk, an exam, a trip. Gaps are computed as a ratio of the time remaining

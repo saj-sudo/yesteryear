@@ -321,6 +321,7 @@ a:hover {
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
+  margin-top: 2.25rem;
 }
 
 .pairing-head h2 {
@@ -358,13 +359,13 @@ a:hover {
   margin: 0.35rem 0 0.6rem;
 }
 
-.today-mix-head {
-  margin: 1.5rem 0 0.6rem;
+.today h2 {
+  margin-bottom: 0.2rem;
 }
 
 .mix-list {
   list-style: none;
-  margin: 0;
+  margin: 0.75rem 0 0;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
