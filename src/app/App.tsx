@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
-import { buildDailyNoteMap, runDaily } from '../engine/orchestrate';
+import { buildDailyNoteMap, runDaily, type RunReport } from '../engine/orchestrate';
 import type { Provider, SpaceInfo } from '../engine/provider';
 import { StateManager } from '../engine/state';
 import type { DailyNoteRef } from '../engine/temporal';
@@ -20,8 +20,10 @@ import { OnThisDay } from './views/OnThisDay';
 import { Preview } from './views/Preview';
 import { Queue } from './views/Queue';
 import { Settings } from './views/Settings';
+import { Today } from './views/Today';
 
 const NAV: { view: View; label: string }[] = [
+  { view: 'today', label: 'Today' },
   { view: 'onThisDay', label: 'On This Day' },
   { view: 'heatmap', label: 'Calendar' },
   { view: 'queue', label: 'Queue' },
@@ -35,6 +37,7 @@ export interface AppData {
   manager: StateManager;
   notes: Map<string, DailyNoteRef>;
   today: LocalDate;
+  report: RunReport | null;
 }
 
 type CachedNotes = Record<string, DailyNoteRef>;
@@ -44,7 +47,7 @@ export function App() {
   const [data, setData] = useState<AppData | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [ranNote, setRanNote] = useState<string | null>(null);
-  const view = useView('onThisDay');
+  const view = useView('today');
   const today: LocalDate = useMemo(() => todayLocal(null), []);
 
   useEffect(() => {
@@ -66,6 +69,7 @@ export function App() {
             session, space, manager,
             notes: new Map(Object.entries(cached)),
             today,
+            report: null,
           });
         }
         const notes = await buildDailyNoteMap(session.provider);
@@ -73,7 +77,7 @@ export function App() {
         if (session.kind === 'live') {
           saveCached(space.spaceId, 'dailyNotes', Object.fromEntries(notes));
         }
-        setData({ session, space, manager, notes, today });
+        setData({ session, space, manager, notes, today, report: null });
 
         // The lazy daily run (§9.2): first visit of the local day computes
         // the allocation, advances the queue, and — only when opted in —
@@ -86,6 +90,7 @@ export function App() {
           notesByDate: notes,
         });
         if (cancelled) return;
+        setData({ session, space, manager, notes, today, report });
         if (report.wrote) {
           setRanNote('Today’s Resurfaced section was added to your daily note.');
         }
@@ -130,8 +135,10 @@ export function App() {
 
   return (
     <div class="app">
-      <header class="app-header">
-        <span class="brand">Yesteryear</span>
+      <aside class="sidebar">
+        <a class="brand" href="#/today">
+          Yesteryear
+        </a>
         <nav>
           {NAV.map((item) => (
             <a
@@ -143,47 +150,58 @@ export function App() {
             </a>
           ))}
         </nav>
-        <span class="space-name">{data?.space.title ?? ''}</span>
-      </header>
-
-      {session.kind === 'demo' && (
-        <div class="demo-banner">
-          Demo space — every note here is synthetic, and nothing leaves this tab.{' '}
-          <button class="subtle" onClick={exitDemo}>
-            Exit demo
-          </button>
+        <div class="sidebar-foot">
+          {session.kind === 'demo' && (
+            <div class="demo-badge">
+              <span>Demo space</span>
+              <button class="subtle" onClick={exitDemo}>
+                exit
+              </button>
+            </div>
+          )}
+          <span class="space-name">{data?.space.title ?? ''}</span>
         </div>
-      )}
-      {loadError && <div class="notice">{loadError}</div>}
-      {ranNote && <div class="notice">{ranNote}</div>}
+      </aside>
 
-      <main class="app-main">
-        {data === null ? (
-          <p class="loading">Reading the space…</p>
-        ) : view === 'onThisDay' ? (
-          <OnThisDay
-            today={data.today}
-            notes={data.notes}
-            getMarkdown={(id) => data.session.provider.getObjectMarkdown(id)}
-            deepLink={(id) => data.session.provider.deepLink(id)}
-            isDemo={session.kind === 'demo'}
-          />
-        ) : view === 'heatmap' ? (
-          <Heatmap
-            today={data.today}
-            notes={data.notes}
-            getMarkdown={(id) => data.session.provider.getObjectMarkdown(id)}
-            deepLink={(id) => data.session.provider.deepLink(id)}
-            isDemo={session.kind === 'demo'}
-          />
-        ) : view === 'queue' ? (
-          <Queue data={data} />
-        ) : view === 'preview' ? (
-          <Preview data={data} />
-        ) : (
-          <Settings data={data} onSignOut={signOut} />
+      <div class="content">
+        {session.kind === 'demo' && (
+          <div class="demo-banner">
+            Every note here is synthetic, and nothing leaves this tab.
+          </div>
         )}
-      </main>
+        {loadError && <div class="notice">{loadError}</div>}
+        {ranNote && <div class="notice">{ranNote}</div>}
+
+        <main class="app-main">
+          {data === null ? (
+            <p class="loading">Reading the space…</p>
+          ) : view === 'today' ? (
+            <Today data={data} />
+          ) : view === 'onThisDay' ? (
+            <OnThisDay
+              today={data.today}
+              notes={data.notes}
+              getMarkdown={(id) => data.session.provider.getObjectMarkdown(id)}
+              deepLink={(id) => data.session.provider.deepLink(id)}
+              isDemo={session.kind === 'demo'}
+            />
+          ) : view === 'heatmap' ? (
+            <Heatmap
+              today={data.today}
+              notes={data.notes}
+              getMarkdown={(id) => data.session.provider.getObjectMarkdown(id)}
+              deepLink={(id) => data.session.provider.deepLink(id)}
+              isDemo={session.kind === 'demo'}
+            />
+          ) : view === 'queue' ? (
+            <Queue data={data} />
+          ) : view === 'preview' ? (
+            <Preview data={data} />
+          ) : (
+            <Settings data={data} onSignOut={signOut} />
+          )}
+        </main>
+      </div>
     </div>
   );
 }

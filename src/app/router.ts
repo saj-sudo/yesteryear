@@ -5,9 +5,10 @@ import { useEffect, useState } from 'preact/hooks';
  * switch on the fragment so no host rewrite rules are ever needed.
  */
 
-export type View = 'onThisDay' | 'heatmap' | 'queue' | 'preview' | 'settings';
+export type View = 'today' | 'onThisDay' | 'heatmap' | 'queue' | 'preview' | 'settings';
 
 const ROUTES: Record<string, View> = {
+  '#/today': 'today',
   '#/on-this-day': 'onThisDay',
   '#/heatmap': 'heatmap',
   '#/queue': 'queue',
@@ -16,6 +17,7 @@ const ROUTES: Record<string, View> = {
 };
 
 export const HASH_FOR: Record<View, string> = {
+  today: '#/today',
   onThisDay: '#/on-this-day',
   heatmap: '#/heatmap',
   queue: '#/queue',

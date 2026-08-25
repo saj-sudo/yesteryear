@@ -266,8 +266,10 @@ export function buildStrangersSpace(today: LocalDate): FixtureSpace {
     guaranteedOffsets: guaranteed,
     seed: 0xca11,
     bodyFor: (_d, noteRng) => {
-      const lines = [pick(noteRng, DAILY_LINES), pick(noteRng, DAILY_LINES)];
-      const parts = [`- ${lines[0]}`, `- ${lines[1]}`];
+      const first = pick(noteRng, DAILY_LINES);
+      let second = pick(noteRng, DAILY_LINES);
+      while (second === first) second = pick(noteRng, DAILY_LINES);
+      const parts = [`- ${first}`, `- ${second}`];
       if (noteRng() < 0.3) parts.push(`\n> ${pick(noteRng, QUOTES)}`);
       return parts.join('\n');
     },
