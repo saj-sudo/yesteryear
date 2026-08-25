@@ -1,0 +1,61 @@
+/* Yesteryear — calm, read-heavy. A place to look at your own past. */
+
+:root {
+  --bg: #faf8f4;
+  --ink: #2b2a27;
+  --ink-soft: #6e6a61;
+  --accent: #7a5c3d;
+  --card: #ffffff;
+  --line: #e6e1d7;
+  --focus: #3b6ea5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1d1c1a;
+    --ink: #e8e4dc;
+    --ink-soft: #a39d90;
+    --accent: #c9a97e;
+    --card: #26241f;
+    --line: #3a372f;
+    --focus: #8ab4e8;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family:
+    ui-serif, 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  line-height: 1.6;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.landing,
+.callback-status {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 3rem 1.25rem;
+}
