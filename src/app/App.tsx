@@ -108,7 +108,12 @@ export function App() {
   }, [session, today]);
 
   if (!session) {
-    return <Connect onDemo={() => setSession(createSession())} />;
+    return (
+      <Connect
+        onDemo={() => setSession(createSession())}
+        onConnected={() => setSession(createSession())}
+      />
+    );
   }
 
   const exitDemo = (): void => {

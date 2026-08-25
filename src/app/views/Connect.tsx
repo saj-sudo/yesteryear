@@ -1,13 +1,33 @@
-import { CLIENT_ID, connect, startDemo, type DemoFlavor } from '../session';
+import { useState } from 'preact/hooks';
+import {
+  CLIENT_ID,
+  connect,
+  connectWithToken,
+  startDemo,
+  type DemoFlavor,
+} from '../session';
 
 /**
- * The connect screen. Calm, honest, no dead ends: when OAuth is not yet
- * configured for this deployment, the demo is offered instead of a wall.
+ * The connect screen. Calm, honest, no dead ends: OAuth is the primary
+ * flow when configured; a personal API token is the advanced path for
+ * self-hosters and early testing; the demo needs nothing at all.
  */
-export function Connect({ onDemo }: { onDemo: (flavor: DemoFlavor) => void }) {
+export function Connect(props: {
+  onDemo: (flavor: DemoFlavor) => void;
+  onConnected: () => void;
+}) {
+  const [token, setToken] = useState('');
+
   const demo = (flavor: DemoFlavor) => () => {
     startDemo(flavor);
-    onDemo(flavor);
+    props.onDemo(flavor);
+  };
+
+  const useToken = (): void => {
+    const trimmed = token.trim();
+    if (!trimmed) return;
+    connectWithToken(trimmed);
+    props.onConnected();
   };
 
   return (
@@ -15,10 +35,10 @@ export function Connect({ onDemo }: { onDemo: (flavor: DemoFlavor) => void }) {
       <h1>Yesteryear</h1>
       <p class="tagline">Resurfacing for Capacities.</p>
       <p>
-        See what you wrote a month, a season, a year ago — on this day. Yesteryear
-        reads your space from this browser only: there is no server, no account,
-        and no tracking. Notes travel from your browser to Capacities and nowhere
-        else.
+        Your notes, coming back around — including the pairs you would never
+        think to file together. Yesteryear reads your space from this browser
+        only: there is no server, no account, and no tracking. Notes travel
+        from your browser to Capacities and nowhere else.
       </p>
 
       {CLIENT_ID ? (
@@ -34,9 +54,9 @@ export function Connect({ onDemo }: { onDemo: (flavor: DemoFlavor) => void }) {
         </>
       ) : (
         <p class="notice">
-          This deployment has no OAuth client configured yet, so connecting a real
-          space is not available. The demo below shows everything with an invented
-          space.
+          This build has no OAuth client configured, so the one-click connect is
+          not available yet. The demo below needs nothing; a personal API token
+          (advanced, further down) connects your real space.
         </p>
       )}
 
@@ -46,9 +66,31 @@ export function Connect({ onDemo }: { onDemo: (flavor: DemoFlavor) => void }) {
           Demo: a nearly empty space
         </button>
       </div>
-      <p class="fineprint">
-        The demo runs on synthetic notes, entirely in this tab.
-      </p>
+      <p class="fineprint">The demo runs on synthetic notes, entirely in this tab.</p>
+
+      <details class="advanced">
+        <summary>Advanced: connect with a personal API token</summary>
+        <p class="fineprint">
+          In the Capacities app: Settings → Capacities API → create a token with
+          read and write access, then paste it here. The token stays in this
+          browser’s storage — treat it like a password, and revoke it in the
+          same settings screen whenever you like.
+        </p>
+        <div class="token-row">
+          <input
+            type="password"
+            placeholder="cap-api-…"
+            value={token}
+            onInput={(e) => setToken((e.target as HTMLInputElement).value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') useToken();
+            }}
+          />
+          <button onClick={useToken} disabled={token.trim() === ''}>
+            Connect
+          </button>
+        </div>
+      </details>
     </main>
   );
 }

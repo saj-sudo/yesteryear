@@ -1,5 +1,5 @@
 import { completeAuthorization, OAuthCallbackError } from '../auth/oauth';
-import { saveTokens } from '../auth/tokens';
+import { saveCredential } from '../auth/tokens';
 
 /**
  * The /callback page: finish the code exchange and hand off to /app/.
@@ -34,7 +34,7 @@ if (!clientId) {
     },
   })
     .then((tokens) => {
-      saveTokens(tokens);
+      saveCredential({ kind: 'oauth', ...tokens });
       location.replace('/app/');
     })
     .catch((err: unknown) => {
