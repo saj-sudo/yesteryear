@@ -1,4 +1,4 @@
-import type { LocalDate, YesteryearState } from './types';
+import type { LocalDate, YesteryearConfig, YesteryearState } from './types';
 
 /**
  * The engine's only view of the outside world. One implementation wraps
@@ -96,17 +96,29 @@ export interface Provider {
   deepLink(objectId: string): string;
 }
 
+/**
+ * The document persisted in the user's space: config travels with state
+ * (§6) so settings sync across devices along with history.
+ */
+export interface PersistedDoc {
+  version: 1;
+  config: YesteryearConfig;
+  state: YesteryearState;
+}
+
 export type SaveConflict = {
-  conflict: { remote: YesteryearState; remoteUpdatedAt: string };
+  conflict: { remote: PersistedDoc; remoteUpdatedAt: string };
 };
 export type SaveResult = 'ok' | SaveConflict;
 
 /**
  * Where resurfacing history lives (§10): an object in the user's own
  * space for the real provider, memory for fixtures. `load()` returning
- * null is a valid first run, never an error.
+ * null is a valid first run, never an error. Saves write the whole
+ * document; a save whose `expectedUpdatedAt` no longer matches the
+ * remote returns the fresh remote instead of overwriting (§10.3).
  */
 export interface StateStore {
-  load(): Promise<{ state: YesteryearState; remoteUpdatedAt: string } | null>;
-  save(state: YesteryearState, expectedUpdatedAt: string | null): Promise<SaveResult>;
+  load(): Promise<{ doc: PersistedDoc; remoteUpdatedAt: string } | null>;
+  save(doc: PersistedDoc, expectedUpdatedAt: string | null): Promise<SaveResult>;
 }

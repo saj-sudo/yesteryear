@@ -1,13 +1,14 @@
 import type {
   FullObject,
   ObjectSummary,
+  PersistedDoc,
   Provider,
   SaveResult,
   StateStore,
   StructureDef,
   TagDef,
 } from '../../engine/provider';
-import type { LocalDate, YesteryearState } from '../../engine/types';
+import type { LocalDate } from '../../engine/types';
 import { dailyNoteTitle } from './generate';
 import type { FixtureSpace } from './types';
 
@@ -23,7 +24,7 @@ export class FixtureProvider implements Provider, StateStore {
   /** Daily-note markdown by date, mutable so appends are observable. */
   private readonly dailyBodies = new Map<string, string>();
   private readonly dailyByDate = new Map<string, { id: string; title: string }>();
-  private state: { doc: YesteryearState; updatedAt: string } | null = null;
+  private state: { doc: PersistedDoc; updatedAt: string } | null = null;
   /** Test hook: when set, the next save throws after this many steps. */
   failNextSave = false;
 
@@ -121,15 +122,15 @@ export class FixtureProvider implements Provider, StateStore {
 
   /* ---------------- StateStore ---------------- */
 
-  load(): Promise<{ state: YesteryearState; remoteUpdatedAt: string } | null> {
+  load(): Promise<{ doc: PersistedDoc; remoteUpdatedAt: string } | null> {
     if (!this.state) return Promise.resolve(null);
     return Promise.resolve({
-      state: structuredClone(this.state.doc),
+      doc: structuredClone(this.state.doc),
       remoteUpdatedAt: this.state.updatedAt,
     });
   }
 
-  save(state: YesteryearState, expectedUpdatedAt: string | null): Promise<SaveResult> {
+  save(doc: PersistedDoc, expectedUpdatedAt: string | null): Promise<SaveResult> {
     if (this.failNextSave) {
       this.failNextSave = false;
       return Promise.reject(new Error('fixture: simulated write failure'));
@@ -143,7 +144,7 @@ export class FixtureProvider implements Provider, StateStore {
         },
       });
     }
-    this.state = { doc: structuredClone(state), updatedAt: state.updatedAt };
+    this.state = { doc: structuredClone(doc), updatedAt: doc.state.updatedAt };
     return Promise.resolve('ok');
   }
 

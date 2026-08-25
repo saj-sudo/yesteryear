@@ -5,6 +5,7 @@
  */
 export const DAILY_NOTE_STRUCTURE_ID = 'RootDailyNote';
 export const TAG_STRUCTURE_ID = 'RootTag';
+export const PAGE_STRUCTURE_ID = 'RootPage';
 
 /** Known deep-link base (spec V5 fallback). */
 export const APP_BASE = 'https://app.capacities.io';
