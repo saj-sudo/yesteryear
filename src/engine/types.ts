@@ -143,6 +143,12 @@ export interface YesteryearState {
   items: Record<ItemKey, ItemState>;
   groupLastSurfaced: Record<string, LocalDate>;
   lastRunDate: LocalDate | null;
+  /**
+   * What the last run surfaced (key, mode, title). This is what lets the
+   * response parser match yesterday's edited section back to items
+   * without trusting line order (§8.6).
+   */
+  lastRunItems: { key: ItemKey; title: string; learn: boolean }[];
 }
 
 /* ------------------------------------------------------------------ */

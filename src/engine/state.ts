@@ -58,6 +58,7 @@ export function emptyState(nowIso: string): YesteryearState {
     items: {},
     groupLastSurfaced: {},
     lastRunDate: null,
+    lastRunItems: [],
   };
 }
 
@@ -130,6 +131,21 @@ export function normalizeDoc(input: unknown, nowIso: string): PersistedDoc {
     if (typeof date === 'string') groupLastSurfaced[group] = date;
   }
 
+  const lastRunItems: YesteryearState['lastRunItems'] = [];
+  if (Array.isArray(stateRaw['lastRunItems'])) {
+    for (const entry of stateRaw['lastRunItems'] as unknown[]) {
+      if (typeof entry !== 'object' || entry === null) continue;
+      const e = entry as Record<string, unknown>;
+      if (typeof e['key'] === 'string' && typeof e['title'] === 'string' && parseKey(e['key'])) {
+        lastRunItems.push({
+          key: e['key'],
+          title: e['title'],
+          learn: e['learn'] === true,
+        });
+      }
+    }
+  }
+
   return {
     version: 1,
     config,
@@ -141,6 +157,7 @@ export function normalizeDoc(input: unknown, nowIso: string): PersistedDoc {
       groupLastSurfaced,
       lastRunDate:
         typeof stateRaw['lastRunDate'] === 'string' ? stateRaw['lastRunDate'] : null,
+      lastRunItems,
     },
   };
 }
