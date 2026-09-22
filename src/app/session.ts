@@ -1,4 +1,9 @@
-import { CapacitiesApiError, CapacitiesClient, CapacitiesOAuthError } from '@capacities/api';
+import {
+  CapacitiesApiError,
+  CapacitiesClient,
+  CapacitiesErrorCode,
+  CapacitiesOAuthError,
+} from '@capacities/api';
 import { beginAuthorization } from '../auth/oauth';
 import { clearCredential, loadCredential, saveCredential } from '../auth/tokens';
 import type { Provider, StateStore } from '../engine/provider';
@@ -170,6 +175,6 @@ export function isAuthLoss(err: unknown): boolean {
   return (
     err instanceof CapacitiesOAuthError ||
     (err instanceof CapacitiesApiError &&
-      (err.code === 'cap_not_authenticated' || err.status === 401))
+      (err.code === CapacitiesErrorCode.NotAuthenticated || err.status === 401))
   );
 }

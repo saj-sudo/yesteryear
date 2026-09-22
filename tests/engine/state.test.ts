@@ -10,7 +10,9 @@ import {
   objKey,
   parseKey,
   pruneMissing,
+  StateManager,
 } from '../../src/engine/state';
+import type { StateStore } from '../../src/engine/provider';
 
 const NOW = '2026-08-25T09:00:00Z';
 
@@ -104,5 +106,41 @@ describe('pruneMissing', () => {
     };
     pruneMissing(doc.state, (id) => id === 'alive');
     expect(Object.keys(doc.state.items)).toEqual([objKey('alive')]);
+  });
+});
+
+describe('StateManager.flush', () => {
+  it('never runs two saves of the same document at once', async () => {
+    let active = 0;
+    let peak = 0;
+    let saves = 0;
+
+    const store: StateStore = {
+      load: () => Promise.resolve(null),
+      save: async () => {
+        active += 1;
+        saves += 1;
+        peak = Math.max(peak, active);
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        active -= 1;
+        return 'ok';
+      },
+    };
+
+    const manager = await StateManager.open(store, () => NOW, defaultConfig());
+    manager.mutate((d) => {
+      d.state.lastRunDate = '2026-08-25';
+    });
+    const first = manager.flush();
+    manager.mutate((d) => {
+      d.state.lastRunDate = '2026-08-26';
+    });
+    const second = manager.flush();
+
+    await Promise.all([first, second]);
+
+    expect(peak).toBe(1);
+    expect(saves).toBeGreaterThan(0);
+    expect(manager.dirty).toBe(false);
   });
 });

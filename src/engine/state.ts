@@ -201,6 +201,7 @@ export class StateManager {
   private doc: PersistedDoc;
   private remoteUpdatedAt: string | null = null;
   private pending: Mutation[] = [];
+  private inFlight: Promise<void> | null = null;
 
   private constructor(store: StateStore, nowIso: () => string, doc: PersistedDoc) {
     this.store = store;
@@ -246,8 +247,22 @@ export class StateManager {
    * mutations onto the fresh remote, retry (up to `maxAttempts`).
    * Throws only when every attempt conflicted or the write itself
    * failed — callers surface that visibly rather than dropping it (§11).
+   *
+   * Calls are serialized: several views flush fire-and-forget, and two
+   * overlapping flushes would each read-then-write the same object under
+   * last-write-wins. The store's read-before-write detects other clients,
+   * not a second flush of our own.
    */
   async flush(maxAttempts = 3): Promise<void> {
+    const run = (this.inFlight ?? Promise.resolve()).then(
+      () => this.flushOnce(maxAttempts),
+      () => this.flushOnce(maxAttempts),
+    );
+    this.inFlight = run.catch(() => undefined);
+    return run;
+  }
+
+  private async flushOnce(maxAttempts: number): Promise<void> {
     if (this.pending.length === 0) return;
     for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
       this.doc.state.updatedAt = this.nowIso();
