@@ -127,7 +127,9 @@ export class CapacitiesAdapter implements Provider {
 
   async appendToDailyNote(date: LocalDate, markdown: string): Promise<void> {
     // Creates the note when absent (V6); no timestamp prefix — the section
-    // heading is the marker.
+    // heading is the marker. The endpoint returns when the append is
+    // queued, not when the note is saved, so never read the note back to
+    // confirm: it can still show the pre-append body.
     await withBackoff(() =>
       this.client.blocks.dailyNote.append({ date, markdown, noTimeStamp: true }),
     );
