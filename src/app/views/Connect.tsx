@@ -23,7 +23,7 @@ export function Connect(props: {
     props.onDemo(flavor);
   };
 
-  const useToken = (): void => {
+  const submitToken = (): void => {
     const trimmed = token.trim();
     if (!trimmed) return;
     connectWithToken(trimmed);
@@ -85,10 +85,10 @@ export function Connect(props: {
             value={token}
             onInput={(e) => setToken((e.target as HTMLInputElement).value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') useToken();
+              if (e.key === 'Enter') submitToken();
             }}
           />
-          <button onClick={useToken} disabled={token.trim() === ''}>
+          <button onClick={submitToken} disabled={token.trim() === ''}>
             Connect
           </button>
         </div>

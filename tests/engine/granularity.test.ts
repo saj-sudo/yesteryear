@@ -7,9 +7,8 @@ import {
 } from '../../src/engine/granularity';
 import type { FullObject } from '../../src/engine/provider';
 import { blockKey, emptyState, objKey } from '../../src/engine/state';
-import type { Candidate, LocalDate } from '../../src/engine/types';
+import type { Candidate } from '../../src/engine/types';
 
-const TODAY = '2026-08-25' as LocalDate;
 
 const longText = (label: string): string =>
   `${label}: a sentence comfortably longer than the forty character minimum.`;

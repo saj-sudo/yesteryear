@@ -1,6 +1,7 @@
 import {
   CapacitiesApiError,
   CapacitiesClient,
+  CapacitiesErrorCode,
   type ApiBlock,
   type ApiToken,
   type GetObjectResponse,
@@ -99,7 +100,7 @@ export class CapacitiesAdapter implements Provider {
     try {
       res = await withBackoff(() => this.client.object.get({ id }));
     } catch (err) {
-      if (err instanceof CapacitiesApiError && err.code === 'cap_not_found') {
+      if (err instanceof CapacitiesApiError && err.code === CapacitiesErrorCode.NotFound) {
         return null; // deleted objects are pruned, never an error (§11)
       }
       throw err;
@@ -118,7 +119,7 @@ export class CapacitiesAdapter implements Provider {
       const res = await withBackoff(() => this.client.object.markdown.get({ id }));
       return res.markdown;
     } catch (err) {
-      if (err instanceof CapacitiesApiError && err.code === 'cap_not_found') {
+      if (err instanceof CapacitiesApiError && err.code === CapacitiesErrorCode.NotFound) {
         return null;
       }
       throw err;
