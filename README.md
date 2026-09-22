@@ -1,5 +1,7 @@
 # Yesteryear
 
+[![CI](https://github.com/saj-sudo/yesteryear/actions/workflows/ci.yml/badge.svg)](https://github.com/saj-sudo/yesteryear/actions/workflows/ci.yml)
+
 **Resurfacing for Capacities.** Your notes, coming back **on a cadence**: the
 notes you tagged as worth meeting again return when their time comes — a month
 out, six months out, whenever they are due — and material with a real date
