@@ -10,6 +10,7 @@ import calendarShot from '../../docs/calendar.png';
 function Landing() {
   return (
     <main class="landing">
+      <div class="landing-art" aria-hidden="true" />
       <h1>Yesteryear</h1>
       <p class="tagline">Resurfacing for Capacities.</p>
       <p>

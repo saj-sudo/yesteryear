@@ -231,9 +231,6 @@ export function Today({ data }: { data: AppData }) {
             deepLink={(id) => data.session.provider.deepLink(id)}
             isDemo={data.session.kind === 'demo'}
           />
-          <span class="pair-x" aria-hidden="true">
-            ×
-          </span>
           <PairingSide
             item={pairing.b}
             body={bodies[pairing.b.objectId]}
