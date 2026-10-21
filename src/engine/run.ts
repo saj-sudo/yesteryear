@@ -4,6 +4,7 @@ import {
   dueLearn,
   ensureLearnScheduled,
   markLearnSurfaced,
+  releaseUnselectedLearn,
   revertExpiredLearn,
 } from './learn';
 import { labelForReason } from './markdown';
@@ -52,9 +53,14 @@ export interface CandidatePools {
 }
 
 /**
- * Learn housekeeping ahead of choosing: passed targets revert, new
- * assignments get their delayed first review scheduled. Mutates state
- * deterministically (replay-safe for the concurrency guard).
+ * Learn housekeeping ahead of choosing. Mutates state deterministically
+ * (replay-safe for the concurrency guard). The order matters:
+ *
+ *   1. Candidates get their dates. A note whose set moved to a later date
+ *      keeps its schedule and simply aims at the new date.
+ *   2. Notes no rule selects any more go back to Recall.
+ *   3. Passed targets revert, so a set whose date went by (and was not
+ *      moved) releases its notes.
  */
 export function prepareLearn(
   state: YesteryearState,
@@ -62,12 +68,23 @@ export function prepareLearn(
   today: LocalDate,
   learnCandidates: Candidate[],
 ): void {
-  revertExpiredLearn(state, today, config.learn, config.recall);
-  if (!config.learn.enabled) return;
-  for (const candidate of learnCandidates) {
-    if (!candidate.targetDate) continue; // no target: stays in Recall (§8.3)
-    ensureLearnScheduled(state, candidate.key, candidate.targetDate, today, config.learn);
+  if (config.learn.enabled) {
+    const selected = new Set<string>();
+    for (const candidate of learnCandidates) {
+      if (!candidate.targetDate) continue; // no target: stays in Recall (§8.3)
+      selected.add(candidate.key);
+      ensureLearnScheduled(
+        state,
+        candidate.key,
+        candidate.targetDate,
+        today,
+        config.learn,
+        candidate.byRule === true,
+      );
+    }
+    releaseUnselectedLearn(state, selected, config.recall);
   }
+  revertExpiredLearn(state, today, config.learn, config.recall);
 }
 
 /**

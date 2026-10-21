@@ -1,3 +1,4 @@
+import { normalizeStudySets } from './studySets';
 import type { YesteryearConfig } from './types';
 
 /**
@@ -30,6 +31,7 @@ export function defaultConfig(): YesteryearConfig {
     },
     learn: {
       enabled: false,
+      sets: [],
       assignByTag: [],
       assignByType: [],
       targetDateProperty: null,
@@ -177,6 +179,7 @@ export function normalizeConfig(input: unknown): YesteryearConfig {
     },
     learn: {
       enabled: bool(learn['enabled'], d.learn.enabled),
+      sets: normalizeStudySets(learn['sets']),
       assignByTag: strArray(learn['assignByTag']),
       assignByType: strArray(learn['assignByType']),
       targetDateProperty: strOrNull(learn['targetDateProperty']),
