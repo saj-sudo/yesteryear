@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { defaultConfig, normalizeConfig } from '../../src/engine/config';
 import {
   addStudySet,
-  duplicateStudySet,
   nearestUpcoming,
   nextStudySetId,
   normalizeStudySets,
@@ -134,21 +133,5 @@ describe('editing sets', () => {
     expect(learn.sets[0]!.targetDate).toBe('2027-01-15');
     updateStudySet(learn, 'missing', { name: 'x' });
     expect(learn.sets).toHaveLength(1);
-  });
-
-  it('duplicates a set for a second exam without touching the first', () => {
-    const learn = defaultConfig().learn;
-    learn.sets = [set({ tags: ['exam'], notes: [{ id: 'n1', title: 'One' }] })];
-    const copy = duplicateStudySet(learn, 'set-1', { targetDate: d('2027-06-01') });
-    expect(copy).toMatchObject({
-      id: 'set-2',
-      name: 'Practical exam (copy)',
-      targetDate: '2027-06-01',
-      tags: ['exam'],
-      notes: [{ id: 'n1', title: 'One' }],
-    });
-    copy!.notes.push({ id: 'n2', title: 'Two' });
-    expect(learn.sets[0]!.notes).toHaveLength(1);
-    expect(learn.sets[0]!.targetDate).toBe('2026-10-01');
   });
 });

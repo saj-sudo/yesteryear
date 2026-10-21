@@ -1,21 +1,24 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { diffDays, formatLocalDate } from '../../engine/dates';
 import { stopLearning } from '../../engine/learn';
-import type { TagDef } from '../../engine/provider';
+import type { PersistedDoc, StructureDef, TagDef } from '../../engine/provider';
 import type { AppData } from '../App';
 import { displayTitle, rowsOf, useTitles } from './scheduleShared';
+import { StudySets } from './StudySets';
 
 /**
  * Learn: the specific cadence. Only for material with a real date
  * attached: reviews are scheduled as a ratio of the time remaining, so
- * the gaps tighten as the date approaches. Deliberately minimal: this
- * is not a flashcard app: and everything reverts to Recall once the
- * date passes.
+ * the gaps tighten as the date approaches. The date comes from a study
+ * set (one date for a group of notes) or from a date property on the
+ * note. Deliberately minimal: this is not a flashcard app, and notes
+ * return to Recall once the date passes.
  */
 export function Learn({ data }: { data: AppData }) {
   const [, setTick] = useState(0);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [allTags, setAllTags] = useState<TagDef[] | null>(null);
+  const [structures, setStructures] = useState<StructureDef[] | null>(null);
 
   const state = data.manager.current.state;
   const config = data.manager.current.config;
@@ -24,6 +27,9 @@ export function Learn({ data }: { data: AppData }) {
     let cancelled = false;
     void data.session.provider.listTags().then((tags) => {
       if (!cancelled) setAllTags(tags);
+    });
+    void data.session.provider.listStructures().then((found) => {
+      if (!cancelled) setStructures(found);
     });
     return () => {
       cancelled = true;
@@ -43,7 +49,7 @@ export function Learn({ data }: { data: AppData }) {
   );
   const titles = useTitles(data, learning);
 
-  const change = (fn: (doc: typeof data.manager.current) => void): void => {
+  const change = (fn: (doc: PersistedDoc) => void): void => {
     data.manager.mutate(fn);
     setTick((t) => t + 1);
     data.manager.flush().catch(() => {
@@ -69,13 +75,13 @@ export function Learn({ data }: { data: AppData }) {
         <div>
           <h2>Learn</h2>
           <p class="fineprint">
-            For notes tied to a real date, like a talk or an exam. Each review
-            is scheduled at{' '}
+            For notes you want to know by a certain day, like a talk or an exam.
+            Each review is scheduled at{' '}
             {Math.round(config.learn.targetRatio * 100)}% of the time remaining
             (never sooner than {config.learn.minGapDays} days), so reviews come
-            closer together as the date gets near. After the date, everything
-            goes back to Recall. For real memorization, use Anki. Learn is for
-            notes you already have.
+            closer together as the date gets near. After the date, a note goes
+            back to Recall if it carries a Recall tag. For real memorization,
+            use Anki. Learn is for notes you already have.
           </p>
         </div>
       </header>
@@ -101,56 +107,18 @@ export function Learn({ data }: { data: AppData }) {
         </div>
       ) : (
         <>
-          <div class="setup-card slim">
-            <h3>Three ways in</h3>
-            <ol class="ways-in">
-              <li>
-                <strong>Flag one item:</strong> use “learn this” on any row in{' '}
-                <a href="#/recall">Recall</a> and give it a target date.
-              </li>
-              <li>
-                <strong>By tag:</strong> everything carrying a chosen tag joins,
-                using the date property mapped in{' '}
-                <a href="#/settings">settings</a>
-                {config.learn.targetDateProperty
-                  ? ` (currently “${config.learn.targetDateProperty}”)`
-                  : ' (no date property mapped yet)'}
-                .
-                {allTags && allTags.length > 0 && (
-                  <span class="tag-grid">
-                    {allTags.map((tag) => {
-                      const on = config.learn.assignByTag.includes(tag.name);
-                      return (
-                        <label key={tag.id} class={`tag-chip${on ? ' on' : ''}`}>
-                          <input
-                            type="checkbox"
-                            checked={on}
-                            onChange={(e) =>
-                              toggleAssignTag(tag.name, (e.target as HTMLInputElement).checked)
-                            }
-                          />
-                          {tag.name}
-                        </label>
-                      );
-                    })}
-                  </span>
-                )}
-              </li>
-              <li>
-                <strong>By type:</strong> assign a whole object type in{' '}
-                <a href="#/settings">settings</a>.
-              </li>
-            </ol>
-            <p class="fineprint">
-              Items without a target date stay in Recall. Yesteryear never
-              makes up a date.
-            </p>
-          </div>
+          <StudySets
+            data={data}
+            tags={allTags}
+            structures={structures}
+            change={change}
+            refresh={() => setTick((n) => n + 1)}
+          />
 
           <section class="queue-section">
             <h3>Learning toward a date</h3>
             {learning.length === 0 ? (
-              <p class="empty-note">Nothing here yet. Pick one of the ways in above.</p>
+              <p class="empty-note">Nothing here yet. Add a study set above.</p>
             ) : (
               <ul class="queue-list learn-list">
                 {learning.map((row) => {
@@ -202,6 +170,42 @@ export function Learn({ data }: { data: AppData }) {
               </ul>
             )}
           </section>
+
+          <details class="setup-card slim property-dates">
+            <summary>Dates from a property</summary>
+            <p>
+              A note can carry its own date instead of belonging to a study set.
+              Everything with a chosen tag joins, using the date property mapped in{' '}
+              <a href="#/settings">settings</a>
+              {config.learn.targetDateProperty
+                ? ` (currently “${config.learn.targetDateProperty}”)`
+                : ' (no date property mapped yet)'}
+              . A note without that date stays out of Learn.
+            </p>
+            {allTags && allTags.length > 0 && (
+              <span class="tag-grid">
+                {allTags.map((tag) => {
+                  const on = config.learn.assignByTag.includes(tag.name);
+                  return (
+                    <label key={tag.id} class={`tag-chip${on ? ' on' : ''}`}>
+                      <input
+                        type="checkbox"
+                        checked={on}
+                        onChange={(e) =>
+                          toggleAssignTag(tag.name, (e.target as HTMLInputElement).checked)
+                        }
+                      />
+                      {tag.name}
+                    </label>
+                  );
+                })}
+              </span>
+            )}
+            <p class="fineprint">
+              To study a single note toward a date of its own, use “learn this” on any row in{' '}
+              <a href="#/recall">Recall</a>.
+            </p>
+          </details>
         </>
       )}
     </section>

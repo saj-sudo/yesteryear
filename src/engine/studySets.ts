@@ -127,26 +127,3 @@ export function updateStudySet(
 export function removeStudySet(learn: LearnConfig, id: string): void {
   learn.sets = learn.sets.filter((s) => s.id !== id);
 }
-
-/**
- * A copy with the same notes, for a second exam on the same material.
- * The copy gets its own date; the original is untouched.
- */
-export function duplicateStudySet(
-  learn: LearnConfig,
-  id: string,
-  patch: Partial<StudySetDraft> = {},
-): StudySet | null {
-  const source = learn.sets.find((s) => s.id === id);
-  if (!source) return null;
-  const { id: sourceId, ...rest } = source;
-  void sourceId;
-  return addStudySet(learn, {
-    ...rest,
-    name: `${source.name} (copy)`,
-    tags: [...source.tags],
-    types: [...source.types],
-    notes: source.notes.map((n) => ({ ...n })),
-    ...patch,
-  });
-}

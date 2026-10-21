@@ -93,6 +93,26 @@ export function createSession(): Session | null {
           rotation: { enabled: true, groupBy: 'tag', groups: ['spark', 'thread'] },
           learn: {
             enabled: true,
+            // One set aiming ahead, and one whose date has passed, so the
+            // "study again with a new date" prompt is visible too.
+            sets: [
+              {
+                id: 'set-1',
+                name: 'Rope team practical',
+                targetDate: addDays(today, 38),
+                tags: ['thread'],
+                types: [],
+                notes: [],
+              },
+              {
+                id: 'set-2',
+                name: 'Spring navigation check',
+                targetDate: addDays(today, -12),
+                tags: [],
+                types: [],
+                notes: [{ id: 'fn-7', title: 'Map corrections' }],
+              },
+            ],
             assignByTag: ['keeper'],
             targetDateProperty: 'Summit Day',
           },

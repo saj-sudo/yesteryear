@@ -330,13 +330,16 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
           }
         />
         <span>
-          Space selected notes toward a target date (needs a date property; for
-          real memorization tooling, use Anki)
+          Space selected notes toward a date, using study sets or a date
+          property (for real memorization tooling, use Anki)
         </span>
       </label>
       {config.learn.enabled && (
         <>
-          <p class="fineprint">Notes with these tags enter Learn mode:</p>
+          <p class="fineprint">
+            Study sets are on the <a href="#/learn">Learn page</a>. Notes with these tags
+            take their date from the property below:
+          </p>
           {tagToggle(config.learn.assignByTag, (d, name, on) => {
             const set = new Set(d.learn.assignByTag);
             if (on) set.add(name);
