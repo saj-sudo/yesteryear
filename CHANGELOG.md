@@ -17,6 +17,10 @@ All notable changes to Yesteryear are documented here. The format follows
   date brings them back, for an exam you sit more than once. A note taken out
   of a set, or a deleted set, leaves Learn. Changes apply straight away
   instead of at the next daily run.
+- Picking many notes at once. In the note picker on a computer, shift-click
+  picks a range, dragging a box across rows picks several, the arrow keys move
+  between rows (with shift they pick as they go), and Ctrl or Cmd with A picks
+  everything shown. On a touch screen, search and "Pick all shown" still work.
 - The date-property option moved into a collapsed "Dates from a property"
   section on the Learn page.
 

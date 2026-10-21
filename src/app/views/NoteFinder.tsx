@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { formatLocalDate, parseDailyNoteTitle } from '../../engine/dates';
 import type { ObjectSummary, Provider, StructureDef } from '../../engine/provider';
 import type { StudySetNote } from '../../engine/types';
+import { pickRange } from './pickRange';
 
 const SEARCH_LIMIT = 30;
 const BROWSE_LIMIT = 60;
@@ -31,6 +32,22 @@ export function NoteFinder(props: {
   const [typeId, setTypeId] = useState('');
   const [results, setResults] = useState<ObjectSummary[] | null>(null);
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [box, setBox] = useState<{ left: number; top: number; width: number; height: number } | null>(
+    null,
+  );
+  const listRef = useRef<HTMLUListElement>(null);
+  /** Row last picked or unpicked: where a shift-click range starts. */
+  const anchor = useRef<number | null>(null);
+  const shiftHeld = useRef(false);
+  const suppressClick = useRef(false);
+  const drag = useRef<{
+    start: number;
+    on: boolean;
+    base: StudySetNote[];
+    x: number;
+    y: number;
+    active: boolean;
+  } | null>(null);
 
   useEffect(() => {
     const text = query.trim();
@@ -58,6 +75,7 @@ export function NoteFinder(props: {
               }
             }
             if (cancelled) return;
+            anchor.current = null;
             setResults(found);
             setStatus('idle');
           } catch {
@@ -98,6 +116,100 @@ export function NoteFinder(props: {
           .map((r) => ({ id: r.id, title: r.title })),
       ]);
     }
+  };
+
+  const rowOf = (el: EventTarget | null): number => {
+    const list = listRef.current;
+    const li = el instanceof Element ? el.closest('li') : null;
+    return list && li ? [...list.children].indexOf(li) : -1;
+  };
+
+  /** The row under a vertical pointer position (the first or last past the ends). */
+  const rowAt = (clientY: number): number => {
+    const rows = [...(listRef.current?.children ?? [])];
+    let found = 0;
+    rows.forEach((row, i) => {
+      if (clientY >= row.getBoundingClientRect().top) found = i;
+    });
+    return found;
+  };
+
+  /* Drag across rows to pick (or unpick) all of them, with a box as feedback.
+     Mouse and pen only: on a touch screen a drag scrolls the list. */
+  const onPointerDown = (e: PointerEvent): void => {
+    suppressClick.current = false;
+    if (e.pointerType === 'touch' || e.button !== 0) return;
+    const index = rowOf(e.target);
+    const note = shown[index];
+    if (!note) return;
+    drag.current = {
+      start: index,
+      on: !pickedIds.has(note.id),
+      base: picked,
+      x: e.clientX,
+      y: e.clientY,
+      active: false,
+    };
+  };
+
+  const onPointerMove = (e: PointerEvent): void => {
+    const d = drag.current;
+    const list = listRef.current;
+    if (!d || !list) return;
+    if (!d.active) {
+      if (Math.abs(e.clientX - d.x) + Math.abs(e.clientY - d.y) < 6) return;
+      d.active = true;
+      list.setPointerCapture(e.pointerId);
+      window.getSelection()?.removeAllRanges();
+    }
+    const edge = list.getBoundingClientRect();
+    if (e.clientY < edge.top + 24) list.scrollTop -= 14;
+    else if (e.clientY > edge.bottom - 24) list.scrollTop += 14;
+    const index = rowAt(e.clientY);
+    onChange(pickRange(d.base, shown, d.start, index, d.on));
+    const frame = list.parentElement?.getBoundingClientRect();
+    if (frame) {
+      setBox({
+        left: Math.min(d.x, e.clientX) - frame.left,
+        top: Math.min(d.y, e.clientY) - frame.top,
+        width: Math.abs(e.clientX - d.x),
+        height: Math.abs(e.clientY - d.y),
+      });
+    }
+    e.preventDefault();
+  };
+
+  const endDrag = (): void => {
+    const d = drag.current;
+    drag.current = null;
+    setBox(null);
+    if (d?.active) {
+      suppressClick.current = true; // the release would otherwise toggle a row
+      anchor.current = d.start;
+    }
+  };
+
+  /* Keyboard: arrows move between rows, shift with arrows picks as you go,
+     and Ctrl or Cmd with A picks everything shown. */
+  const onKeyDown = (e: KeyboardEvent): void => {
+    const target = e.target;
+    if (!(target instanceof HTMLInputElement) || target.type !== 'checkbox') return;
+    const index = rowOf(target);
+    if (index < 0) return;
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+      e.preventDefault();
+      onChange(pickRange(picked, shown, 0, shown.length - 1, true));
+      return;
+    }
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    e.preventDefault();
+    const next = Math.max(0, Math.min(shown.length - 1, index + (e.key === 'ArrowDown' ? 1 : -1)));
+    if (e.shiftKey) {
+      onChange(pickRange(picked, shown, index, next, true));
+      anchor.current = next;
+    }
+    const field = listRef.current?.children[next]?.querySelector('input');
+    field?.focus();
   };
 
   return (
@@ -153,23 +265,63 @@ export function NoteFinder(props: {
               {allShownPicked ? 'Unpick all shown' : 'Pick all shown'}
             </button>
           </div>
-          <ul class="finder-results">
-            {shown.map((note) => (
-              <li key={note.id}>
-                <label class="finder-row">
-                  <input
-                    type="checkbox"
-                    checked={pickedIds.has(note.id)}
-                    onChange={(e) => toggle(note, (e.target as HTMLInputElement).checked)}
-                  />
-                  <span class="finder-title">{noteLabel(note.title)}</span>
-                  {typeTitle.get(note.structureId) && (
-                    <span class="chip">{typeTitle.get(note.structureId)}</span>
-                  )}
-                </label>
-              </li>
-            ))}
-          </ul>
+          <div class="finder-box">
+            <ul
+              ref={listRef}
+              class="finder-results"
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={endDrag}
+              onPointerCancel={endDrag}
+              onClickCapture={(e) => {
+                if (!suppressClick.current) return;
+                suppressClick.current = false;
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onKeyDown={onKeyDown}
+            >
+              {shown.map((note, i) => (
+                <li key={note.id}>
+                  <label class="finder-row">
+                    <input
+                      type="checkbox"
+                      checked={pickedIds.has(note.id)}
+                      onClick={(e) => {
+                        shiftHeld.current = e.shiftKey;
+                      }}
+                      onChange={(e) => {
+                        const on = (e.target as HTMLInputElement).checked;
+                        if (shiftHeld.current && anchor.current !== null) {
+                          onChange(pickRange(picked, shown, anchor.current, i, on));
+                        } else {
+                          toggle(note, on);
+                        }
+                        anchor.current = i;
+                        shiftHeld.current = false;
+                      }}
+                    />
+                    <span class="finder-title">{noteLabel(note.title)}</span>
+                    {typeTitle.get(note.structureId) && (
+                      <span class="chip">{typeTitle.get(note.structureId)}</span>
+                    )}
+                  </label>
+                </li>
+              ))}
+            </ul>
+            {box && (
+              <div
+                class="finder-marquee"
+                aria-hidden="true"
+                style={{ left: box.left, top: box.top, width: box.width, height: box.height }}
+              />
+            )}
+          </div>
+          <p class="fineprint finder-hint">
+            On a computer: shift-click picks a range, dragging across rows picks several, the arrow
+            keys move between rows (with shift they pick as they go), and Ctrl or Cmd with A picks
+            everything shown.
+          </p>
         </>
       )}
 
