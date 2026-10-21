@@ -28,7 +28,7 @@ const config = normalizeConfig({
   surfaces: { dailyNote: { maxItems: 4 } },
 });
 
-describe('rotation (§8.4 — the most important rule in the module)', () => {
+describe('rotation (§8.4: the most important rule in the module)', () => {
   it('a neglected group outranks a higher-weighted item from an over-surfaced group', () => {
     const state = emptyState('now');
     state.groupLastSurfaced['Work'] = '2026-08-24'; // surfaced yesterday
@@ -84,7 +84,7 @@ describe('learn share (§8.4)', () => {
     expect(merged).toHaveLength(4);
     expect(merged.filter((c) => c.source === 'learn')).toHaveLength(2); // half of 4
     expect(merged[0]!.source).toBe('learn');
-    // Overflow simply stays due — nothing expands the allocation.
+    // Overflow simply stays due: nothing expands the allocation.
   });
 });
 

@@ -39,7 +39,7 @@ describe('cooldown eligibility', () => {
     expect(eligibleRecall([cand('a')], state, '2026-10-09')).toHaveLength(1);
   });
 
-  it('overdue items keep their place — no backlog dump after missed days', () => {
+  it('overdue items keep their place: no backlog dump after missed days', () => {
     const state = emptyState('now');
     markRecallSurfaced(state, objKey('a'), null, '2025-01-01', cfg);
     expect(eligibleRecall([cand('a')], state, TODAY)).toHaveLength(1);

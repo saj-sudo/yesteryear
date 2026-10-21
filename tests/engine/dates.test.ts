@@ -68,7 +68,7 @@ describe('nextOccurrence', () => {
 
 describe('parseDailyNoteTitle', () => {
   it('parses the real API title format: ISO datetime at UTC midnight', () => {
-    // Verified against a live space — this is what listings actually return.
+    // Verified against a live space: this is what listings actually return.
     expect(parseDailyNoteTitle('2026-04-23T00:00:00.000Z')).toBe('2026-04-23');
     expect(parseDailyNoteTitle('2026-08-23T00:00:00Z')).toBe('2026-08-23');
     expect(parseDailyNoteTitle('2026-08-23T00:00:00+02:00')).toBe('2026-08-23');

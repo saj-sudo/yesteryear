@@ -8,7 +8,7 @@ import { withBackoff } from './rateLimit';
  * The "Yesteryear State" object in the user's own space (§10.1): one
  * page holding the whole document as a fenced JSON block, PATCHed whole
  * on every save. The user can open, inspect, or delete it in their own
- * app at any time — it is their data.
+ * app at any time: it is their data.
  *
  * Concurrency (§10.3): the API is last-write-wins, so save() re-reads
  * the object first and reports a conflict when its updatedAt moved,
@@ -19,7 +19,7 @@ export const STATE_OBJECT_TITLE = 'Yesteryear State';
 
 const PREAMBLE =
   'This page stores your Yesteryear settings and resurfacing history. ' +
-  'Yesteryear keeps it up to date automatically — editing it by hand may ' +
+  'Yesteryear keeps it up to date. Editing it by hand may ' +
   'lose scheduling history, and deleting it starts Yesteryear fresh.';
 
 export function docToMarkdown(doc: PersistedDoc): string {

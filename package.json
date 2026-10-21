@@ -1,7 +1,7 @@
 {
   "name": "yesteryear",
   "version": "0.1.0",
-  "description": "Yesteryear: resurfacing for Capacities. Bring your older notes back into view with on-this-day lookbacks, gentle recall scheduling, and optional spaced review. Disclaimer: Yesteryear is an independent community tool. It is not affiliated with, endorsed by, or sponsored by Capacities. Capacities is a trademark of its respective owners.",
+  "description": "Yesteryear: resurfacing for Capacities. Brings older notes back on a schedule, with on-this-day lookbacks and an optional review mode for notes tied to a date. Disclaimer: Yesteryear is an independent community tool. It is not affiliated with, endorsed by, or sponsored by Capacities. Capacities is a trademark of its respective owners.",
   "keywords": [
     "capacities",
     "resurfacing",

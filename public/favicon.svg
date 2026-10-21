@@ -1,1 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">🍂</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <style>.ink { mix-blend-mode: multiply; }</style>
+  <path class="ink" d="M 256 110 A 146 146 0 1 1 119 206" fill="none" stroke="#3255a4" stroke-width="38" stroke-linecap="round"/>
+  <polygon class="ink" points="198,110 266,76 266,144" fill="#3255a4"/>
+  <rect class="ink" x="182" y="198" width="148" height="28" rx="14" fill="#f7a072"/>
+  <rect class="ink" x="182" y="244" width="112" height="28" rx="14" fill="#f7a072"/>
+  <rect class="ink" x="182" y="290" width="134" height="28" rx="14" fill="#f7a072"/>
+</svg>

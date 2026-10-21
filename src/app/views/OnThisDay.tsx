@@ -7,7 +7,7 @@ import { Markdown } from '../components/Markdown';
 /**
  * On This Day (§9.1, the default view): today's date across every past
  * year, one column per year, most recent first. Empty years render as
- * empty — the gaps are part of the picture.
+ * empty: the gaps are part of the picture.
  */
 
 const MONTHS = [

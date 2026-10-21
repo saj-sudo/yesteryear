@@ -11,7 +11,7 @@ import type {
  *
  *   score = tagWeight × rotationBoost × recencyPenalty
  *
- * rotationBoost rises the longer a group has gone unsurfaced — the most
+ * rotationBoost rises the longer a group has gone unsurfaced: the most
  * important rule here: without it the queue fills with whichever group
  * generates the most volume. Learn items are due-driven and placed
  * first, capped at maxShareOfDailySlots; overflow spills to tomorrow
@@ -81,8 +81,8 @@ function dedupe(candidates: Candidate[]): Candidate[] {
 /**
  * Choose today's allocation. Inputs are already-filtered pools: recall
  * candidates have passed cooldown sampling, learn candidates are due.
- * In minimal mode one item surfaces, preferring temporal — "here is
- * what you wrote a year ago" costs nothing to receive on a bad day —
+ * In minimal mode one item surfaces, preferring temporal: "here is
+ * what you wrote a year ago" costs nothing to receive on a bad day,
  * unless a Learn item is due (§8.4).
  */
 export function rankAndMerge(input: {
@@ -129,8 +129,8 @@ export function rankAndMerge(input: {
       .sort((a, b) => b.score - a.score || a.candidate.key.localeCompare(b.candidate.key))
       .map((s) => s.candidate);
 
-  // The sampled pool is the product's center of gravity — unexpected
-  // connections — so it gets at least half the slots. Two temporal tiers
+  // The sampled pool is the product's center of gravity (unexpected
+  // connections) so it gets at least half the slots. Two temporal tiers
   // sit around it: birthdays, target dates, and anniversaries are rare
   // and have a real cost when missed, so they always land; same-day
   // lookbacks connect things the calendar already connected, so they

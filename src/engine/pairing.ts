@@ -3,15 +3,15 @@ import type { ItemKey, LocalDate, YesteryearState } from './types';
 
 /**
  * Serendipity pairings: two items deliberately drawn from different
- * corners of the space — different tags, different types, different
- * eras — presented side by side to invite a connection that no filing
+ * corners of the space: different tags, different types, different
+ * eras: presented side by side to invite a connection that no filing
  * system would have made. This is the product's center of gravity:
  * same-day-across-years connects things the calendar already connected;
  * this connects things that had no reason to meet.
  *
  * A pairing is a lens, not a scheduled surfacing: drawing one reads no
  * cooldowns, starts no cooldowns, and never mutates state. Retired
- * items are the one exclusion — retired means never show me this again.
+ * items are the one exclusion: retired means never show me this again.
  */
 
 export interface PairingCandidate {
@@ -35,8 +35,8 @@ const CONTRAST_SAMPLE = 20;
 
 /**
  * Distance between two items: bigger is stranger. No shared tags +2,
- * different type +1, far apart in time up to +1 (different modality —
- * one dated, one not — counts +0.5).
+ * different type +1, far apart in time up to +1 (a different modality,
+ * one dated and one not, counts +0.5).
  */
 export function pairingDistance(a: PairingCandidate, b: PairingCandidate): number {
   let distance = 0;

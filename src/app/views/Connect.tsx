@@ -35,12 +35,11 @@ export function Connect(props: {
       <h1>Yesteryear</h1>
       <p class="tagline">Resurfacing for Capacities.</p>
       <p>
-        Your notes, coming back on a gentle cadence — the note you tagged three
-        months ago returns when its time comes, and material with a real date
-        attached tightens toward it. On the side, an unlikely pair each day.
-        Yesteryear reads your space from this browser only: there is no server,
-        no account, and no tracking. Notes travel from your browser to
-        Capacities and nowhere else.
+        Your older notes, coming back on a schedule. The note you tagged three
+        months ago comes back when it is due, and notes tied to a real date
+        come back more often as it gets closer. Each day there is also one
+        unlikely pair. Yesteryear reads your space from this browser. There is
+        no server and no account, and your notes go only to Capacities.
       </p>
 
       {CLIENT_ID ? (
@@ -49,21 +48,24 @@ export function Connect(props: {
             Connect to Capacities
           </button>
           <p class="fineprint">
-            You choose which space to share on the Capacities side. You can revoke
-            access at any time in Capacities under Settings&nbsp;→ Capacities
-            API&nbsp;→ Connections — nothing here can stop you.
+            You pick which space to share on the Capacities side. You can revoke
+            access any time in Capacities under Settings&nbsp;→ Capacities
+            API&nbsp;→ Connections.
           </p>
         </>
       ) : (
         <p class="notice">
-          This build has no OAuth client configured, so the one-click connect is
-          not available yet. The demo below needs nothing; a personal API token
-          (advanced, further down) connects your real space.
+          One-click connect isn't set up on this build yet. You can try the
+          demo, or connect your own space with a personal API token under
+          Advanced, further down.
         </p>
       )}
 
       <div class="demo-buttons">
-        <button onClick={demo('strangers')}>Try the demo</button>
+        {/* Without a client id the demo is the one thing to do here. */}
+        <button class={CLIENT_ID ? '' : 'primary'} onClick={demo('strangers')}>
+          Try the demo
+        </button>
         <button class="subtle" onClick={demo('minimal')}>
           Demo: a nearly empty space
         </button>
@@ -73,10 +75,10 @@ export function Connect(props: {
       <details class="advanced">
         <summary>Advanced: connect with a personal API token</summary>
         <p class="fineprint">
-          In the Capacities app: Settings → Capacities API → create a token with
-          read and write access, then paste it here. The token stays in this
-          browser’s storage — treat it like a password, and revoke it in the
-          same settings screen whenever you like.
+          In the Capacities app, go to Settings → Capacities API and create a
+          token with read and write access. Paste it here. The token stays in
+          this browser’s storage, so treat it like a password. You can revoke
+          it in the same settings screen whenever you like.
         </p>
         <div class="token-row">
           <input

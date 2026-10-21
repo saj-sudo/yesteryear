@@ -11,15 +11,15 @@ import type {
 } from './types';
 
 /**
- * Learn mode (§8.3): opt-in, and only where a target date exists — the
+ * Learn mode (§8.3): opt-in, and only where a target date exists. The
  * spacing literature's optimal-gap findings are proportions of the
  * retention interval, so without a target there is no principled
  * schedule and the item stays in Recall instead. Never invent one.
  *
  *   gap = clamp(targetRatio × daysUntilTarget, minGap, maxGap)
  *
- * recomputed after every review, so gaps contract as the date nears —
- * deliberately the opposite of an expanding ladder (§15). The first
+ * recomputed after every review, so gaps contract as the date nears.
+ * That is the opposite of an expanding ladder, on purpose (§15). The first
  * review is always delayed by at least minGap: the effortful first
  * retrieval is what carries the effect.
  */

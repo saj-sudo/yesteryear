@@ -166,7 +166,7 @@ export function disconnect(): void {
 }
 
 /**
- * True when an error means "the connection is gone" — revoked access,
+ * True when an error means "the connection is gone": revoked access,
  * an expired refresh token, or a revoked/invalid personal token.
  * Callers clear the credential and show Connect again rather than
  * error-looping (§11).

@@ -10,7 +10,7 @@ import type { AppData } from '../App';
 /**
  * Settings doubles as onboarding (§6): everything here is built from
  * what the space actually contains, fetched live. Every mapping is
- * opt-in and "none" is always valid — a user who configures nothing
+ * opt-in and "none" is always valid: a user who configures nothing
  * still gets daily-note resurfacing.
  */
 
@@ -70,7 +70,7 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
     data.manager
       .flush()
       .then(() => setStatus('Saved. Settings live in your own space and sync with it.'))
-      .catch(() => setStatus('Saving failed — the change is kept locally and will retry.'));
+      .catch(() => setStatus('Saving failed. The change is kept in this browser and will be saved again later.'));
   };
 
   const typeSelect = (role: TypeRole, label: string, hint: string) => (
@@ -166,8 +166,8 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
     <section class="settings">
       <h2>Settings</h2>
       <p class="fineprint">
-        Everything below is read from your space — your object types and your
-        tags, not anyone else’s. Every mapping is optional; “None” always works.
+        Everything below is read from your space, using your own object types
+        and tags. Every mapping is optional, and “None” always works.
       </p>
 
       {warnings.length > 0 && (
@@ -182,7 +182,7 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
       <h3>Object types</h3>
       {customTypes.length === 0 ? (
         <p class="empty-note">
-          No custom types in this space — daily-note resurfacing works without any.
+          No custom types in this space. Daily notes still come back without them.
         </p>
       ) : (
         <div class="field-row">

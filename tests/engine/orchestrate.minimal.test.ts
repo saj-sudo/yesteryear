@@ -9,7 +9,7 @@ import { buildMinimalSpace } from '../../src/providers/fixture/minimalSpace';
 
 /**
  * The minimal space (§12): no custom types, no tags, zero configuration.
- * Daily-note lookback must still work — it is the one feature that needs
+ * Daily-note lookback must still work: it is the one feature that needs
  * no mapping at all (§8.2).
  */
 
@@ -44,7 +44,7 @@ describe('a full day on the minimal space with zero configuration', () => {
     expect(report.surfaced[0]!.source).toBe('temporal');
   });
 
-  it('a day with zero candidates writes nothing at all — no empty heading', async () => {
+  it('a day with zero candidates writes nothing at all: no empty heading', async () => {
     const provider = new FixtureProvider({
       ...buildMinimalSpace(TODAY),
       dailyNotes: [], // an entirely new space

@@ -6,10 +6,10 @@ import type { AppData } from '../App';
 import { displayTitle, rowsOf, useTitles } from './scheduleShared';
 
 /**
- * Learn — the specific cadence. Only for material with a real date
+ * Learn: the specific cadence. Only for material with a real date
  * attached: reviews are scheduled as a ratio of the time remaining, so
- * the gaps tighten as the date approaches. Deliberately minimal — this
- * is not a flashcard app — and everything reverts to Recall once the
+ * the gaps tighten as the date approaches. Deliberately minimal: this
+ * is not a flashcard app: and everything reverts to Recall once the
  * date passes.
  */
 export function Learn({ data }: { data: AppData }) {
@@ -47,7 +47,7 @@ export function Learn({ data }: { data: AppData }) {
     data.manager.mutate(fn);
     setTick((t) => t + 1);
     data.manager.flush().catch(() => {
-      setSaveError('Saving the change failed — it will retry on the next run.');
+      setSaveError('Saving the change failed. It will try again on the next run.');
     });
   };
 
@@ -69,13 +69,13 @@ export function Learn({ data }: { data: AppData }) {
         <div>
           <h2>Learn</h2>
           <p class="fineprint">
-            The specific cadence, for material with a real date attached — a
-            talk, an exam, a trip. Each review is scheduled at{' '}
+            For notes tied to a real date, like a talk or an exam. Each review
+            is scheduled at{' '}
             {Math.round(config.learn.targetRatio * 100)}% of the time remaining
-            (never sooner than {config.learn.minGapDays} days), so the rhythm
-            tightens as the date approaches. Afterwards, everything returns to
-            Recall. For serious memorization, use Anki — this is for notes you
-            already have.
+            (never sooner than {config.learn.minGapDays} days), so reviews come
+            closer together as the date gets near. After the date, everything
+            goes back to Recall. For real memorization, use Anki. Learn is for
+            notes you already have.
           </p>
         </div>
       </header>
@@ -142,15 +142,15 @@ export function Learn({ data }: { data: AppData }) {
               </li>
             </ol>
             <p class="fineprint">
-              Items without a resolvable target date simply stay in Recall —
-              a date is never invented.
+              Items without a target date stay in Recall. Yesteryear never
+              makes up a date.
             </p>
           </div>
 
           <section class="queue-section">
             <h3>Learning toward a date</h3>
             {learning.length === 0 ? (
-              <p class="empty-note">Nothing here yet — pick a way in above.</p>
+              <p class="empty-note">Nothing here yet. Pick one of the ways in above.</p>
             ) : (
               <ul class="queue-list learn-list">
                 {learning.map((row) => {

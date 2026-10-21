@@ -6,7 +6,7 @@ import { Markdown } from '../components/Markdown';
 
 /**
  * Preview (§9.1): exactly what the next daily-note write would contain,
- * computed on a throwaway copy of state — nothing is written anywhere.
+ * computed on a throwaway copy of state: nothing is written anywhere.
  * This is the onboarding payoff: real content from the user's own space
  * before anything touches their notes.
  */
@@ -46,8 +46,8 @@ export function Preview({ data }: { data: AppData }) {
     <section class="preview">
       <h2>Preview</h2>
       <p class="fineprint">
-        What a run right now would surface. Nothing has been written — this view
-        never touches your notes.
+        What a run right now would bring back. This view never writes to your
+        notes.
       </p>
       {result.warnings.length > 0 && (
         <div class="notice">
@@ -62,7 +62,7 @@ export function Preview({ data }: { data: AppData }) {
         </div>
       ) : (
         <p class="empty-note">
-          Nothing would surface today — a quiet day is a normal day.
+          Nothing would come back today. Days like that are normal.
         </p>
       )}
     </section>

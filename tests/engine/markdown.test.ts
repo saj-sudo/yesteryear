@@ -61,12 +61,12 @@ describe('renderSection', () => {
     const md = renderSection('Resurfaced', [
       item({ excerpt: `  Long   line\nwith breaks ${'x'.repeat(300)}` }),
     ])!;
-    expect(md).toContain('— “Long line with breaks');
+    expect(md).toContain(': “Long line with breaks');
     expect(md).toContain('…');
     expect(md).not.toContain('\nwith breaks');
   });
 
-  it('zero candidates render nothing at all — no empty heading (§11)', () => {
+  it('zero candidates render nothing at all: no empty heading (§11)', () => {
     expect(renderSection('Resurfaced', [])).toBeNull();
   });
 

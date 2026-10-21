@@ -24,9 +24,9 @@ import type {
  * A run happens in three phases so block refinement (which needs I/O)
  * can sit between planning and finalizing:
  *
- *   1. applyResponses  — yesterday's note updates state
- *   2. planDay         — choose today's candidates (object-level)
- *   3. finalizeRun     — record surfacings, produce SurfacedItems
+ *   1. applyResponses : yesterday's note updates state
+ *   2. planDay        : choose today's candidates (object-level)
+ *   3. finalizeRun    : record surfacings, produce SurfacedItems
  */
 
 export function applyResponses(

@@ -246,7 +246,7 @@ export class StateManager {
    * Persist the working copy. On conflict: re-read, replay pending
    * mutations onto the fresh remote, retry (up to `maxAttempts`).
    * Throws only when every attempt conflicted or the write itself
-   * failed — callers surface that visibly rather than dropping it (§11).
+   * failed: callers surface that visibly rather than dropping it (§11).
    *
    * Calls are serialized: several views flush fire-and-forget, and two
    * overlapping flushes would each read-then-write the same object under

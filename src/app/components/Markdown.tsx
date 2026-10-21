@@ -3,7 +3,7 @@ import type { JSX } from 'preact';
 /**
  * A deliberately tiny markdown renderer for note previews: paragraphs,
  * bullet lists, quotes, headings, checkboxes, and [[wikilinks]] shown as
- * plain emphasis. No dependency, no HTML injection — everything renders
+ * plain emphasis. No dependency, no HTML injection: everything renders
  * through text nodes.
  */
 

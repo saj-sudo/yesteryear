@@ -4,7 +4,7 @@ import { defaultConfig, normalizeConfig } from '../../src/engine/config';
 describe('defaultConfig', () => {
   const d = defaultConfig();
 
-  it('contains no schema names — types, properties, tags all start empty (§4)', () => {
+  it('contains no schema names: types, properties, tags all start empty (§4)', () => {
     expect(d.types).toEqual({});
     expect(d.properties).toEqual({});
     expect(d.recall.tags).toEqual([]);

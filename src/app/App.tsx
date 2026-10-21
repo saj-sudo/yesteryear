@@ -24,6 +24,8 @@ import { Recall } from './views/Recall';
 import { Settings } from './views/Settings';
 import { Today } from './views/Today';
 
+const DISCLAIMER = 'Independent community tool. Not affiliated with Capacities.';
+
 const NAV_GROUPS: { label: string | null; items: { view: View; label: string }[] }[] = [
   {
     label: null,
@@ -99,7 +101,7 @@ export function App() {
         setData({ session, space, manager, notes, today, report: null });
 
         // The lazy daily run (§9.2): first visit of the local day computes
-        // the allocation, advances the queue, and — only when opted in —
+        // the allocation, advances the queue, and (only when opted in)
         // writes the Resurfaced section into today's daily note.
         const report = await runDaily({
           provider: session.provider,
@@ -186,6 +188,7 @@ export function App() {
             </div>
           )}
           <span class="space-name">{data?.space.title ?? ''}</span>
+          <p class="disclaimer">{DISCLAIMER}</p>
         </div>
       </aside>
 
@@ -229,6 +232,9 @@ export function App() {
             <Settings data={data} onSignOut={signOut} />
           )}
         </main>
+        <footer class="app-foot">
+          <p class="disclaimer">{DISCLAIMER}</p>
+        </footer>
       </div>
     </div>
   );

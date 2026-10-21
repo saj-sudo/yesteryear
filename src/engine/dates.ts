@@ -3,7 +3,7 @@ import type { LocalDate } from './types';
 /**
  * All calendar math for the engine. A LocalDate is a plain YYYY-MM-DD
  * string in the *user's* timezone (§11: local date, never UTC). Date.UTC
- * is used below purely as an arithmetic substrate for day counting — the
+ * is used below purely as an arithmetic substrate for day counting: the
  * user's timezone only ever matters when deriving "today", which happens
  * once in todayInZone() and is injected everywhere else.
  */
@@ -125,12 +125,11 @@ function monthFromName(name: string): number | null {
  * Parse a daily-note title into a LocalDate.
  *
  * Verified against a real space: the API returns daily-note titles as
- * ISO datetimes at UTC midnight ("2026-04-23T00:00:00.000Z") — the
+ * ISO datetimes at UTC midnight ("2026-04-23T00:00:00.000Z"): the
  * pretty "Aug 23, 2026" form only appears in the app UI and markdown
  * frontmatter. Both are accepted, along with locale-formatted dates.
- * Parsing is deliberately forgiving, and anything unrecognized — a
- * hand-titled note like "Weekdays", ambiguous numerics like 03/04/2025 —
- * returns null so the caller skips the note instead of failing (§8.2).
+ * Parsing is forgiving, and anything unrecognized (a hand-titled note
+ * like "Weekdays", ambiguous numerics like 03/04/2025) returns null so the caller skips the note instead of failing (§8.2).
  */
 export function parseDailyNoteTitle(title: string): LocalDate | null {
   const t = title.trim();

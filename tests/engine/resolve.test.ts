@@ -8,7 +8,7 @@ const TODAY = '2026-08-25' as LocalDate;
 const space = buildStrangersSpace(TODAY);
 
 describe('resolveSchema against the stranger space', () => {
-  it('maps the stranger schema — nothing about it is assumed', () => {
+  it('maps the stranger schema: nothing about it is assumed', () => {
     const config = normalizeConfig({
       types: { project: 'Expedition', person: 'Correspondent', note: 'Field Note' },
       properties: {
@@ -35,7 +35,7 @@ describe('resolveSchema against the stranger space', () => {
       recall: { tags: ['insight', 'win'] },
     });
     const r = resolveSchema(config, space.structures, space.tags);
-    // Everything misses — and every miss is a readable warning, not a crash.
+    // Everything misses: and every miss is a readable warning, not a crash.
     // Property misses are folded into their type's warning (the type name
     // itself failed to resolve), so: 2 type + 2 tag warnings.
     expect(r.types).toEqual({});
@@ -79,7 +79,7 @@ describe('resolveSchema against the stranger space', () => {
     expect(r.types.project?.structure.id).toBe('st-expedition');
   });
 
-  it('an empty config resolves with no warnings — none is always valid', () => {
+  it('an empty config resolves with no warnings: none is always valid', () => {
     const r = resolveSchema(normalizeConfig({}), space.structures, space.tags);
     expect(r.warnings).toEqual([]);
   });
