@@ -1,43 +1,90 @@
-/* Yesteryear — designed to feel at home next to Capacities:
-   quiet neutral surfaces, a blue-violet accent, soft-bordered cards,
-   an app-like sans stack, and first-class dark mode. */
+/* Yesteryear: Capacities-native structure with two riso inks.
+   The surfaces, sans, radii and sidebar rhythm sit comfortably next to
+   Capacities; the colour comes from two inks, blue and apricot, printed
+   slightly off register. Where they overprint they make a third colour,
+   a muted plum, used for Learn. Flat inks are for fills; text in an ink
+   colour uses the darker --ink*-text tokens so it passes AA.
+   Sibling of Farview: same token names, type scale, spacing and radii;
+   different inks. Nothing here counts, scores or scolds. */
 
 :root {
-  --bg: #f7f7f8;
+  /* Surfaces and text. */
+  --bg: #ffffff;
   --surface: #ffffff;
-  --line: #e4e4e7;
-  --ink: #1a1a1e;
-  --ink-soft: #6e6e78;
-  --accent: #5b67e8;
-  --accent-soft: #eceefc;
-  --focus: rgba(91, 103, 232, 0.55);
-  --shadow: 0 1px 2px rgba(20, 20, 30, 0.05);
-}
+  --wash: #faf9f7;
+  --line: #ebe9e6;
+  --line-strong: #dcd9d4;
+  --field-border: #8a878e;
+  --ink: #1c1b20;
+  --ink-soft: #57555b;
+  --charcoal: #3f3e43;
+  --on-charcoal: #ffffff;
 
-:root {
-  --teal: #2ab3a6;
-  --teal-soft: #e2f5f3;
-  --amber: #d99a2b;
-  --amber-soft: #faf1de;
-  --rose: #e06a8f;
-  --grad: linear-gradient(135deg, #2ab3a6 0%, #5b67e8 55%, #9a6ae8 100%);
+  /* The two inks, and their overprint. */
+  --ink1: #3255a4;
+  --ink2: #f7a072;
+  --ink3: #8a76a8;
+  --ink1-text: #2c4b92;
+  --ink2-text: #8a3f14;
+  --ink3-text: #4d3f6b;
+  --ink1-tint: #e3e9f6;
+  --ink2-tint: #fde6d9;
+  --ink3-tint: #ebe4f0;
+
+  --accent: var(--ink1-text);
+  --accent-soft: var(--ink1-tint);
+  --focus: #2c4b92;
+  --shadow: 0 1px 2px rgba(28, 27, 32, 0.05), 0 4px 14px rgba(28, 27, 32, 0.05);
+  --shadow-lift: 0 12px 36px rgba(28, 27, 32, 0.16);
+  --dots: radial-gradient(rgba(28, 27, 32, 0.12) 1px, transparent 1.3px) 0 0 / 6px 6px;
+  --blend: multiply;
+
+  /* Shared with Farview. */
+  --font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  --text-xs: 0.78rem;
+  --text-sm: 0.88rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.6rem;
+  --text-2xl: clamp(2.4rem, 6vw, 3.4rem);
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-lg: 12px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #161619;
-    --surface: #1f1f24;
-    --line: #2c2c33;
-    --ink: #e8e8ec;
-    --ink-soft: #9a9aa5;
-    --accent: #8b93f8;
-    --accent-soft: #26283c;
-    --focus: rgba(139, 147, 248, 0.6);
+    --bg: #1b1a1e;
+    --surface: #222125;
+    --wash: #1f1e22;
+    --line: #313035;
+    --line-strong: #3d3c42;
+    --field-border: #76747c;
+    --ink: #ecebef;
+    --ink-soft: #a6a4ab;
+    --charcoal: #ecebef;
+    --on-charcoal: #1b1a1e;
+    --ink1: #7d9be6;
+    --ink2: #f7a072;
+    --ink3: #b6a3d6;
+    --ink1-text: #a6bcf2;
+    --ink2-text: #f9b993;
+    --ink3-text: #cdbbe6;
+    --ink1-tint: #1e2840;
+    --ink2-tint: #3a271d;
+    --ink3-tint: #2c2536;
+    --focus: #a6bcf2;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-    --teal: #4fd0c3;
-    --teal-soft: #16332f;
-    --amber: #e8b45c;
-    --amber-soft: #33290f;
+    --shadow-lift: 0 12px 36px rgba(0, 0, 0, 0.5);
+    --dots: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1.3px) 0 0 / 6px 6px;
+    --blend: screen;
   }
 }
 
@@ -47,32 +94,33 @@
 
 html {
   font-size: 15px;
+  background: var(--bg);
 }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family:
-    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui,
-    Roboto, sans-serif;
+  font-family: var(--font);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4 {
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-wrap: balance;
 }
 
-h2 { font-size: 1.25rem; }
-h3 { font-size: 1rem; }
+h1 { font-size: var(--text-2xl); }
+h2 { font-size: var(--text-xl); }
+h3 { font-size: var(--text-md); letter-spacing: -0.01em; }
 
 :focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -88,16 +136,17 @@ button {
   font: inherit;
   color: var(--ink);
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
   padding: 0.45rem 0.95rem;
   cursor: pointer;
-  box-shadow: var(--shadow);
+  font-weight: 500;
+  box-shadow: 0 1px 1px rgba(28, 27, 32, 0.04);
   transition: border-color 120ms ease, background 120ms ease;
 }
 
 button:hover:not(:disabled) {
-  border-color: var(--accent);
+  background: var(--wash);
 }
 
 button:disabled {
@@ -105,12 +154,19 @@ button:disabled {
   cursor: default;
 }
 
+/* The one obvious action on a screen: charcoal, with the second ink
+   printed slightly off register behind it. */
 button.primary {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
-  font-weight: 500;
+  background: var(--charcoal);
+  color: var(--on-charcoal);
+  border-color: var(--charcoal);
   padding: 0.55rem 1.3rem;
+  box-shadow: 3px 3px 0 var(--ink2);
+}
+
+button.primary:hover:not(:disabled) {
+  background: var(--charcoal);
+  box-shadow: 4px 4px 0 var(--ink2);
 }
 
 button.subtle {
@@ -123,7 +179,7 @@ button.subtle {
 }
 
 a {
-  color: var(--accent);
+  color: var(--ink1-text);
   text-decoration: none;
 }
 
@@ -133,13 +189,13 @@ a:hover {
 
 .fineprint {
   color: var(--ink-soft);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .notice {
-  background: var(--accent-soft);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  background: var(--ink2-tint);
+  border: 0;
+  border-radius: var(--radius);
   padding: 0.55rem 0.9rem;
   margin: 0.75rem 0;
   font-size: 0.9rem;
@@ -152,12 +208,12 @@ a:hover {
 
 .chip {
   display: inline-block;
-  background: var(--accent-soft);
-  color: var(--accent);
-  border-radius: 999px;
-  padding: 0.05rem 0.55rem;
-  font-size: 0.78rem;
-  font-weight: 500;
+  background: var(--ink1-tint);
+  color: var(--ink1-text);
+  border-radius: var(--radius-sm);
+  padding: 0.05rem 0.5rem;
+  font-size: var(--text-xs);
+  font-weight: 600;
 }
 
 /* ---------- connect ---------- */
@@ -203,8 +259,8 @@ a:hover {
   font: inherit;
   color: var(--ink);
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius);
   padding: 0.45rem 0.7rem;
 }
 
@@ -219,10 +275,10 @@ a:hover {
   flex: 0 0 13rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding: 1.1rem 0.9rem;
+  gap: var(--space-5);
+  padding: var(--space-4) var(--space-3);
   border-right: 1px solid var(--line);
-  background: var(--surface);
+  background: var(--wash);
   position: sticky;
   top: 0;
   height: 100vh;
@@ -232,17 +288,24 @@ a:hover {
   font-weight: 700;
   color: var(--ink);
   font-size: 1.05rem;
-  padding: 0.2rem 0.6rem;
+  letter-spacing: -0.01em;
+  padding: 0.2rem 0.55rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
 }
 
+.sidebar .brand:hover {
+  text-decoration: none;
+}
+
+/* Two inks, slightly off register: the mark is the palette. */
 .brand-mark {
   width: 14px;
   height: 14px;
-  border-radius: 5px;
-  background: var(--grad);
+  border-radius: 50%;
+  background: var(--ink1);
+  box-shadow: 4px 2px 0 var(--ink2);
   flex: 0 0 auto;
 }
 
@@ -260,59 +323,85 @@ a:hover {
 
 .nav-group-label {
   font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.09em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-soft);
-  padding: 0 0.6rem 0.25rem;
-  opacity: 0.8;
+  padding: 0 0.55rem 0.25rem;
 }
 
 .sidebar nav a {
   color: var(--ink-soft);
-  padding: 0.4rem 0.6rem;
-  border-radius: 8px;
-  font-size: 0.95rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.93rem;
   display: flex;
   align-items: center;
   gap: 0.55rem;
 }
 
+/* Each view's icon is printed in one of the inks: cadences in blue,
+   lenses in apricot, Learn in the overprint. */
 .sidebar nav a .icon {
   flex: 0 0 auto;
-  opacity: 0.75;
+  color: var(--ink2);
+}
+
+.nav-group:nth-child(2) a:nth-of-type(1) .icon {
+  color: var(--ink1);
+}
+
+.nav-group:nth-child(2) a:nth-of-type(2) .icon {
+  color: var(--ink3);
+}
+
+.nav-group:last-child a .icon {
+  color: var(--ink-soft);
 }
 
 .sidebar nav a:hover {
-  background: var(--bg);
+  background: rgba(28, 27, 32, 0.05);
   text-decoration: none;
 }
 
 .sidebar nav a.active {
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-weight: 500;
+  background: var(--ink2-tint);
+  color: var(--ink);
+  font-weight: 600;
 }
 
 .sidebar-foot {
   margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  padding: 0 0.6rem;
+  gap: var(--space-2);
+  padding: 0 0.55rem;
 }
 
 .demo-badge {
   display: flex;
   gap: 0.4rem;
   align-items: baseline;
-  font-size: 0.8rem;
-  color: var(--accent);
+  font-size: 0.82rem;
+  color: var(--ink1-text);
+  font-weight: 600;
 }
 
 .space-name {
   color: var(--ink-soft);
   font-size: 0.82rem;
+}
+
+/* The independence line stays in view on every screen. */
+.disclaimer {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.app-foot {
+  display: none;
 }
 
 .content {
@@ -321,18 +410,27 @@ a:hover {
 }
 
 .demo-banner {
-  color: var(--ink-soft);
+  margin: 0;
+  color: var(--ink);
   font-size: 0.85rem;
+  text-align: center;
   padding: 0.5rem 1.5rem;
+  background: var(--dots), var(--ink2-tint);
   border-bottom: 1px solid var(--line);
 }
 
+.content > .notice {
+  margin: var(--space-3) var(--space-6) 0;
+}
+
 .app-main {
-  padding: 1.5rem;
+  padding: var(--space-5) var(--space-6);
   max-width: 72rem;
   margin: 0 auto;
 }
 
+/* On phone the nav becomes one scrolling row: the group labels go,
+   the order stays. */
 @media (max-width: 720px) {
   .app {
     flex-direction: column;
@@ -341,17 +439,21 @@ a:hover {
     flex: none;
     height: auto;
     position: static;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.75rem;
+    gap: var(--space-2);
     border-right: none;
     border-bottom: 1px solid var(--line);
-    padding: 0.6rem 0.9rem;
+    padding: var(--space-3) var(--space-4) var(--space-2);
   }
   .sidebar nav {
     flex-direction: row;
     overflow-x: auto;
     gap: 0.2rem;
+  }
+  .nav-group {
+    display: contents;
+  }
+  .nav-group-label {
+    display: none;
   }
   .sidebar nav a {
     white-space: nowrap;
@@ -359,77 +461,20 @@ a:hover {
   .sidebar-foot {
     display: none;
   }
+  .content > .notice {
+    margin: var(--space-3) var(--space-4) 0;
+  }
+  .app-main {
+    padding: var(--space-4);
+  }
+  .app-foot {
+    display: block;
+    padding: var(--space-4);
+    border-top: 1px solid var(--line);
+  }
 }
 
-/* ---------- today: pairing + mix ---------- */
-
-.pairing-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-top: 2.25rem;
-}
-
-.pairing-head h2 {
-  margin: 0 0 0.2rem;
-}
-
-.pairing {
-  display: flex;
-  gap: 0.9rem;
-  align-items: stretch;
-  margin: 1rem 0 2rem;
-}
-
-.pair-side {
-  flex: 1 1 0;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 1.05rem 1.2rem;
-  box-shadow: var(--shadow);
-  min-width: 0;
-  position: relative;
-  overflow: hidden;
-  transition: transform 120ms ease, box-shadow 120ms ease;
-}
-
-.pair-side::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 2px;
-  background: var(--grad);
-  opacity: 0.7;
-}
-
-.pair-side:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(20, 20, 30, 0.09);
-}
-
-.pair-x {
-  align-self: center;
-  flex: 0 0 auto;
-  width: 1.9rem;
-  height: 1.9rem;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: var(--grad);
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.pair-meta {
-  display: flex;
-  gap: 0.35rem;
-  flex-wrap: wrap;
-  margin: 0.35rem 0 0.6rem;
-}
+/* ---------- today: mix + pairing ---------- */
 
 .today h2 {
   margin-bottom: 0.2rem;
@@ -440,61 +485,56 @@ a:hover {
   margin: 0.75rem 0 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.8rem;
 }
 
+/* Each item prints a thin band of its source's ink along the top. */
 .mix-item {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-left-width: 3px;
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   padding: 0.85rem 1rem;
-  box-shadow: var(--shadow);
-  transition: transform 120ms ease, box-shadow 120ms ease;
-}
-
-.mix-item:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(20, 20, 30, 0.08);
+  box-shadow: var(--shadow), inset 0 3px 0 var(--ink2);
 }
 
 .mix-item.src-recall {
-  border-left-color: var(--accent);
-}
-
-.mix-item.src-temporal {
-  border-left-color: var(--amber);
+  box-shadow: var(--shadow), inset 0 3px 0 var(--ink1);
 }
 
 .mix-item.src-learn {
-  border-left-color: var(--teal);
+  box-shadow: var(--shadow), inset 0 3px 0 var(--ink3);
 }
 
+/* The source reads like a Capacities type: a tinted pill. */
 .mix-label {
-  display: block;
-  color: var(--ink-soft);
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.25rem;
+  display: inline-block;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  padding: 0.1rem 0.5rem;
+  margin-bottom: 0.45rem;
+  background: var(--ink2-tint);
+  color: var(--ink2-text);
 }
 
 .src-recall .mix-label {
-  color: var(--accent);
-}
-
-.src-temporal .mix-label {
-  color: var(--amber);
+  background: var(--ink1-tint);
+  color: var(--ink1-text);
 }
 
 .src-learn .mix-label {
-  color: var(--teal);
+  background: var(--ink3-tint);
+  color: var(--ink3-text);
+}
+
+.mix-item .note-title {
+  font-size: 1.02rem;
 }
 
 .mix-excerpt {
   color: var(--ink-soft);
-  font-size: 0.88rem;
+  font-size: var(--text-sm);
   margin: 0.4rem 0 0;
 }
 
@@ -506,22 +546,23 @@ a:hover {
 }
 
 .mix-response {
-  font-size: 0.78rem;
+  font-size: var(--text-xs);
   padding: 0.15rem 0.6rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   box-shadow: none;
   color: var(--ink-soft);
 }
 
-.mix-response:hover {
-  color: var(--accent);
+.mix-response:hover:not(:disabled) {
+  color: var(--ink);
 }
 
 .mix-answered {
-  font-size: 0.78rem;
-  color: var(--accent);
-  background: var(--accent-soft);
-  border-radius: 999px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--ink1-text);
+  background: var(--ink1-tint);
+  border-radius: var(--radius-sm);
   padding: 0.15rem 0.6rem;
 }
 
@@ -545,17 +586,90 @@ a:hover {
   font: inherit;
   color: var(--ink);
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-sm);
   padding: 0.25rem 0.5rem;
+}
+
+.pairing-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 2.5rem;
+}
+
+.pairing-head h2 {
+  margin: 0 0 0.2rem;
+}
+
+/* The unlikely pair: two prints, one in each ink, laid slightly across
+   each other the way two sheets land on a desk. */
+.pairing {
+  display: flex;
+  align-items: flex-start;
+  margin: 1.25rem 0 2.5rem;
+}
+
+.pair-side {
+  flex: 1 1 0;
+  min-width: 0;
+  position: relative;
+  background: var(--ink2-tint);
+  border-radius: 4px;
+  padding: 1.4rem 1.6rem 1.6rem;
+  transform: rotate(-1.1deg);
+  mix-blend-mode: var(--blend);
+}
+
+.pair-side + .pair-side {
+  background: var(--ink1-tint);
+  transform: rotate(1.2deg) translate(-0.6rem, 1.2rem);
+}
+
+.pair-meta {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin: 0.35rem 0 0.6rem;
+}
+
+.pair-side .chip {
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--ink);
+}
+
+.pair-side .note-title {
+  font-size: 1.15rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .pair-side .chip {
+    background: rgba(0, 0, 0, 0.25);
+  }
 }
 
 @media (max-width: 720px) {
   .pairing {
     flex-direction: column;
   }
-  .pair-x {
-    align-self: center;
+  .pair-side {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+  .pair-side + .pair-side {
+    transform: rotate(1deg) translate(0.3rem, -0.4rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pair-side,
+  .pair-side + .pair-side {
+    transform: none;
+  }
+  .pair-side + .pair-side {
+    margin-left: 0.6rem;
   }
 }
 
@@ -588,39 +702,43 @@ a:hover {
   flex: 0 0 18rem;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   padding: 0.9rem 1.1rem;
   min-height: 8rem;
   box-shadow: var(--shadow);
 }
 
 .year-column h3 {
-  margin: 0 0 0.4rem;
-  color: var(--ink-soft);
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  margin: 0 0 0.5rem;
+  display: inline-block;
+  color: var(--ink2-text);
+  background: var(--ink2-tint);
+  border-radius: var(--radius-sm);
+  padding: 0.05rem 0.5rem;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .note-title {
-  font-weight: 600;
+  font-weight: 650;
   display: block;
   margin-bottom: 0.35rem;
   color: var(--ink);
 }
 
 a.note-title {
-  color: var(--accent);
+  color: var(--ink1-text);
 }
 
 .md {
-  font-size: 0.92rem;
+  font-size: 0.95rem;
 }
 
 .md blockquote {
   margin: 0.5rem 0;
   padding-left: 0.8rem;
-  border-left: 3px solid var(--accent-soft);
+  border-left: 3px solid var(--ink2);
   color: var(--ink-soft);
 }
 
@@ -631,7 +749,7 @@ a.note-title {
 
 .md .wikilink {
   font-style: normal;
-  color: var(--accent);
+  color: var(--ink1-text);
 }
 
 @media (max-width: 720px) {
@@ -644,7 +762,7 @@ a.note-title {
   }
 }
 
-/* ---------- heatmap ---------- */
+/* ---------- calendar ---------- */
 
 .heatmap-head {
   display: flex;
@@ -655,13 +773,29 @@ a.note-title {
 
 .year-picker {
   display: flex;
-  gap: 0.3rem;
+  gap: 2px;
+  padding: 2px;
   flex-wrap: wrap;
+  background: var(--wash);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.year-picker button {
+  text-decoration: none;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  border-radius: var(--radius-sm);
+  padding: 0.2rem 0.75rem;
+  color: var(--ink-soft);
 }
 
 .year-picker .active {
-  border-color: var(--accent);
-  color: var(--accent);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: inset 0 -3px 0 var(--ink2), 0 1px 2px rgba(28, 27, 32, 0.12);
 }
 
 .heat-grid {
@@ -683,12 +817,14 @@ a.note-title {
   color: var(--ink-soft);
 }
 
+/* A day you wrote is one dot of ink. Days you did not are plain paper:
+   no score, no gaps called out. */
 .heat-cell {
   width: 14px;
   height: 14px;
   flex: 0 0 auto;
-  border-radius: 4px;
-  background: var(--surface);
+  border-radius: 50%;
+  background: var(--wash);
   border: 1px solid var(--line);
   padding: 0;
   box-shadow: none;
@@ -696,17 +832,19 @@ a.note-title {
 }
 
 .heat-cell.written {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--ink1);
+  border-color: var(--ink1);
   cursor: pointer;
 }
 
-.heat-cell.written:hover {
+.heat-cell.written:hover:not(:disabled) {
+  background: var(--ink1);
   transform: scale(1.25);
 }
 
 .heat-cell.open {
   outline: 2px solid var(--focus);
+  box-shadow: 2px 1px 0 var(--ink2);
 }
 
 .heat-cell.void,
@@ -718,7 +856,7 @@ a.note-title {
 .heat-detail {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   padding: 1rem 1.25rem;
   max-width: 40rem;
   box-shadow: var(--shadow);
@@ -740,13 +878,14 @@ a.note-title {
   display: flex;
   gap: 0.9rem;
   align-items: baseline;
-  padding: 0.45rem 0;
+  padding: 0.5rem 0;
   border-bottom: 1px solid var(--line);
   flex-wrap: wrap;
 }
 
 .queue-title {
   flex: 1 1 14rem;
+  font-weight: 600;
 }
 
 .queue-when,
@@ -765,7 +904,7 @@ a.note-title {
 .preview-card {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   padding: 1rem 1.25rem;
   max-width: 44rem;
   box-shadow: var(--shadow);
@@ -808,8 +947,8 @@ a.note-title {
   font: inherit;
   color: var(--ink);
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius);
   padding: 0.35rem 0.55rem;
   max-width: 16rem;
 }
@@ -826,8 +965,8 @@ a.note-title {
 }
 
 .tag-chip {
-  border: 1px solid var(--line);
-  border-radius: 999px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-sm);
   padding: 0.15rem 0.75rem;
   cursor: pointer;
   user-select: none;
@@ -836,9 +975,10 @@ a.note-title {
 }
 
 .tag-chip.on {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-soft);
+  border-color: var(--ink1);
+  color: var(--ink1-text);
+  background: var(--ink1-tint);
+  font-weight: 600;
 }
 
 .tag-chip input {
@@ -857,12 +997,12 @@ a.note-title {
 
 .transfer textarea {
   width: 100%;
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-family: var(--mono);
   font-size: 0.8rem;
   background: var(--surface);
   color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius);
   margin-bottom: 0.6rem;
   padding: 0.5rem;
 }
@@ -885,7 +1025,7 @@ a.note-title {
   flex: 0 0 auto;
   width: 2.4rem;
   height: 2.4rem;
-  border-radius: 10px;
+  border-radius: var(--radius);
   display: grid;
   place-items: center;
   font-size: 1.15rem;
@@ -893,33 +1033,23 @@ a.note-title {
 }
 
 .recall-tint {
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--ink1-tint);
+  color: var(--ink1-text);
 }
 
 .learn-tint {
-  background: var(--teal-soft);
-  color: var(--teal);
+  background: var(--ink3-tint);
+  color: var(--ink3-text);
 }
 
 .setup-card {
-  position: relative;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 1.1rem 1.3rem;
   max-width: 40rem;
   margin: 1rem 0 1.5rem;
   box-shadow: var(--shadow);
-  overflow: hidden;
-}
-
-.setup-card::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 3px;
-  background: var(--grad);
 }
 
 .setup-card h3 {
@@ -930,7 +1060,7 @@ a.note-title {
 .setup-card p {
   margin: 0.3rem 0 0.8rem;
   color: var(--ink-soft);
-  font-size: 0.92rem;
+  font-size: var(--text-sm);
 }
 
 .ways-in {
@@ -962,13 +1092,13 @@ a.note-title {
 }
 
 .learn-chip {
-  background: var(--teal-soft);
-  color: var(--teal);
+  background: var(--ink3-tint);
+  color: var(--ink3-text);
 }
 
 .learn-chip.due {
-  background: var(--teal);
-  color: #fff;
+  background: var(--charcoal);
+  color: var(--on-charcoal);
 }
 
 /* ---------- landing + callback ---------- */
@@ -977,44 +1107,68 @@ a.note-title {
 .callback-status {
   max-width: 42rem;
   margin: 0 auto;
-  padding: 3.5rem 1.25rem;
+  padding: var(--space-6) 1.25rem 3.5rem;
+}
+
+/* Two prints on a desk: the one loud thing on the site. Full bleed. */
+.landing-art {
+  height: clamp(150px, 24vw, 300px);
+  margin: 0 calc(50% - 50vw) var(--space-6);
+  margin-top: calc(-1 * var(--space-6));
+  background: url('/art/landing.svg') center / cover no-repeat;
+}
+
+.landing h1 {
+  margin: 0 0 var(--space-2);
+  line-height: 1.05;
 }
 
 .landing img {
   max-width: 100%;
   border: 1px solid var(--line);
-  border-radius: 10px;
-  margin: 1.5rem 0;
-  box-shadow: var(--shadow);
+  border-radius: var(--radius-lg);
+  margin: var(--space-5) 0;
+  box-shadow: var(--shadow-lift);
 }
 
 .landing .tagline {
   color: var(--ink-soft);
-  margin-top: -0.5rem;
-  font-size: 1.1rem;
+  margin-top: 0;
+  font-size: var(--text-lg);
 }
 
 .landing .cta {
   display: inline-block;
-  background: var(--accent);
-  color: #fff;
-  border-radius: 8px;
-  padding: 0.6rem 1.4rem;
-  margin-right: 0.9rem;
-  font-weight: 500;
+  background: var(--charcoal);
+  color: var(--on-charcoal);
+  border-radius: var(--radius);
+  padding: 0.65rem 1.4rem;
+  margin: 0 1.1rem var(--space-2) 0;
+  font-weight: 600;
+  box-shadow: 4px 4px 0 var(--ink2);
 }
 
 .landing .cta:hover {
   text-decoration: none;
-  opacity: 0.92;
+  box-shadow: 5px 5px 0 var(--ink2);
 }
 
 .landing .cta-secondary {
-  color: var(--accent);
+  color: var(--ink1-text);
+  font-weight: 500;
+}
+
+.landing h2 {
+  font-size: var(--text-lg);
+  margin: var(--space-6) 0 var(--space-2);
 }
 
 .landing footer {
   margin-top: 3rem;
   border-top: 1px solid var(--line);
   padding-top: 1rem;
+}
+
+body:has(.landing) {
+  overflow-x: hidden;
 }
