@@ -109,6 +109,7 @@ export function normalizeDoc(input: unknown, nowIso: string): PersistedDoc {
       items[key] = {
         mode: 'learn',
         targetDate: v['targetDate'],
+        ...(v['byRule'] === true ? { byRule: true } : {}),
         lastSurfaced: typeof v['lastSurfaced'] === 'string' ? v['lastSurfaced'] : null,
         nextDue: typeof v['nextDue'] === 'string' ? v['nextDue'] : null,
         surfaceCount: typeof v['surfaceCount'] === 'number' ? v['surfaceCount'] : 0,

@@ -987,6 +987,12 @@ a.note-title {
   pointer-events: none;
 }
 
+/* The checkbox is hidden, so the chip shows the keyboard focus. */
+.tag-chip:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
 .settings-actions {
   display: flex;
   gap: 0.75rem;
@@ -1099,6 +1105,202 @@ a.note-title {
 .learn-chip.due {
   background: var(--charcoal);
   color: var(--on-charcoal);
+}
+
+/* ---------- study sets ---------- */
+
+.study-sets {
+  max-width: 46rem;
+  margin: 0 0 1.75rem;
+}
+
+.set-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.set-section-head h3 {
+  margin: 0 0 var(--space-1);
+}
+
+.set-list {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.set-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 0.85rem 1.1rem;
+  box-shadow: var(--shadow);
+}
+
+.set-card.passed {
+  background: var(--wash);
+  box-shadow: none;
+}
+
+.set-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.set-head h4,
+.set-editor h4 {
+  margin: 0;
+  font-size: var(--text-md);
+}
+
+.set-card p {
+  margin: var(--space-1) 0 var(--space-2);
+}
+
+.set-actions {
+  flex-wrap: wrap;
+  margin-top: var(--space-2);
+}
+
+.set-redate {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-top: var(--space-2);
+}
+
+.set-editor {
+  max-width: none;
+}
+
+.set-editor h4 {
+  margin-top: var(--space-4);
+}
+
+.set-group {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin: var(--space-3) 0;
+  padding: var(--space-2) var(--space-3) var(--space-3);
+}
+
+.set-group legend {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  padding: 0 var(--space-1);
+}
+
+.field input[type='date'] {
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius);
+  padding: 0.35rem 0.55rem;
+}
+
+/* Chromium does not always match :focus-visible while a date field's
+   month, day or year part has focus, so a focused date input shows the
+   ring itself. */
+.field input[type='date']:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.property-dates summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.property-dates[open] summary {
+  margin-bottom: var(--space-2);
+}
+
+.finder-controls {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.finder-bar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.finder-box {
+  position: relative;
+}
+
+.finder-marquee {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  border: 1px solid var(--ink1);
+  background: var(--ink1-tint);
+  opacity: 0.4;
+  border-radius: 2px;
+}
+
+.finder-hint {
+  margin-top: calc(-1 * var(--space-2));
+}
+
+@media (hover: none) {
+  .finder-hint {
+    display: none;
+  }
+}
+
+.finder-results {
+  list-style: none;
+  margin: var(--space-1) 0 var(--space-3);
+  padding: 0;
+  max-height: 16rem;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.finder-results li {
+  border-bottom: 1px solid var(--line);
+}
+
+.finder-results li:last-child {
+  border-bottom: 0;
+}
+
+.finder-row input[type='checkbox'] {
+  accent-color: var(--ink1);
+}
+
+.finder-row {
+  user-select: none;
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  padding: 0.4rem var(--space-3);
+  cursor: pointer;
+}
+
+li.finder-row {
+  cursor: default;
+  justify-content: space-between;
+}
+
+.finder-title {
+  flex: 1 1 auto;
+  overflow-wrap: anywhere;
 }
 
 /* ---------- landing + callback ---------- */

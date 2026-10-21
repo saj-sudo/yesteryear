@@ -39,7 +39,7 @@ const PROPERTY_HOME: Record<PropertyRole, TypeRole> = {
   personBirthday: 'person',
 };
 
-function listNames(items: { name?: string; title?: string }[]): string {
+export function listNames(items: { name?: string; title?: string }[]): string {
   const names = items.map((s) => `"${s.title ?? s.name}"`);
   return names.length > 0 ? names.join(', ') : '(none)';
 }
@@ -60,6 +60,7 @@ export function referencedTagNames(config: YesteryearConfig): string[] {
   const names = new Set<string>([
     ...config.recall.tags,
     ...config.learn.assignByTag,
+    ...config.learn.sets.flatMap((s) => s.tags),
     ...Object.keys(config.recall.tagWeights),
   ]);
   if (config.rotation.enabled && config.rotation.groupBy === 'tag') {

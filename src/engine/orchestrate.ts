@@ -3,8 +3,9 @@ import type { PairingCandidate } from './pairing';
 import { refineToBlock } from './granularity';
 import { renderSection } from './markdown';
 import { parseResponses } from './parseResponses';
-import type { FullObject, Provider, PropertyValue } from './provider';
-import { referencedTagNames, resolveSchema, type ResolvedSchema } from './resolve';
+import type { FullObject, ObjectSummary, Provider, PropertyValue, StructureDef } from './provider';
+import { listNames, referencedTagNames, resolveSchema, type ResolvedSchema } from './resolve';
+import { nearestUpcoming } from './studySets';
 import { learnKey, objKey, parseKey, StateManager } from './state';
 import { temporalCandidates, type DailyNoteRef, type PersonInput, type ProjectInput } from './temporal';
 import { chooseDay, finalizeRun, prepareLearn, applyResponses, type CandidatePools } from './run';
@@ -159,102 +160,164 @@ export async function gatherPools(
     config.rotation.enabled && config.rotation.groupBy === 'tag'
       ? config.rotation.groups
       : [];
-  const objectTags = new Map<string, { title: string; tags: Set<string> }>();
-  const sweep = async (tagName: string): Promise<void> => {
-    const tagId = resolved.tagIds[tagName];
-    if (!tagId) return; // unresolved tag: already warned by resolveSchema
-    for await (const s of provider.listObjectsByTag(tagId)) {
-      const entry = objectTags.get(s.id) ?? { title: s.title, tags: new Set() };
-      entry.tags.add(tagName);
-      objectTags.set(s.id, entry);
-    }
-  };
-  const sweepNames = new Set([
-    ...config.recall.tags,
-    ...config.learn.assignByTag,
-    ...rotationTagGroups,
-  ]);
-  for (const name of sweepNames) await sweep(name);
+  const objectTags = await sweepTags(
+    provider,
+    resolved.tagIds,
+    new Set([...config.recall.tags, ...learnTagNames(config), ...rotationTagGroups]),
+  );
 
   const groupOf = (tags: Set<string>): string | null =>
     rotationTagGroups.find((g) => tags.has(g)) ?? null;
 
   /* ---- learn assignments ---- */
-  const learn: Candidate[] = [];
-  const learnIds = new Set<string>();
-  if (config.learn.enabled) {
-    const byTag = [...objectTags.entries()].filter(([, v]) =>
-      config.learn.assignByTag.some((t) => v.tags.has(t)),
-    );
-    // assignByType names arbitrary types, not just mapped roles, so it
-    // resolves directly against the space's structure list.
-    const typeIds: { id: string; title: string }[] = [];
-    if (config.learn.assignByType.length > 0) {
-      const structures = await provider.listStructures();
-      for (const typeName of config.learn.assignByType) {
-        const structure = structures.find(
-          (s) => s.title.trim().toLowerCase() === typeName.trim().toLowerCase(),
-        );
-        if (!structure) {
-          warnings.push(
-            `Learn type "${typeName}" is not in this space and was skipped.`,
-          );
-          continue;
-        }
-        for await (const s of provider.listObjectsByStructure(structure.id)) {
-          typeIds.push({ id: s.id, title: s.title });
-        }
-      }
-    }
-    const candidates = [
-      ...byTag.map(([id, v]) => ({ id, title: v.title })),
-      ...typeIds,
-    ].filter((c) => {
-      if (learnIds.has(c.id)) return false;
-      learnIds.add(c.id);
-      return true;
-    });
-
-    // Resolving each item's target date needs the full object.
-    const enriched = await enrichAll(
-      provider,
-      candidates.map((c) => c.id),
-      warnings,
-      'learn items',
-    );
-    for (const obj of enriched) {
-      const targetDate = await resolveTargetDate(provider, obj, config);
-      const tags = objectTags.get(obj.id)?.tags ?? new Set<string>();
-      if (targetDate) {
-        learn.push({
-          key: learnKey(objKey(obj.id)),
-          objectId: obj.id,
-          blockId: null,
-          title: obj.title,
-          excerpt: null,
-          source: 'learn',
-          temporalReason: null,
-          tags: [...tags],
-          group: groupOf(tags),
-          targetDate,
-        });
-      }
-      // Without a target date the item falls back to Recall (§8.3):
-      // it stays in the recall pool below.
-    }
-  }
+  const learn = await gatherLearn(provider, config, objectTags, groupOf, today, warnings);
 
   /* ---- recall pool ---- */
+  const learning = new Set(learn.map((c) => c.objectId));
   const recall: Candidate[] = [];
   for (const [id, entry] of objectTags) {
     const inRecallTags = config.recall.tags.some((t) => entry.tags.has(t));
-    const learnAssigned = learnIds.has(id) && learn.some((l) => l.objectId === id);
-    if (inRecallTags && !learnAssigned) {
+    if (inRecallTags && !learning.has(id)) {
       recall.push(recallCandidate(id, entry.title, [...entry.tags], groupOf(entry.tags)));
     }
   }
 
   return { temporal, recall, learn };
+}
+
+export type ObjectTags = Map<string, { title: string; tags: Set<string> }>;
+
+/** Every tag name Learn needs swept: date-property tags and the tags of study sets. */
+function learnTagNames(config: YesteryearConfig): string[] {
+  return [...config.learn.assignByTag, ...config.learn.sets.flatMap((s) => s.tags)];
+}
+
+/** Object id → title and the tag names (from `names`) it carries. */
+async function sweepTags(
+  provider: Provider,
+  tagIds: Readonly<Record<string, string>>,
+  names: Iterable<string>,
+): Promise<ObjectTags> {
+  const objectTags: ObjectTags = new Map();
+  for (const name of new Set(names)) {
+    const tagId = tagIds[name];
+    if (!tagId) continue; // unresolved tag: already warned by resolveSchema
+    for await (const s of provider.listObjectsByTag(tagId)) {
+      const entry = objectTags.get(s.id) ?? { title: s.title, tags: new Set<string>() };
+      entry.tags.add(name);
+      objectTags.set(s.id, entry);
+    }
+  }
+  return objectTags;
+}
+
+/**
+ * The notes that study toward a date today, with the date each one aims
+ * at. Shared by the daily run and by syncLearn.
+ */
+async function gatherLearn(
+  provider: Provider,
+  config: YesteryearConfig,
+  objectTags: ObjectTags,
+  groupOf: (tags: Set<string>) => string | null,
+  today: LocalDate,
+  warnings: string[],
+): Promise<Candidate[]> {
+  // Every way a note can enter Learn contributes a date for it: a date
+  // property (tag or type assignments) and study sets (tag, type or a
+  // note picked by hand). A note claimed by several studies toward the
+  // nearest date that has not passed.
+  const learn: Candidate[] = [];
+  if (config.learn.enabled) {
+    const claims = new Map<string, { title: string; dates: LocalDate[] }>();
+    const claim = (id: string, title: string, date: LocalDate): void => {
+      const entry = claims.get(id) ?? { title, dates: [] };
+      entry.dates.push(date);
+      claims.set(id, entry);
+    };
+
+    // Type names resolve directly against the space's structure list, so
+    // any type can be used, not only the mapped roles.
+    let structures: StructureDef[] | null = null;
+    const membersOfType = async (
+      typeName: string,
+      missing: (known: StructureDef[]) => string,
+    ): Promise<ObjectSummary[]> => {
+      structures ??= await provider.listStructures();
+      const structure = structures.find(
+        (s) => s.title.trim().toLowerCase() === typeName.trim().toLowerCase(),
+      );
+      if (!structure) {
+        warnings.push(missing(structures));
+        return [];
+      }
+      const found: ObjectSummary[] = [];
+      for await (const s of provider.listObjectsByStructure(structure.id)) found.push(s);
+      return found;
+    };
+
+    /* date property: tag and type assignments */
+    const byProperty = new Map<string, string>();
+    for (const [id, v] of objectTags) {
+      if (config.learn.assignByTag.some((t) => v.tags.has(t))) byProperty.set(id, v.title);
+    }
+    for (const typeName of config.learn.assignByType) {
+      const found = await membersOfType(
+        typeName,
+        () => `Learn type "${typeName}" is not in this space and was skipped.`,
+      );
+      for (const s of found) byProperty.set(s.id, s.title);
+    }
+    if (byProperty.size > 0) {
+      // Resolving each note's date needs the full object.
+      const enriched = await enrichAll(provider, [...byProperty.keys()], warnings, 'learn items');
+      for (const obj of enriched) {
+        const date = await resolveTargetDate(provider, obj, config);
+        if (date) claim(obj.id, obj.title, date);
+        // Without a date the note stays in Recall (§8.3).
+      }
+    }
+
+    /* study sets: one date for the whole set; nothing to enrich */
+    for (const set of config.learn.sets) {
+      if (set.targetDate < today) continue; // finished: its notes were released
+      for (const [id, v] of objectTags) {
+        if (set.tags.some((t) => v.tags.has(t))) claim(id, v.title, set.targetDate);
+      }
+      for (const typeName of set.types) {
+        const found = await membersOfType(
+          typeName,
+          (known) =>
+            `Study set "${set.name}" uses the type "${typeName}", which is not in ` +
+            `this space. The space contains: ${listNames(known)}.`,
+        );
+        for (const s of found) claim(s.id, s.title, set.targetDate);
+      }
+      // Notes picked by hand come last, so a live title from a tag or
+      // type listing wins over the title saved when they were picked.
+      for (const note of set.notes) claim(note.id, note.title, set.targetDate);
+    }
+
+    for (const [id, entry] of claims) {
+      const targetDate = nearestUpcoming(entry.dates, today);
+      if (!targetDate) continue;
+      const tags = objectTags.get(id)?.tags ?? new Set<string>();
+      learn.push({
+        key: learnKey(objKey(id)),
+        objectId: id,
+        blockId: null,
+        title: entry.title,
+        excerpt: null,
+        source: 'learn',
+        temporalReason: null,
+        tags: [...tags],
+        group: groupOf(tags),
+        targetDate,
+        byRule: true,
+      });
+    }
+  }
+  return learn;
 }
 
 const structureCache = new WeakMap<Provider, Map<string, Map<string, string>>>();
@@ -387,12 +450,13 @@ async function computeDay(
   const pools = await gatherPools(provider, config, resolved, notesByDate, today, warnings);
 
   // Learn items flagged per-item in the UI (§8.3's third assignment
-  // path) live only in state: no tag or type sweep will find them, so
-  // fold the due ones into the pool here.
+  // path) live only in state: no tag, type or set sweep will find them,
+  // so fold the due ones into the pool here. Notes a rule selected are
+  // left out: when no rule selects them any more they leave Learn.
   if (config.learn.enabled) {
     const poolKeys = new Set(pools.learn.map((c) => c.key));
     for (const [key, item] of Object.entries(manager.current.state.items)) {
-      if (item.mode !== 'learn' || poolKeys.has(key)) continue;
+      if (item.mode !== 'learn' || item.byRule || poolKeys.has(key)) continue;
       if (!item.nextDue || item.nextDue > today) continue;
       const parsed = parseKey(key);
       if (!parsed) continue;
@@ -429,6 +493,29 @@ async function computeDay(
     pools,
     rng,
   });
+
+  // Notes picked by hand for a study set were never listed from the
+  // space, so confirm the ones surfacing today still exist and show
+  // their current titles. A deleted note drops out and its state goes.
+  const handPicked = new Set(config.learn.sets.flatMap((s) => s.notes.map((n) => n.id)));
+  if (handPicked.size > 0) {
+    const checked: Candidate[] = [];
+    for (const candidate of chosen) {
+      if (candidate.source !== 'learn' || !handPicked.has(candidate.objectId)) {
+        checked.push(candidate);
+        continue;
+      }
+      const obj = await provider.getObject(candidate.objectId);
+      if (!obj) {
+        manager.mutate((doc) => {
+          delete doc.state.items[candidate.key]; // deleted note: pruned silently (§11)
+        });
+        continue;
+      }
+      checked.push({ ...candidate, title: obj.title });
+    }
+    chosen = checked;
+  }
 
   // Block granularity refinement for the handful actually surfacing.
   if (config.granularity.mode === 'block') {
@@ -552,6 +639,31 @@ export async function previewDaily(opts: {
     markdown: renderSection(manager.current.config.surfaces.dailyNote.heading, surfaced),
     warnings,
   };
+}
+
+/**
+ * Apply the current Learn selections now. The daily run does this too,
+ * but only once a day, and after editing a study set the notes should
+ * enter (or leave) Learn straight away. Reads the space, then writes one
+ * state update; surfaces nothing.
+ */
+export async function syncLearn(opts: {
+  provider: Provider;
+  manager: StateManager;
+  today: LocalDate;
+}): Promise<{ warnings: string[] }> {
+  const { provider, manager, today } = opts;
+  const config = manager.current.config;
+  const warnings: string[] = [];
+  if (!config.learn.enabled) return { warnings };
+
+  const [structures, tags] = await Promise.all([provider.listStructures(), provider.listTags()]);
+  const resolved = resolveSchema(config, structures, tags);
+  const objectTags = await sweepTags(provider, resolved.tagIds, learnTagNames(config));
+  const candidates = await gatherLearn(provider, config, objectTags, () => null, today, warnings);
+  manager.mutate((doc) => prepareLearn(doc.state, doc.config, today, candidates));
+  await manager.flush();
+  return { warnings };
 }
 
 /** In-memory store seeded with a document copy; used for previews. */

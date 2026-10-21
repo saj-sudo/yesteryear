@@ -50,15 +50,24 @@ export function ensureLearnScheduled(
   targetDate: LocalDate,
   today: LocalDate,
   config: LearnConfig,
+  byRule = false,
 ): LearnItemState {
   const existing = learnState(state, key);
   if (existing) {
     existing.targetDate = targetDate; // the user may have moved the date
+    // A date moved earlier must not leave the next review after it.
+    if (existing.nextDue !== null && existing.nextDue > targetDate) {
+      existing.nextDue = addDays(
+        today,
+        Math.min(config.minGapDays, Math.max(0, diffDays(targetDate, today))),
+      );
+    }
     return existing;
   }
   const fresh: LearnItemState = {
     mode: 'learn',
     targetDate,
+    ...(byRule ? { byRule: true } : {}),
     lastSurfaced: null,
     nextDue: addDays(today, config.minGapDays),
     surfaceCount: 0,
@@ -145,6 +154,26 @@ export function stopLearning(
       retired: false,
     };
   }
+}
+
+/**
+ * Notes that a study set, tag, type or date property put into Learn
+ * leave it when none of those selects them any more (a note taken out
+ * of a set, a set deleted, a tag removed). Notes flagged by hand are
+ * not affected. Returns the keys that left.
+ */
+export function releaseUnselectedLearn(
+  state: YesteryearState,
+  selectedKeys: ReadonlySet<ItemKey>,
+  recallConfig: RecallConfig,
+): ItemKey[] {
+  const released: ItemKey[] = [];
+  for (const [key, item] of Object.entries(state.items)) {
+    if (item.mode !== 'learn' || !item.byRule || selectedKeys.has(key)) continue;
+    stopLearning(state, key, recallConfig);
+    released.push(key);
+  }
+  return released;
 }
 
 /**

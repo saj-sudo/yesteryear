@@ -40,8 +40,34 @@ export interface RecallConfig {
   tagWeights: Record<string, number>;
 }
 
+/** A note picked by hand for a study set. The title is a snapshot for display. */
+export interface StudySetNote {
+  id: string;
+  title: string;
+}
+
+/**
+ * A named group of notes that share one date, like the notes for an
+ * exam. The notes come from tags and types (followed live, so a new
+ * note with the tag joins) and from notes picked one by one. Names stay
+ * human-readable and resolve against the space on every run, like all
+ * other config. The date belongs to the set, so moving it moves every
+ * note in it.
+ */
+export interface StudySet {
+  /** Stable within the document, e.g. "set-1". */
+  id: string;
+  name: string;
+  targetDate: LocalDate;
+  tags: string[];
+  types: string[];
+  notes: StudySetNote[];
+}
+
 export interface LearnConfig {
   enabled: boolean;
+  /** Notes sharing one date, assigned by tag, type or one by one. */
+  sets: StudySet[];
   assignByTag: string[];
   assignByType: string[];
   targetDateProperty: string | null;
@@ -128,6 +154,12 @@ export interface RecallItemState {
 export interface LearnItemState {
   mode: 'learn';
   targetDate: LocalDate;
+  /**
+   * True when a study set, tag, type or date property put the note here,
+   * so it leaves Learn when none of them selects it any more. Absent for
+   * notes flagged by hand, which stay until their date passes.
+   */
+  byRule?: boolean;
   lastSurfaced: LocalDate | null;
   nextDue: LocalDate | null;
   surfaceCount: number;
@@ -177,6 +209,8 @@ export interface Candidate {
   group: string | null;
   /** Learn mode only. */
   targetDate: LocalDate | null;
+  /** Learn mode only: selected by a set, tag, type or date property, not flagged by hand. */
+  byRule?: boolean;
 }
 
 export interface SurfacedItem {

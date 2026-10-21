@@ -5,12 +5,14 @@ import {
   type ApiBlock,
   type ApiToken,
   type GetObjectResponse,
+  type SearchObjectsBody,
 } from '@capacities/api';
 import type {
   FullObject,
   ObjectSummary,
   PropertyValue,
   Provider,
+  SearchOptions,
   SimpleBlock,
   SpaceInfo,
   StructureDef,
@@ -93,6 +95,21 @@ export class CapacitiesAdapter implements Provider {
       yield* page.results;
       cursor = page.hasMore && page.nextCursor ? page.nextCursor : undefined;
     } while (cursor);
+  }
+
+  async searchObjects(query: string, options: SearchOptions = {}): Promise<ObjectSummary[]> {
+    const text = query.trim();
+    if (text.length === 0) return [];
+    const res = await withBackoff(() =>
+      this.client.objects.search({
+        query: text,
+        limit: options.limit ?? 30,
+        ...(options.structureId
+          ? { structureIds: [options.structureId] as NonNullable<SearchObjectsBody['structureIds']> }
+          : {}),
+      }),
+    );
+    return res.results.map((r) => ({ id: r.id, structureId: r.structureId, title: r.title }));
   }
 
   async getObject(id: string): Promise<FullObject | null> {
