@@ -55,7 +55,7 @@ Yesteryear uses the official Capacities HTTP API through the official [`@capacit
 
 ## Deploying your own
 
-The site works on any static host, with no server functions.
+The site works on any static host, with no server functions. On Cloudflare Workers, the `wrangler.jsonc` in the repo serves `dist/` as static assets.
 
 ```sh
 npm install
