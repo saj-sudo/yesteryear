@@ -46,7 +46,7 @@ export function renderSection(heading: string, items: SurfacedItem[]): string | 
   for (const item of items) {
     const excerpt = excerptOf(item);
     let line = `- [ ] **${item.label}:** [[${item.title}]]`;
-    if (excerpt) line += ` — “${excerpt}”`;
+    if (excerpt) line += `: “${excerpt}”`;
     lines.push(line);
     lines.push(`      ${item.source === 'learn' ? LEARN_MARKERS : RECALL_MARKERS}`);
   }

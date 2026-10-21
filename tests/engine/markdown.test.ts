@@ -61,7 +61,7 @@ describe('renderSection', () => {
     const md = renderSection('Resurfaced', [
       item({ excerpt: `  Long   line\nwith breaks ${'x'.repeat(300)}` }),
     ])!;
-    expect(md).toContain('— “Long line with breaks');
+    expect(md).toContain(': “Long line with breaks');
     expect(md).toContain('…');
     expect(md).not.toContain('\nwith breaks');
   });

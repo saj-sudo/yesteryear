@@ -19,82 +19,82 @@ const label = (...names: string[]): PropertyValue => ({ type: 'label', names });
 
 const FIELD_NOTE_BODIES: { title: string; blocks: [string, string][] }[] = [
   {
-    title: 'Switchbacks are honest',
+    title: 'East switchbacks',
     blocks: [
-      ['TextBlock', 'The trail that zigzags looks slower than the scramble straight up, but it is the one you can still walk in year three. Most shortcuts are loans against your knees.'],
-      ['QuoteBlock', 'The mountain does not care how fast you climb it. It cares whether you come back.'],
+      ['TextBlock', 'The switchback trail up the east side took 40 minutes longer than the scramble, but nobody needed a rest stop. Use it for groups carrying full packs.'],
+      ['QuoteBlock', 'Ansel: "Mark the scramble as dry weather only."'],
     ],
   },
   {
-    title: 'On unread letters',
+    title: 'Letters owed',
     blocks: [
-      ['TextBlock', 'A letter you have not answered is not a debt, it is a held note in a long chord. Cordelia waited four months to reply and her answer was better for the waiting.'],
-      ['TextBlock', 'Reply when the reply is ready.'],
+      ['TextBlock', 'Still owe Cordelia a reply about the lighthouse survey. She asked for the tide tables from March.'],
+      ['TextBlock', 'Send the tables first and the long letter after.'],
     ],
   },
   {
     title: 'The basecamp ledger',
     blocks: [
-      ['TextBlock', 'Counted the tins again: we always overpack fear and underpack patience. Next season, fewer contingencies and more mornings with nothing planned.'],
-      ['QuoteBlock', 'Every expedition fails at the pace of its most anxious member.'],
+      ['TextBlock', 'Counted the tins again. 47 left, twelve more than we used last season. Order fewer next year.'],
+      ['QuoteBlock', 'Wren: "Cut the spare stove fuel by a third."'],
       ['TextBlock', 'Tin count: 47.'],
     ],
   },
   {
     title: 'Fog instruments',
     blocks: [
-      ['TextBlock', 'In fog you navigate by instruments you calibrated on clear days. Journals are the same: write down what you believe while you can still see, and trust it when you cannot.'],
+      ['TextBlock', 'Calibrated the altimeter at the hut on a clear morning: 2,140 m. On foggy days, trust that reading over the map.'],
     ],
   },
   {
     title: 'Wintering',
     blocks: [
-      ['TextBlock', 'The expedition that winters over is not paused; it is doing the slow work that summits require. Roots do their growing in the dark half of the year.'],
-      ['QuoteBlock', 'A season of no visible progress is still a season.'],
+      ['TextBlock', 'Plan for the winter months: inventory in December, sledge repairs in January, the survey write-up in February.'],
+      ['QuoteBlock', 'Nobody goes up the pass until the snow report is in.'],
     ],
   },
   {
     title: 'Rope teams',
     blocks: [
-      ['TextBlock', 'Tied to Ansel on the glacier I finally understood: the rope is not there because you expect to fall, it is there so you can look up more often.'],
-      ['TextBlock', 'Short rope, long trust.'],
+      ['TextBlock', 'Ansel and I roped up for the glacier crossing. Two crevasses near the second marker, both bridged with old snow.'],
+      ['TextBlock', 'Next time: a shorter rope, and probe every ten steps.'],
     ],
   },
   {
-    title: 'The cartographer bias',
+    title: 'Map corrections',
     blocks: [
-      ['TextBlock', 'Maps flatter the mapped. The valleys I have named feel more real than the ones I have only crossed, which is exactly backwards, and worth remembering when I reread old plans.'],
+      ['TextBlock', 'The survey map puts the north tarn about 300 m too far west. Marked it on the office copy and wrote to the survey office.'],
     ],
   },
   {
-    title: 'Postage stamps as promises',
+    title: 'Post days',
     blocks: [
-      ['TextBlock', 'Bought a sheet of stamps and it changed how I write: a letter that costs something to send gets written to be worth sending. Friction is a kind of editor.'],
-      ['QuoteBlock', 'Cheap sending makes for expensive reading.'],
+      ['TextBlock', 'Post goes down the valley on Tuesdays and Fridays, so a letter written on a Wednesday waits two days.'],
+      ['QuoteBlock', 'Buy a full sheet of stamps next time in town.'],
     ],
   },
 ];
 
 const DAILY_LINES = [
-  'Walked the ridge line before breakfast; the valley fog burned off by nine.',
-  'Cordelia’s letter arrived, twelve pages, mostly about the lighthouse.',
-  'Mended the tent seam. Small repairs while the weather holds.',
-  'Read two chapters of the glacier survey and argued with the margins.',
-  'Ansel says the pass will clear early this year. I doubt it, and hope.',
-  'Sorted the seed tins for the north terrace. Planted nothing yet.',
-  'Long letter to Wren about whether ambition keeps or spoils.',
-  'The barometer fell all afternoon. Batten down, brew tea.',
-  'Sketched the cirque from the eastern moraine. Charcoal smudged in the wind.',
-  'Counted strides on the lake loop: 4,180. The lake does not count back.',
-  'A day of nothing planned, exactly as planned.',
-  'Re-read last spring’s journal. Past me was worried about all the wrong ridges.',
+  'Walked the ridge line before breakfast. The valley fog was gone by nine.',
+  'Letter from Cordelia, twelve pages, mostly about the lighthouse.',
+  'Mended the tent seam with the waxed thread.',
+  'Read two chapters of the glacier survey and made notes in the margins.',
+  'Ansel thinks the pass will clear early this year.',
+  'Sorted the seed tins for the north terrace. Nothing planted yet.',
+  'Long letter to Wren about the summer schedule.',
+  'The barometer fell all afternoon. Brought the gear in.',
+  'Sketched the cirque from the eastern moraine in charcoal.',
+  'Counted strides on the lake loop: 4,180.',
+  'No plans today. Read by the stove.',
+  'Re-read last spring’s journal. Most of what worried me then never happened.',
 ];
 
 const QUOTES = [
-  'Slow is smooth, smooth is far.',
-  'You do not conquer a mountain; you negotiate with it and keep the minutes.',
-  'Write to your future self as kindly as you would to a friend abroad.',
-  'The pack is always lighter after you decide what it is for.',
+  'Ansel: "Leave the hut by six or not at all."',
+  'Cordelia: "Send the tide tables when you can."',
+  'Note to self: check the stove fuel before every trip.',
+  'Wren: "Pack the heavy things close to your back."',
 ];
 
 export function buildStrangersSpace(today: LocalDate): FixtureSpace {

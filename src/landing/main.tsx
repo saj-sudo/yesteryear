@@ -14,62 +14,63 @@ function Landing() {
       <h1>Yesteryear</h1>
       <p class="tagline">Resurfacing for Capacities.</p>
       <p>
-        You already wrote the good stuff — it just never comes back. Yesteryear
-        brings it back <em>on a cadence</em>: the notes you tagged as worth
-        meeting again return when their time comes — a month out, six months
-        out, whenever they are due — not when the calendar happens to rhyme.
-        Material with a real date attached (a talk, an exam, a trip) gets its
-        own tightening schedule toward that date. And alongside the cadence,
-        one unlikely pair a day: two things from different corners of your
-        space, side by side, because some connections no filing system would
-        have made.
+        Notes go into Capacities easily and rarely come back out. Yesteryear
+        brings older notes back to you <em>on a cadence</em>. The ones you tag
+        as worth seeing again come back when they are due: a month later, six
+        months later. Notes tied to a real date, like a talk or an exam, come
+        back more often as that date gets closer. Each day you also get one
+        unlikely pair: two notes from different corners of your space, side by
+        side.
       </p>
 
       <p>
         <a class="cta" href="/app/">Open Yesteryear</a>
-        <a class="cta-secondary" href="/app/">Try the demo — no account needed</a>
+        <a class="cta-secondary" href="/app/">Try the demo (no account needed)</a>
       </p>
 
-      <img src={todayShot} alt="Today: the day's resurfaced mix, with an unlikely pair alongside" />
+      <img
+        src={todayShot}
+        alt="Today in a made-up field office space: four resurfaced notes with tinted labels, and an unlikely pair shown as two overlapping prints."
+      />
 
-      <h2>No backend. Really none.</h2>
+      <h2>No server</h2>
       <p>
-        This site is static files. Your notes travel from your browser straight
-        to Capacities and nowhere else — there is no server to pass through, no
-        account to create, no analytics, no tracking of any kind. Access tokens
-        stay in your browser; your resurfacing history lives in a page inside
-        your own space, where you can read or delete it whenever you like. You
-        can revoke access at any time in Capacities itself.
+        The site is a set of static files. Your notes go from your browser to
+        Capacities and nowhere else. There's no account to make and no
+        analytics. Access tokens stay in your browser. Your resurfacing
+        history is kept in a page inside your own space, where you can read it
+        or delete it. You can revoke access any time in Capacities.
       </p>
 
-      <h2>Your object types, not ours</h2>
+      <h2>Works with the types you already have</h2>
       <p>
-        Every Capacities space has its own types, properties, and tags — so
-        nothing here is hardcoded. Yesteryear reads what your space actually
-        contains and lets you map it: which types count as projects or people,
-        which tags mark something worth resurfacing, whether whole pages or
-        single paragraphs are the unit. A space with nothing configured still
-        works, because daily notes exist everywhere.
+        Every Capacities space has its own types, properties and tags, so
+        Yesteryear doesn't assume any. It reads what your space contains and
+        lets you choose: which types are projects or people, which tags mark a
+        note worth seeing again, and whether a whole page or a single
+        paragraph comes back. With nothing set up, it still works from your
+        daily notes.
       </p>
 
-      <h2>Time as one lens, not the whole story</h2>
+      <h2>Dates help, and so does chance</h2>
       <p>
-        Birthdays, project target dates, and “what was I writing a year ago
-        today” are all here — On This Day columns, a calendar heatmap of your
-        writing. But the calendar only connects things it already connected.
-        The daily mix leans deliberately on sampled and random draws, because
-        surprising juxtaposition is where the insight lives.
+        Birthdays, project dates and what you wrote a year ago today are all
+        here, in On This Day and a calendar of the days you wrote. The daily
+        mix also draws at random, because a date can only bring back notes
+        that already share one.
       </p>
 
-      <img src={calendarShot} alt="Calendar heatmap: a year of daily notes at a glance" />
+      <img
+        src={calendarShot}
+        alt="The calendar: a year of days, with a dot of ink for each day that has a daily note."
+      />
 
-      <h2>Quiet by design</h2>
+      <h2>No streaks or scores</h2>
       <p>
-        No streaks, no counters, no overdue badges. Skipping a day is a normal
-        state, and silence is a valid response — the tool works fully unattended
-        forever. If you enable the daily-note surface, a small Resurfaced
-        section appears in the note you already open each morning; respond to
-        it, rewrite it, or ignore it.
+        Nothing here counts days or marks anything overdue. Skipping a day is
+        fine, and so is never answering. If you turn on the daily note
+        section, a short Resurfaced list appears in the note you already open
+        each morning. Answer it, edit it or leave it.
       </p>
 
       <footer>

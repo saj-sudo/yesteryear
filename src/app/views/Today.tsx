@@ -155,11 +155,10 @@ export function Today({ data }: { data: AppData }) {
     <section class="today">
       <h2>Resurfaced today</h2>
       <p class="fineprint">
-        What the cadence brought back — items return when their time comes, not
-        when the calendar rhymes.
+        The notes that are due today, plus any with a date coming up.
       </p>
       {surfaced.length === 0 ? (
-        <p class="empty-note">Nothing surfaced today — a quiet day is a normal day.</p>
+        <p class="empty-note">Nothing came back today. Days like that are normal.</p>
       ) : (
         <ul class="mix-list">
           {surfaced.map((item) => {
@@ -207,9 +206,8 @@ export function Today({ data }: { data: AppData }) {
         <div>
           <h2>An unlikely pair</h2>
           <p class="fineprint">
-            And on the side: two things from different corners of your space.
-            Sometimes nothing — sometimes exactly the connection you would never
-            have filed.
+            Two notes from different corners of your space, side by side. Draw
+            again whenever you like.
           </p>
         </div>
         <button onClick={redraw} disabled={!pool || pool.length < 2}>
@@ -221,7 +219,8 @@ export function Today({ data }: { data: AppData }) {
         <p class="loading">Gathering the pool…</p>
       ) : pairing === null ? (
         <p class="empty-note">
-          Not enough here to pair yet — this comes alive as the space grows.
+          There aren't enough notes to pair yet. This starts working as the
+          space grows.
         </p>
       ) : (
         <div class="pairing">

@@ -19,7 +19,7 @@ export const STATE_OBJECT_TITLE = 'Yesteryear State';
 
 const PREAMBLE =
   'This page stores your Yesteryear settings and resurfacing history. ' +
-  'Yesteryear keeps it up to date automatically — editing it by hand may ' +
+  'Yesteryear keeps it up to date. Editing it by hand may ' +
   'lose scheduling history, and deleting it starts Yesteryear fresh.';
 
 export function docToMarkdown(doc: PersistedDoc): string {

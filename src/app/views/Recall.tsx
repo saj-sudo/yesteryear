@@ -73,7 +73,7 @@ export function Recall({ data }: { data: AppData }) {
     data.manager.mutate(fn);
     setTick((t) => t + 1);
     data.manager.flush().catch(() => {
-      setSaveError('Saving the change failed — it will retry on the next run.');
+      setSaveError('Saving the change failed. It will try again on the next run.');
     });
   };
 
@@ -186,11 +186,11 @@ export function Recall({ data }: { data: AppData }) {
         <div>
           <h2>Recall</h2>
           <p class="fineprint">
-            The general cadence: everything worth meeting again comes back on a
-            rhythm — at least {config.recall.cooldownDays} days between visits,
-            weighted toward what has waited longest, with{' '}
-            {Math.round(config.recall.randomShare * 100)}% pure chance mixed in.
-            No deadlines, no scores; skipping is a normal state.
+            The main schedule. Notes you want to see again come back at least{' '}
+            {config.recall.cooldownDays} days apart, favouring the ones that
+            have waited longest, with{' '}
+            {Math.round(config.recall.randomShare * 100)}% picked at random.
+            There are no deadlines or scores, and skipping is fine.
           </p>
         </div>
       </header>
@@ -200,16 +200,16 @@ export function Recall({ data }: { data: AppData }) {
         <div class="setup-card">
           <h3>Give Recall something to work with</h3>
           <p>
-            Daily notes resurface on their own, but the rotation gets rich when
-            you pick a few tags that mark notes worth meeting again — an
-            “insight” tag, a “keeper” tag, whatever your space uses.
+            Daily notes come back on their own. Recall gets more varied when you
+            pick a few tags that mark notes worth seeing again, such as an
+            “insight” or “keeper” tag, or whatever your space uses.
           </p>
           {allTags === null ? (
             <p class="loading">Reading your tags…</p>
           ) : allTags.length === 0 ? (
             <p class="empty-note">
-              This space has no tags yet — tag a few notes in Capacities and
-              they will appear here.
+              This space has no tags yet. Tag a few notes in Capacities and the
+              tags will appear here.
             </p>
           ) : (
             <>
@@ -257,7 +257,7 @@ export function Recall({ data }: { data: AppData }) {
       {section(
         'Scheduled next',
         upcoming,
-        'Nothing scheduled yet — the rotation fills as items surface.',
+        'Nothing scheduled yet. This fills up as notes come back.',
         actions,
       )}
       {section('Recently surfaced', recent, 'Nothing has surfaced yet.', actions)}
