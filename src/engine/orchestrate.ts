@@ -160,28 +160,69 @@ export async function gatherPools(
     config.rotation.enabled && config.rotation.groupBy === 'tag'
       ? config.rotation.groups
       : [];
-  const objectTags = new Map<string, { title: string; tags: Set<string> }>();
-  const sweep = async (tagName: string): Promise<void> => {
-    const tagId = resolved.tagIds[tagName];
-    if (!tagId) return; // unresolved tag: already warned by resolveSchema
-    for await (const s of provider.listObjectsByTag(tagId)) {
-      const entry = objectTags.get(s.id) ?? { title: s.title, tags: new Set() };
-      entry.tags.add(tagName);
-      objectTags.set(s.id, entry);
-    }
-  };
-  const sweepNames = new Set([
-    ...config.recall.tags,
-    ...config.learn.assignByTag,
-    ...config.learn.sets.flatMap((s) => s.tags),
-    ...rotationTagGroups,
-  ]);
-  for (const name of sweepNames) await sweep(name);
+  const objectTags = await sweepTags(
+    provider,
+    resolved.tagIds,
+    new Set([...config.recall.tags, ...learnTagNames(config), ...rotationTagGroups]),
+  );
 
   const groupOf = (tags: Set<string>): string | null =>
     rotationTagGroups.find((g) => tags.has(g)) ?? null;
 
   /* ---- learn assignments ---- */
+  const learn = await gatherLearn(provider, config, objectTags, groupOf, today, warnings);
+
+  /* ---- recall pool ---- */
+  const learning = new Set(learn.map((c) => c.objectId));
+  const recall: Candidate[] = [];
+  for (const [id, entry] of objectTags) {
+    const inRecallTags = config.recall.tags.some((t) => entry.tags.has(t));
+    if (inRecallTags && !learning.has(id)) {
+      recall.push(recallCandidate(id, entry.title, [...entry.tags], groupOf(entry.tags)));
+    }
+  }
+
+  return { temporal, recall, learn };
+}
+
+export type ObjectTags = Map<string, { title: string; tags: Set<string> }>;
+
+/** Every tag name Learn needs swept: date-property tags and the tags of study sets. */
+function learnTagNames(config: YesteryearConfig): string[] {
+  return [...config.learn.assignByTag, ...config.learn.sets.flatMap((s) => s.tags)];
+}
+
+/** Object id → title and the tag names (from `names`) it carries. */
+async function sweepTags(
+  provider: Provider,
+  tagIds: Readonly<Record<string, string>>,
+  names: Iterable<string>,
+): Promise<ObjectTags> {
+  const objectTags: ObjectTags = new Map();
+  for (const name of new Set(names)) {
+    const tagId = tagIds[name];
+    if (!tagId) continue; // unresolved tag: already warned by resolveSchema
+    for await (const s of provider.listObjectsByTag(tagId)) {
+      const entry = objectTags.get(s.id) ?? { title: s.title, tags: new Set<string>() };
+      entry.tags.add(name);
+      objectTags.set(s.id, entry);
+    }
+  }
+  return objectTags;
+}
+
+/**
+ * The notes that study toward a date today, with the date each one aims
+ * at. Shared by the daily run and by syncLearn.
+ */
+async function gatherLearn(
+  provider: Provider,
+  config: YesteryearConfig,
+  objectTags: ObjectTags,
+  groupOf: (tags: Set<string>) => string | null,
+  today: LocalDate,
+  warnings: string[],
+): Promise<Candidate[]> {
   // Every way a note can enter Learn contributes a date for it: a date
   // property (tag or type assignments) and study sets (tag, type or a
   // note picked by hand). A note claimed by several studies toward the
@@ -276,18 +317,7 @@ export async function gatherPools(
       });
     }
   }
-
-  /* ---- recall pool ---- */
-  const learning = new Set(learn.map((c) => c.objectId));
-  const recall: Candidate[] = [];
-  for (const [id, entry] of objectTags) {
-    const inRecallTags = config.recall.tags.some((t) => entry.tags.has(t));
-    if (inRecallTags && !learning.has(id)) {
-      recall.push(recallCandidate(id, entry.title, [...entry.tags], groupOf(entry.tags)));
-    }
-  }
-
-  return { temporal, recall, learn };
+  return learn;
 }
 
 const structureCache = new WeakMap<Provider, Map<string, Map<string, string>>>();
@@ -609,6 +639,31 @@ export async function previewDaily(opts: {
     markdown: renderSection(manager.current.config.surfaces.dailyNote.heading, surfaced),
     warnings,
   };
+}
+
+/**
+ * Apply the current Learn selections now. The daily run does this too,
+ * but only once a day, and after editing a study set the notes should
+ * enter (or leave) Learn straight away. Reads the space, then writes one
+ * state update; surfaces nothing.
+ */
+export async function syncLearn(opts: {
+  provider: Provider;
+  manager: StateManager;
+  today: LocalDate;
+}): Promise<{ warnings: string[] }> {
+  const { provider, manager, today } = opts;
+  const config = manager.current.config;
+  const warnings: string[] = [];
+  if (!config.learn.enabled) return { warnings };
+
+  const [structures, tags] = await Promise.all([provider.listStructures(), provider.listTags()]);
+  const resolved = resolveSchema(config, structures, tags);
+  const objectTags = await sweepTags(provider, resolved.tagIds, learnTagNames(config));
+  const candidates = await gatherLearn(provider, config, objectTags, () => null, today, warnings);
+  manager.mutate((doc) => prepareLearn(doc.state, doc.config, today, candidates));
+  await manager.flush();
+  return { warnings };
 }
 
 /** In-memory store seeded with a document copy; used for previews. */

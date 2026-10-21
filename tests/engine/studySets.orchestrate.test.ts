@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { normalizeConfig } from '../../src/engine/config';
 import { addDays } from '../../src/engine/dates';
-import { runDaily } from '../../src/engine/orchestrate';
+import { runDaily, syncLearn } from '../../src/engine/orchestrate';
 import { StateManager } from '../../src/engine/state';
 import type { LocalDate, StudySet } from '../../src/engine/types';
 import { FixtureProvider } from '../../src/providers/fixture/fixtureProvider';
@@ -295,5 +295,47 @@ describe('study sets on the minimal space', () => {
     const report = await run(provider, manager, TODAY);
     expect(report.warnings.some((w) => w.includes('Tag "exam"'))).toBe(true);
     expect(Object.keys(manager.current.state.items).filter((k) => k.endsWith('#learn'))).toEqual([]);
+  });
+});
+
+describe('applying a change straight away', () => {
+  it('syncLearn puts a new set to work without waiting for tomorrow, and takes a removed note out', async () => {
+    const { provider, manager } = await strangers([]);
+    await run(provider, manager, TODAY); // today's run is done
+    expect(learnEntry(manager, 'fn-2')).toBeNull();
+
+    manager.mutate((doc) => {
+      doc.config.learn.sets.push(set({ id: 'set-1', targetDate: day(45), tags: ['thread'] }));
+    });
+    const result = await syncLearn({ provider, manager, today: TODAY });
+    expect(result.warnings).toEqual([]);
+    expect(learnEntry(manager, 'fn-2')?.targetDate).toBe(day(45));
+    expect(learnEntry(manager, 'fn-2')?.nextDue).toBe(addDays(TODAY, 7));
+    expect(manager.dirty).toBe(false); // written through
+
+    manager.mutate((doc) => {
+      doc.config.learn.sets = [];
+    });
+    await syncLearn({ provider, manager, today: TODAY });
+    expect(learnEntry(manager, 'fn-2')).toBeNull();
+  });
+
+  it('syncLearn does nothing while Learn is off', async () => {
+    const provider = new FixtureProvider(buildStrangersSpace(TODAY));
+    const config = normalizeConfig({
+      ...baseStrangers,
+      learn: { enabled: false, sets: [set({ id: 'set-1', targetDate: day(45), tags: ['thread'] })] },
+    });
+    const manager = await StateManager.open(provider, nowIso, config);
+    await syncLearn({ provider, manager, today: TODAY });
+    expect(learnEntry(manager, 'fn-2')).toBeNull();
+  });
+
+  it('syncLearn reports a type the space lacks', async () => {
+    const { provider, manager } = await strangers([
+      set({ id: 'set-1', name: 'Boat exam', targetDate: day(30), types: ['Flashcard'] }),
+    ]);
+    const result = await syncLearn({ provider, manager, today: TODAY });
+    expect(result.warnings.some((w) => w.includes('Boat exam') && w.includes('"Flashcard"'))).toBe(true);
   });
 });
