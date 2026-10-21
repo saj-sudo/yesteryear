@@ -14,6 +14,7 @@ npm run lint     # eslint, warnings fail
 npm test         # Vitest, runs entirely against made-up fixtures
 npm run dev      # Vite dev server
 npm run build    # tsc --noEmit + production build
+npm run smoke    # after a build: the built site in Chromium
 ```
 
 Node 18 or newer (the SDK's minimum). You don't need an OAuth client id for development. Without `VITE_CAPACITIES_CLIENT_ID`, the app runs in demo mode against the built-in fixture spaces, which is how most of it was built.
@@ -36,6 +37,8 @@ The Recall cooldown, `targetRatio: 0.15`, the delayed first review and the fixed
 ## Tests
 
 Every engine change needs tests, and every feature must pass against **both** fixture spaces: the field office space (with type and property names unlike any real space) and the minimal space (daily notes only, no setup). Together they check the main promise.
+
+One browser check runs in CI: `npm run smoke` serves the built site, opens every page and demo view at phone and desktop size in Chromium, and fails on any console error, uncaught exception or CSP violation. It checks that pages load cleanly and nothing more. Locally it needs a build first, and Chromium from `npx playwright install chromium`.
 
 ## Conduct
 

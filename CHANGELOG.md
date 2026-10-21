@@ -23,6 +23,14 @@ All notable changes to Yesteryear are documented here. The format follows
   everything shown. On a touch screen, search and "Pick all shown" still work.
 - The date-property option moved into a collapsed "Dates from a property"
   section on the Learn page.
+- **Add Yesteryear to your home screen.** The site now has a web manifest
+  and app icons, so a phone or desktop browser can install it. It opens
+  straight to Today in its own window. The CSP allows the manifest
+  (`manifest-src 'self'`) and still loads nothing from other origins.
+- A link to yesteryear.dev now shows a preview card (title, description and
+  a picture of the demo Today page) where it's shared.
+- A smoke test in CI opens the built site in Chromium at phone and desktop
+  size and fails on any console error or CSP violation.
 
 ### Changed
 

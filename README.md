@@ -72,6 +72,7 @@ npm run lint    # eslint, warnings fail
 npm test        # Vitest; the whole engine runs against made-up fixture spaces
 npm run dev     # local dev server
 npm run build   # typecheck + production build
+npm run smoke   # after a build: every page and demo view in Chromium
 ```
 
 The engine (`src/engine/`) is plain TypeScript with no Capacities or DOM imports. Providers implement a small interface, which would also make an adapter for another notes app possible. See [CONTRIBUTING.md](CONTRIBUTING.md).
