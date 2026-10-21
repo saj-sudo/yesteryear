@@ -1208,6 +1208,14 @@ a.note-title {
   padding: 0.35rem 0.55rem;
 }
 
+/* Chromium does not always match :focus-visible while a date field's
+   month, day or year part has focus, so a focused date input shows the
+   ring itself. */
+.field input[type='date']:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
 .property-dates summary {
   cursor: pointer;
   font-weight: 600;

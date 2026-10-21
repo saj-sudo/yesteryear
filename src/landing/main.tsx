@@ -1,6 +1,7 @@
 import { render } from 'preact';
 import todayShot from '../../docs/today.png';
 import calendarShot from '../../docs/calendar.png';
+import learnShot from '../../docs/learn.png';
 
 /**
  * The landing page: what it is, what it looks like, and the privacy
@@ -31,6 +32,26 @@ function Landing() {
       <img
         src={todayShot}
         alt="Today in a made-up field office space: four resurfaced notes with tinted labels, and an unlikely pair shown as two overlapping prints."
+      />
+
+      <h2>Study toward a date</h2>
+      <p>
+        Some notes matter by a certain day, like a talk or an exam. Put them in
+        a study set, choosing them by tag, by object type, or one at a time with
+        a search, and give the set a date. Yesteryear spaces the reviews out,
+        with each gap set at 15% of the time left, so they come closer together
+        as the day gets near. The first review waits at least a week.
+      </p>
+      <p>
+        Sitting the same exam again? Give the set a new date and the same notes
+        study toward it. Learn works on the notes you already have. There are
+        no cards to make and no grades to give: you see the note and answer
+        with a tap. For heavier memorising, Anki is the better tool.
+      </p>
+
+      <img
+        src={learnShot}
+        alt="The Learn page in a made-up field office space: two study sets, one counting down to its date and one whose date has passed, and the notes now studying toward a date."
       />
 
       <h2>No server</h2>
