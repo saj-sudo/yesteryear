@@ -4,6 +4,7 @@ import type {
   PersistedDoc,
   Provider,
   SaveResult,
+  SearchOptions,
   StateStore,
   StructureDef,
   TagDef,
@@ -71,6 +72,33 @@ export class FixtureProvider implements Provider, StateStore {
       const o = this.space.objects.find((x) => x.id === id);
       if (o) yield { id: o.id, structureId: o.structureId, title: o.title };
     }
+  }
+
+  /** Every word of the phrase must appear in the title or the body. */
+  searchObjects(query: string, options: SearchOptions = {}): Promise<ObjectSummary[]> {
+    const words = query.toLowerCase().split(/\s+/).filter((w) => w.length > 0);
+    if (words.length === 0) return Promise.resolve([]);
+    const limit = options.limit ?? 30;
+    const matches = (title: string, body: string): boolean => {
+      const haystack = `${title}\n${body}`.toLowerCase();
+      return words.every((w) => haystack.includes(w));
+    };
+    const hits: ObjectSummary[] = [];
+    const wanted = (structureId: string): boolean =>
+      options.structureId === undefined || options.structureId === structureId;
+    for (const o of this.space.objects) {
+      if (wanted(o.structureId) && matches(o.title, o.markdown)) {
+        hits.push({ id: o.id, structureId: o.structureId, title: o.title });
+      }
+    }
+    if (wanted(this.dailyNoteStructureId)) {
+      for (const [date, note] of this.dailyByDate) {
+        if (matches(note.title, this.dailyBodies.get(date) ?? '')) {
+          hits.push({ id: note.id, structureId: this.dailyNoteStructureId, title: note.title });
+        }
+      }
+    }
+    return Promise.resolve(hits.slice(0, limit));
   }
 
   getObject(id: string): Promise<FullObject | null> {

@@ -71,6 +71,12 @@ export interface SpaceInfo {
   title: string;
 }
 
+export interface SearchOptions {
+  /** Only notes of this type. */
+  structureId?: string;
+  limit?: number;
+}
+
 export interface Provider {
   /** Structure id of daily notes; supplied by the adapter (RootDailyNote). */
   readonly dailyNoteStructureId: string;
@@ -81,6 +87,13 @@ export interface Provider {
 
   listObjectsByStructure(structureId: string): AsyncIterable<ObjectSummary>;
   listObjectsByTag(tagId: string): AsyncIterable<ObjectSummary>;
+
+  /**
+   * Notes matching a search phrase, for picking notes by hand. The
+   * matching belongs to the space's own search, so an empty phrase finds
+   * nothing and results are summaries only.
+   */
+  searchObjects(query: string, options?: SearchOptions): Promise<ObjectSummary[]>;
 
   /** Full object, or null when it no longer exists (drives §11 pruning). */
   getObject(id: string): Promise<FullObject | null>;
