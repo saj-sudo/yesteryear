@@ -4,15 +4,42 @@ All notable changes to Yesteryear are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/), and the project follows
 [semantic versioning](https://semver.org/).
 
-## [0.1.0] — 2026-08-25
+## [Unreleased]
+
+### Changed
+
+- **New look.** A layout that sits comfortably next to Capacities (white and
+  warm off-white surfaces, the system font, soft corners, a familiar
+  sidebar) printed in two riso inks, blue and apricot, with their overprint
+  for Learn. Today's sources read like Capacities types, the unlikely pair
+  is two overlapping prints, and the calendar marks each written day with a
+  dot of ink. Dark mode follows the system setting.
+- On phone, the nav is now one scrolling row (it used to wrap into a
+  clipped grid), and the unlikely pair no longer collapses to empty strips.
+- The disclaimer now stays visible in the app: in the sidebar on desktop and
+  in a footer on phone. The landing page opens with printed art.
+- Without an OAuth client configured, "Try the demo" is the main action on
+  the Connect screen.
+- All interface text, the demo notes, the README and CONTRIBUTING are
+  rewritten in plainer words. The daily-note section separates a title from
+  its excerpt with a colon. A test now fails the build if an em or en dash
+  comes back.
+
+### Fixed
+
+- Every page under `/app/` logged a CSP violation because zod probes for
+  `eval` support. zod now runs in its `jitless` mode, so the probe never
+  runs.
+
+## [0.1.0] - 2026-08-25
 
 Initial release.
 
 ### Added
 
-- **Today view** (default): the day's resurfaced mix — the cadence engine's
-  output — with a re-drawable *serendipity pairing* alongside: two items
-  deliberately drawn from different tags, types, and eras. Pairings are a
+- **Today view** (default): the day's resurfaced mix (the cadence engine's
+  output) with a re-drawable *serendipity pairing* alongside: two items
+  drawn on purpose from different tags, types, and eras. Pairings are a
   lens: they never touch scheduling state.
 - Sampled-pool-first daily allocation: the sampled pool gets at least half
   the slots; rare high-cost date-bound items (birthdays, target dates,
@@ -34,8 +61,8 @@ Initial release.
 - **Recall and Learn views**, one per cadence: each explains its rhythm with
   the live config numbers, offers inline setup (pick resurfacing tags, turn
   Learn on, assign by tag) when nothing is configured, and shows its slice of
-  the schedule — scheduled/recent/retired for Recall, next-review and target
-  countdowns for Learn — editable in place.
+  the schedule (scheduled, recent and retired for Recall; next review and
+  target countdowns for Learn), editable in place.
 - **Preview**: exactly what a run right now would surface, computed on a
   throwaway state copy.
 - **Settings/onboarding** built live from the space's own types, properties,
@@ -43,8 +70,8 @@ Initial release.
   resolve.
 - **Temporal producer**: daily-note lookbacks, birthdays, start-date
   anniversaries, target-date marks gated on active statuses.
-- **Recall mode**: 45-day cooldown, weighted sampling, deliberate random
-  share, keep/dismiss/retire responses parsed forgivingly from the note.
+- **Recall mode**: 45-day cooldown, weighted sampling, a fixed random
+  share, keep/dismiss/retire responses parsed loosely from the note.
 - **Learn mode** (opt-in): ratio-of-time-to-target spacing with contraction,
   delayed first review, revert-to-Recall after the target passes.
 - **Block granularity**: resurface individual paragraphs/quotes instead of
