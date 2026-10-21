@@ -117,7 +117,7 @@ export function anniversaryCandidates(
 /**
  * Target dates at exactly the configured marks (default 7, 3, 1 days
  * out), only for projects whose status is in activeStatusValues. With no
- * configured active statuses, no project counts as in-flight — target
+ * configured active statuses, no project counts as in-flight: target
  * reminders are opt-in by definition (§8.2).
  */
 export function targetDateCandidates(

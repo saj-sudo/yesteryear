@@ -17,7 +17,7 @@ import type {
 } from './types';
 
 /**
- * The I/O layer of a daily run — everything here talks only to the
+ * The I/O layer of a daily run: everything here talks only to the
  * Provider interface and the StateManager, so it runs identically
  * against Capacities and the fixtures. Enumeration is cheap (summaries),
  * full objects are fetched only where properties or blocks are actually
@@ -100,7 +100,7 @@ function recallCandidate(
 
 /**
  * Gather the day's candidate pools from the space. Missing mappings mean
- * the corresponding producer contributes nothing — silently (§4).
+ * the corresponding producer contributes nothing: silently (§4).
  */
 export async function gatherPools(
   provider: Provider,
@@ -298,7 +298,7 @@ async function resolveTargetDate(
 
 /**
  * The serendipity pool (Today view): every daily note plus everything
- * carrying a configured tag. Summaries only — nothing is enriched until
+ * carrying a configured tag. Summaries only: nothing is enriched until
  * a drawn pairing is actually displayed.
  */
 export async function gatherPairingPool(
@@ -387,7 +387,7 @@ async function computeDay(
   const pools = await gatherPools(provider, config, resolved, notesByDate, today, warnings);
 
   // Learn items flagged per-item in the UI (§8.3's third assignment
-  // path) live only in state — no tag or type sweep will find them, so
+  // path) live only in state: no tag or type sweep will find them, so
   // fold the due ones into the pool here.
   if (config.learn.enabled) {
     const poolKeys = new Set(pools.learn.map((c) => c.key));
@@ -464,7 +464,7 @@ async function computeDay(
 
 /**
  * The daily run (§9.2 lazy write): compute today's allocation, update
- * state, and append the section to today's daily note — at most once
+ * state, and append the section to today's daily note: at most once
  * per local day, with the heading as the cross-device guard.
  */
 export async function runDaily(opts: {

@@ -4,8 +4,8 @@ import { generateDailyNotes, pick } from './generate';
 import type { FixtureSpace } from './types';
 
 /**
- * The minimal space (spec §12): no custom types, no tags — only the basic
- * structures every Capacities space has. Daily-note lookback must work
+ * The minimal space (spec §12): no custom types and no tags, only the
+ * basic structures every Capacities space has. Daily-note lookback must work
  * here with zero configuration; everything else is silently skipped.
  */
 

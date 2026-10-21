@@ -9,7 +9,7 @@ import type { AppData } from '../App';
 import { displayTitle, rowsOf, useTitles, type Row } from './scheduleShared';
 
 /**
- * Recall — the general cadence. No deadline, no memory model: a hard
+ * Recall: the general cadence. No deadline, no memory model: a hard
  * cooldown, weighted sampling, and a slice of pure chance. This view is
  * where that rhythm becomes visible and editable, and where someone who
  * has configured nothing gets shown the one step that makes it richer.

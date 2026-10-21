@@ -1,7 +1,7 @@
 /**
  * Browser-storage cache (spec §10.1 secondary store): keeps the app fast
- * and readable offline. Everything here is disposable — the source of
- * truth is the user's space — so every read tolerates absence or
+ * and readable offline. Everything here is disposable: the source of
+ * truth is the user's space: so every read tolerates absence or
  * corruption by returning null.
  */
 

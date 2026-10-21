@@ -101,7 +101,7 @@ export function App() {
         setData({ session, space, manager, notes, today, report: null });
 
         // The lazy daily run (§9.2): first visit of the local day computes
-        // the allocation, advances the queue, and — only when opted in —
+        // the allocation, advances the queue, and (only when opted in)
         // writes the Resurfaced section into today's daily note.
         const report = await runDaily({
           provider: session.provider,

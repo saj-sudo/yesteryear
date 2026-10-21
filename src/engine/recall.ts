@@ -11,7 +11,7 @@ import type {
 
 /**
  * Recall mode (§8.3): no memory target, no simulated one. The objective
- * is coverage without repetition fatigue — a hard cooldown, weighted
+ * is coverage without repetition fatigue: a hard cooldown, weighted
  * sampling, and a deliberate slice of pure randomness. Responses adjust
  * preference, never "memory strength". Nothing is removed without an
  * explicit retire.
@@ -39,7 +39,7 @@ function ensureRecallState(state: YesteryearState, key: ItemKey): RecallItemStat
 }
 
 /** Eligible = not retired and past its cooldown. Overdue keeps its place
- * in the pool and is ranked normally — a missed week is never a backlog
+ * in the pool and is ranked normally: a missed week is never a backlog
  * dump (§11). */
 export function eligibleRecall(
   candidates: Candidate[],
@@ -95,7 +95,7 @@ function drawWeighted(
 
 /**
  * Fill up to `slots` from the eligible pool: a randomShare portion drawn
- * uniformly at random regardless of weight (§8.3 — surprise is a
+ * uniformly at random regardless of weight (§8.3, since surprise is a
  * documented source of insight), the rest weighted by tag weight and
  * time-since-surfaced.
  */

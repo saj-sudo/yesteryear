@@ -6,10 +6,10 @@ import type { AppData } from '../App';
 import { displayTitle, rowsOf, useTitles } from './scheduleShared';
 
 /**
- * Learn — the specific cadence. Only for material with a real date
+ * Learn: the specific cadence. Only for material with a real date
  * attached: reviews are scheduled as a ratio of the time remaining, so
- * the gaps tighten as the date approaches. Deliberately minimal — this
- * is not a flashcard app — and everything reverts to Recall once the
+ * the gaps tighten as the date approaches. Deliberately minimal: this
+ * is not a flashcard app: and everything reverts to Recall once the
  * date passes.
  */
 export function Learn({ data }: { data: AppData }) {

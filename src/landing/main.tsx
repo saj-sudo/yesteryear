@@ -5,7 +5,7 @@ import calendarShot from '../../docs/calendar.png';
 /**
  * The landing page: what it is, what it looks like, and the privacy
  * property stated plainly (§9.1). Screenshots come from the built-in
- * demo space — synthetic notes, like everything else in this repo.
+ * demo space: synthetic notes, like everything else in this repo.
  */
 function Landing() {
   return (

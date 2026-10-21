@@ -4,7 +4,7 @@ import { challengeS256, generateState, generateVerifier } from './pkce';
  * Browser-side OAuth 2.1 authorization-code flow against Capacities
  * (spec §7.2). Endpoints come from server metadata rather than being
  * hardcoded; the documented paths are only the fallback when discovery
- * is unreachable. There is no client secret — this is a public client —
+ * is unreachable. There is no client secret (this is a public client),
  * and the token exchange sends no Authorization header.
  */
 
@@ -89,7 +89,7 @@ export class OAuthCallbackError extends Error {}
 
 /**
  * Handle the redirect back from Capacities: verify state, exchange the
- * code for tokens. Send no Authorization header — public client.
+ * code for tokens. Send no Authorization header: public client.
  */
 export async function completeAuthorization(opts: {
   params: URLSearchParams;

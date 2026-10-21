@@ -10,7 +10,7 @@ import type { AppData } from '../App';
 /**
  * Settings doubles as onboarding (§6): everything here is built from
  * what the space actually contains, fetched live. Every mapping is
- * opt-in and "none" is always valid — a user who configures nothing
+ * opt-in and "none" is always valid: a user who configures nothing
  * still gets daily-note resurfacing.
  */
 

@@ -6,7 +6,7 @@ import { Markdown } from '../components/Markdown';
 
 /**
  * Preview (§9.1): exactly what the next daily-note write would contain,
- * computed on a throwaway copy of state — nothing is written anywhere.
+ * computed on a throwaway copy of state: nothing is written anywhere.
  * This is the onboarding payoff: real content from the user's own space
  * before anything touches their notes.
  */

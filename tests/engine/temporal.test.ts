@@ -22,7 +22,7 @@ function notesFrom(space: { dailyNotes: { date: string; id: string; title: strin
 }
 
 describe('daily note lookbacks', () => {
-  it('finds one year ago today in the minimal space — zero config needed', () => {
+  it('finds one year ago today in the minimal space: zero config needed', () => {
     const notes = notesFrom(buildMinimalSpace(TODAY));
     const hits = dailyNoteLookbacks(notes, TODAY, cfg);
     const yearBack = hits.find((h) => h.temporalReason?.kind === 'lookback'

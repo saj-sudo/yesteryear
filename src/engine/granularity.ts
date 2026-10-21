@@ -12,7 +12,7 @@ import type {
  * unit, but one paragraph inside it is. Objects are still enumerated and
  * sampled cheaply at the object level (spec §5.4: never fetch the whole
  * space); the winning objects are fetched, and the block to surface is
- * chosen from their qualifying blocks — least recently surfaced first.
+ * chosen from their qualifying blocks: least recently surfaced first.
  */
 
 export function qualifyingBlocks(
@@ -28,7 +28,7 @@ export function qualifyingBlocks(
 }
 
 /**
- * Drop state entries for blocks that no longer exist on the object —
+ * Drop state entries for blocks that no longer exist on the object:
  * edited or deleted blocks disappear silently (§8.3b).
  */
 export function pruneStaleBlockState(

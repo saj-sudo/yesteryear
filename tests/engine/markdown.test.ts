@@ -66,7 +66,7 @@ describe('renderSection', () => {
     expect(md).not.toContain('\nwith breaks');
   });
 
-  it('zero candidates render nothing at all — no empty heading (§11)', () => {
+  it('zero candidates render nothing at all: no empty heading (§11)', () => {
     expect(renderSection('Resurfaced', [])).toBeNull();
   });
 

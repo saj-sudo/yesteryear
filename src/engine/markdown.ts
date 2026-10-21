@@ -2,7 +2,7 @@ import type { SurfacedItem, TemporalReason } from './types';
 
 /**
  * Rendering the Resurfaced section (§8.5). Zero items renders nothing at
- * all — an empty heading is clutter, not information. Copy never guilts:
+ * all, since an empty heading is only clutter. Copy never guilts:
  * no counts of what was skipped, no overdue language.
  */
 

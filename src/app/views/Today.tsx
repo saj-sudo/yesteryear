@@ -18,7 +18,7 @@ const RESPONSE_LABELS: Record<ItemResponse, string> = {
 
 /**
  * Today (the default view). The core comes first: the day's resurfaced
- * mix, produced by the cadence engine — Recall's cooldown-and-sampling
+ * mix, produced by the cadence engine: Recall's cooldown-and-sampling
  * rhythm, Learn's contracting ladder toward real dates, and the
  * date-bound items worth never missing. Below it, a serendipity
  * pairing: two things from different corners of the space that had no

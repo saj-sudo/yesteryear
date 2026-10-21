@@ -11,7 +11,7 @@ import { buildStrangersSpace } from '../../src/providers/fixture/strangersSpace'
 /**
  * Full-day end-to-end against the stranger's space (§12): the primary
  * regression guard for the whole premise. Nothing about this space's
- * schema is known to the code — it is all resolved from config names.
+ * schema is known to the code: it is all resolved from config names.
  */
 
 const TODAY = '2026-08-25' as LocalDate;
@@ -79,7 +79,7 @@ describe('a full day on the stranger space', () => {
     await runDaily({ provider, manager: laptop, today: TODAY, rng: seededRng(1) });
 
     // The phone opens with stale local state (fresh manager without
-    // lastRunDate would recompute) — simulate by clearing lastRunDate.
+    // lastRunDate would recompute): simulate by clearing lastRunDate.
     const phone = await StateManager.open(provider, nowIso, strangersConfig);
     phone.mutate((doc) => {
       doc.state.lastRunDate = null;
@@ -131,11 +131,11 @@ describe('a full day on the stranger space', () => {
     const entry = manager.current.state.items['obj:x-tern#learn'];
     expect(entry?.mode).toBe('learn');
     expect(entry?.mode === 'learn' && entry.targetDate).toBe(addDays(TODAY, 5));
-    // First review delayed by minGap — never sooner, even near the target.
+    // First review delayed by minGap: never sooner, even near the target.
     expect(entry?.mode === 'learn' && entry.nextDue).toBe(addDays(TODAY, 7));
   });
 
-  it('an item flagged for Learn in the UI surfaces when due — no tag or type needed', async () => {
+  it('an item flagged for Learn in the UI surfaces when due: no tag or type needed', async () => {
     const provider = new FixtureProvider(buildStrangersSpace(TODAY));
     const learnConfig = normalizeConfig({
       ...strangersConfig,

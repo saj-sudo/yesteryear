@@ -101,7 +101,7 @@ describe('responses', () => {
     expect(item.mode === 'learn' && item.nextDue).toBe('2026-09-01');
   });
 
-  it('no response is treated as got it — silence stays safe', () => {
+  it('no response is treated as got it: silence stays safe', () => {
     const state = surfacedState();
     const item = state.items[KEY]!;
     expect(item.mode === 'learn' && item.nextDue).toBe('2026-09-04');
