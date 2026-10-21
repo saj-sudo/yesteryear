@@ -6,7 +6,22 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **Study sets in Learn.** A set has a name, one date and a selection of
+  notes: by tag, by object type, or picked one by one with a search that can
+  tick many notes at once. The date belongs to the set, so a note no longer
+  needs a date property. Moving a set's date moves every note in it and keeps
+  their schedule. A note in two sets studies toward the nearer date, then the
+  next. When a date passes the notes leave Learn, and giving the set a new
+  date brings them back, for an exam you sit more than once. A note taken out
+  of a set, or a deleted set, leaves Learn. Changes apply straight away
+  instead of at the next daily run.
+- The date-property option moved into a collapsed "Dates from a property"
+  section on the Learn page.
+
 ### Changed
+
 
 - **New look.** A layout that sits comfortably next to Capacities (white and
   warm off-white surfaces, the system font, soft corners, a familiar
@@ -27,6 +42,8 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Fixed
 
+- Tag chips showed no keyboard focus, because the ring was drawn on a hidden
+  checkbox. The chip now shows it.
 - Every page under `/app/` logged a CSP violation because zod probes for
   `eval` support. zod now runs in its `jitless` mode, so the probe never
   runs.
