@@ -26,7 +26,8 @@ import type { LocalDate } from '../engine/types';
  * - null: not connected → the Connect screen.
  */
 
-export type DemoFlavor = 'strangers' | 'minimal';
+/** 'fresh' is the stranger's space with nothing set up yet, so the first run can be seen. */
+export type DemoFlavor = 'strangers' | 'minimal' | 'fresh';
 
 export interface Session {
   kind: 'live' | 'demo';
@@ -47,7 +48,7 @@ export function todayLocal(timezone: string | null): LocalDate {
 export function activeDemo(): DemoFlavor | null {
   try {
     const v = sessionStorage.getItem(DEMO_KEY);
-    return v === 'strangers' || v === 'minimal' ? v : null;
+    return v === 'strangers' || v === 'minimal' || v === 'fresh' ? v : null;
   } catch {
     return null;
   }
@@ -73,7 +74,7 @@ export function createSession(): Session | null {
   const demo = activeDemo();
   if (demo) {
     const today = todayLocal(null);
-    const space = demo === 'strangers' ? buildStrangersSpace(today) : buildMinimalSpace(today);
+    const space = demo === 'minimal' ? buildMinimalSpace(today) : buildStrangersSpace(today);
     const provider = new FixtureProvider(space);
     if (demo === 'strangers') {
       // The demo starts as a user would be after onboarding: the invented
