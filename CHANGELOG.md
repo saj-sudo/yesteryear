@@ -48,6 +48,13 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Changed
 
+- **The landing page is easier to scan.** The opening is three short lines
+  instead of one dense paragraph, Learn is a list, and paragraphs are three
+  sentences at most. The tagline matches the link preview card, and the
+  privacy claim links to the test that checks it. A new section covers the
+  phone view.
+- CONTRIBUTING has a Writing section with the copy rules, which are checked by
+  `tests/build/copy.test.ts` where a machine can check them.
 - **The demo spaces read like real notes.** The Fernweh Field Office had about
   400 daily notes made from 12 sentences, so the same line came back every few
   weeks and sometimes twice on one On This Day page. The daily notes now draw
