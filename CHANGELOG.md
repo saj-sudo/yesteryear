@@ -8,6 +8,18 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Added
 
+- **Setup that reads your space.** Yesteryear used to start with nothing mapped,
+  so a space with a Project type or a People type did nothing with them until
+  someone found the right dropdowns. It now reads your object types, their
+  date and status properties and your tags, and offers what it found in
+  Capacities' words, each with what it is used for: "Your projects are
+  Project", "Birthdays come from Birthday", "Bring back notes tagged keeper".
+  Names it knows start ticked. A guess made from the shape of a type (two dates
+  and a status) says so and starts unticked. On the first connect the offer
+  comes before the first daily run, so what you pick shapes the first set of
+  notes. It also shows at the top of Settings until it is used or skipped, and
+  nothing is changed without a tick. Anything already mapped is left alone.
+- A third demo, "a first run in a new space", shows that first screen.
 - **Pick a range of notes on a touch screen.** In the study set note picker,
   "Pick a range" lets you tap the first note and then the last, and everything
   between is picked. Tapping a range that is all picked already takes it back

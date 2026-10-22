@@ -3,9 +3,12 @@ import { normalizeConfig } from '../../engine/config';
 import { exportDoc, importDoc } from '../../engine/state';
 import type { StructureDef, TagDef } from '../../engine/provider';
 import { resolveSchema } from '../../engine/resolve';
+import { applySuggestion, suggestionKey, suggestMapping } from '../../engine/suggest';
 import type { PropertyRole, TypeRole, YesteryearConfig } from '../../engine/types';
 import { isBasicStructure } from '../../providers/capacities/constants';
 import type { AppData } from '../App';
+import { MappingSuggestions } from '../components/MappingSuggestions';
+import { readSkipped, saveSkipped } from '../suggestionSkipped';
 
 /**
  * Settings doubles as onboarding (§6): everything here is built from
@@ -16,7 +19,16 @@ import type { AppData } from '../App';
 
 const BLOCK_TYPES = ['TextBlock', 'QuoteBlock', 'CodeBlock', 'MathBlock'];
 
-export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => void }) {
+export function Settings({
+  data,
+  onSignOut,
+  onSuggestionApplied,
+}: {
+  data: AppData;
+  onSignOut: () => void;
+  /** The suggestion was used here, so a first run held for it can go ahead. */
+  onSuggestionApplied?: () => void;
+}) {
   const [structures, setStructures] = useState<StructureDef[] | null>(null);
   const [tags, setTags] = useState<TagDef[] | null>(null);
   const [config, setConfig] = useState<YesteryearConfig>(() =>
@@ -25,6 +37,7 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
   const [status, setStatus] = useState<string | null>(null);
   const [importText, setImportText] = useState('');
   const [showTransfer, setShowTransfer] = useState(false);
+  const [skipped, setSkipped] = useState<string | null>(readSkipped);
 
   useEffect(() => {
     let cancelled = false;
@@ -50,6 +63,7 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
   if (!structures || !tags) return <p class="loading">Reading your space’s types and tags…</p>;
 
   const customTypes = structures.filter((s) => !isBasicStructure(s.id));
+  const suggestion = suggestMapping(customTypes, tags, config);
   const typeByName = (name: string | undefined): StructureDef | undefined =>
     name
       ? structures.find((s) => s.title.trim().toLowerCase() === name.trim().toLowerCase())
@@ -62,14 +76,14 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
     setStatus(null);
   };
 
-  const save = (): void => {
-    const finalConfig = normalizeConfig(structuredClone(config));
+  const save = (override?: YesteryearConfig, message?: string): void => {
+    const finalConfig = normalizeConfig(structuredClone(override ?? config));
     data.manager.mutate((doc) => {
       doc.config = finalConfig;
     });
     data.manager
       .flush()
-      .then(() => setStatus('Saved. Settings live in your own space and sync with it.'))
+      .then(() => setStatus(message ?? 'Saved. Settings live in your own space and sync with it.'))
       .catch(() => setStatus('Saving failed. The change is kept in this browser and will be saved again later.'));
   };
 
@@ -178,6 +192,27 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
         </div>
       )}
       {status && <div class="notice">{status}</div>}
+
+      {suggestion && suggestionKey(suggestion) !== skipped && (
+        <MappingSuggestions
+          suggestion={suggestion}
+          spaceTitle={data.space.title}
+          firstRun={false}
+          onUse={(picked) => {
+            const next = normalizeConfig(applySuggestion(config, picked));
+            setConfig(next);
+            save(
+              next,
+              'Saved. These start showing from the next daily run, and Preview shows what it would bring back.',
+            );
+            onSuggestionApplied?.();
+          }}
+          onSkip={() => {
+            saveSkipped(suggestionKey(suggestion));
+            setSkipped(suggestionKey(suggestion));
+          }}
+        />
+      )}
 
       <h2 class="sub">Object types</h2>
       {customTypes.length === 0 ? (
@@ -425,7 +460,7 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
       </div>
 
       <div class="settings-actions">
-        <button class="primary" onClick={save}>
+        <button class="primary" onClick={() => save()}>
           Save settings
         </button>
         <button class="subtle" onClick={() => setShowTransfer((s) => !s)}>

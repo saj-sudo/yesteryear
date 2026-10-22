@@ -66,6 +66,9 @@ export function Connect(props: {
         <button class={CLIENT_ID ? '' : 'primary'} onClick={demo('strangers')}>
           Try the demo
         </button>
+        <button class="subtle" onClick={demo('fresh')}>
+          Demo: a first run in a new space
+        </button>
         <button class="subtle" onClick={demo('minimal')}>
           Demo: a nearly empty space
         </button>
