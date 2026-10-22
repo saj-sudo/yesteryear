@@ -35,7 +35,7 @@ export function norm(text: string): string {
   return text.toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
-const PROJECT_TYPES = ['project', 'projects', 'initiative', 'initiatives', 'epic', 'campaign', 'workitem', 'undertaking'];
+const PROJECT_TYPES = ['project', 'projects', 'initiative', 'initiatives', 'epic', 'campaign', 'workitem'];
 const PERSON_TYPES = ['person', 'people', 'contact', 'contacts', 'friend', 'friends', 'family', 'colleague', 'colleagues'];
 const NOTE_TYPES = ['note', 'notes', 'atomicnote', 'zettel', 'permanentnote', 'fleetingnote', 'idea', 'ideas', 'insight', 'insights'];
 
