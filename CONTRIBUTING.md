@@ -61,7 +61,7 @@ Words are part of the product, and readers scan. Copy is plain, specific and sho
 
 Every engine change needs tests, and every feature must pass against **both** fixture spaces: the field office space (with type and property names unlike any real space) and the minimal space (daily notes only, no setup). Together they check the main promise.
 
-One browser check runs in CI: `npm run smoke` serves the built site, opens every page and demo view at phone and desktop size in Chromium, and fails on any console error, uncaught exception or CSP violation. It also runs axe-core on each page in light and dark and fails on any WCAG A or AA violation, so new views start with a heading, named controls and enough contrast. It checks that pages load cleanly and nothing more. Locally it needs a build first, and Chromium from `npx playwright install chromium`.
+One browser check runs in CI: `npm run smoke` serves the built site, opens every page and demo view at phone and desktop size in Chromium, and fails on any console error, uncaught exception or CSP violation. It also runs axe-core on each page in light and dark and fails on any WCAG A or AA violation, so new views start with a heading, named controls and enough contrast. It checks that pages load cleanly and pass those accessibility checks, and nothing else. Locally it needs a build first, and Chromium from `npx playwright install chromium`.
 
 ## Conduct
 
