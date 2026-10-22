@@ -4,7 +4,13 @@ import { refineToBlock } from './granularity';
 import { renderSection } from './markdown';
 import { parseResponses } from './parseResponses';
 import type { FullObject, ObjectSummary, Provider, PropertyValue, StructureDef } from './provider';
-import { listNames, referencedTagNames, resolveSchema, type ResolvedSchema } from './resolve';
+import {
+  listNames,
+  referencedTagNames,
+  resolveSchema,
+  resolveTagIds,
+  type ResolvedSchema,
+} from './resolve';
 import { nearestUpcoming, removeNoteFromSets } from './studySets';
 import { learnKey, objKey, parseKey, StateManager } from './state';
 import { temporalCandidates, type DailyNoteRef, type PersonInput, type ProjectInput } from './temporal';
@@ -13,6 +19,7 @@ import type { PersistedDoc, SaveResult, StateStore } from './provider';
 import type {
   Candidate,
   LocalDate,
+  StudySet,
   SurfacedItem,
   YesteryearConfig,
 } from './types';
@@ -211,6 +218,88 @@ async function sweepTags(
   return objectTags;
 }
 
+type TypeLister = (
+  typeName: string,
+  missing: (known: StructureDef[]) => string,
+  warnings: string[],
+) => Promise<ObjectSummary[]>;
+
+/**
+ * Lists the notes of a type by its name. Type names resolve directly
+ * against the space's structure list, so any type can be used, not only
+ * the mapped roles. The structure list is fetched once per lister.
+ */
+function typeLister(provider: Provider): TypeLister {
+  let structures: StructureDef[] | null = null;
+  return async (typeName, missing, warnings) => {
+    structures ??= await provider.listStructures();
+    const structure = structures.find(
+      (s) => s.title.trim().toLowerCase() === typeName.trim().toLowerCase(),
+    );
+    if (!structure) {
+      warnings.push(missing(structures));
+      return [];
+    }
+    const found: ObjectSummary[] = [];
+    for await (const s of provider.listObjectsByStructure(structure.id)) found.push(s);
+    return found;
+  };
+}
+
+/**
+ * Every note a study set selects, in the order Learn claims them: by tag,
+ * then by type, then the notes picked by hand (last, so a live title from a
+ * tag or type listing wins over the title saved when they were picked).
+ * The daily run and the "show notes" list both go through here, so they
+ * cannot disagree about what is in a set.
+ */
+async function eachSetMember(
+  set: StudySet,
+  objectTags: ObjectTags,
+  membersOfType: TypeLister,
+  warnings: string[],
+  visit: (id: string, title: string) => void,
+): Promise<void> {
+  for (const [id, v] of objectTags) {
+    if (set.tags.some((t) => v.tags.has(t))) visit(id, v.title);
+  }
+  for (const typeName of set.types) {
+    const found = await membersOfType(
+      typeName,
+      (known) =>
+        `Study set "${set.name}" uses the type "${typeName}", which is not in ` +
+        `this space. The space contains: ${listNames(known)}.`,
+      warnings,
+    );
+    for (const s of found) visit(s.id, s.title);
+  }
+  for (const note of set.notes) visit(note.id, note.title);
+}
+
+export interface SetMember {
+  id: string;
+  title: string;
+}
+
+/**
+ * The notes a study set holds right now: its tags and types looked up in
+ * the space, plus the notes picked by hand. Read-only: nothing is written
+ * and no schedule changes. A tag or type the space lacks adds a warning.
+ */
+export async function listSetMembers(
+  provider: Provider,
+  set: StudySet,
+): Promise<{ members: SetMember[]; warnings: string[] }> {
+  const warnings: string[] = [];
+  const tagIds = set.tags.length > 0 ? resolveTagIds(await provider.listTags(), set.tags, warnings) : {};
+  const objectTags = await sweepTags(provider, tagIds, set.tags);
+  const members = new Map<string, SetMember>();
+  await eachSetMember(set, objectTags, typeLister(provider), warnings, (id, title) => {
+    if (!members.has(id)) members.set(id, { id, title });
+  });
+  return { members: [...members.values()], warnings };
+}
+
 /**
  * The notes that study toward a date today, with the date each one aims
  * at. Shared by the daily run and by syncLearn.
@@ -229,32 +318,20 @@ async function gatherLearn(
   // nearest date that has not passed.
   const learn: Candidate[] = [];
   if (config.learn.enabled) {
-    const claims = new Map<string, { title: string; dates: LocalDate[] }>();
-    const claim = (id: string, title: string, date: LocalDate): void => {
-      const entry = claims.get(id) ?? { title, dates: [] };
+    const claims = new Map<
+      string,
+      { title: string; dates: LocalDate[]; sets: { id: string; date: LocalDate }[] }
+    >();
+    const claim = (id: string, title: string, date: LocalDate, setId?: string): void => {
+      const entry = claims.get(id) ?? { title, dates: [], sets: [] };
       entry.dates.push(date);
+      if (setId !== undefined && !entry.sets.some((s) => s.id === setId)) {
+        entry.sets.push({ id: setId, date });
+      }
       claims.set(id, entry);
     };
 
-    // Type names resolve directly against the space's structure list, so
-    // any type can be used, not only the mapped roles.
-    let structures: StructureDef[] | null = null;
-    const membersOfType = async (
-      typeName: string,
-      missing: (known: StructureDef[]) => string,
-    ): Promise<ObjectSummary[]> => {
-      structures ??= await provider.listStructures();
-      const structure = structures.find(
-        (s) => s.title.trim().toLowerCase() === typeName.trim().toLowerCase(),
-      );
-      if (!structure) {
-        warnings.push(missing(structures));
-        return [];
-      }
-      const found: ObjectSummary[] = [];
-      for await (const s of provider.listObjectsByStructure(structure.id)) found.push(s);
-      return found;
-    };
+    const membersOfType = typeLister(provider);
 
     /* date property: tag and type assignments */
     const byProperty = new Map<string, string>();
@@ -265,6 +342,7 @@ async function gatherLearn(
       const found = await membersOfType(
         typeName,
         () => `Learn type "${typeName}" is not in this space and was skipped.`,
+        warnings,
       );
       for (const s of found) byProperty.set(s.id, s.title);
     }
@@ -281,21 +359,9 @@ async function gatherLearn(
     /* study sets: one date for the whole set; nothing to enrich */
     for (const set of config.learn.sets) {
       if (set.targetDate < today) continue; // finished: its notes were released
-      for (const [id, v] of objectTags) {
-        if (set.tags.some((t) => v.tags.has(t))) claim(id, v.title, set.targetDate);
-      }
-      for (const typeName of set.types) {
-        const found = await membersOfType(
-          typeName,
-          (known) =>
-            `Study set "${set.name}" uses the type "${typeName}", which is not in ` +
-            `this space. The space contains: ${listNames(known)}.`,
-        );
-        for (const s of found) claim(s.id, s.title, set.targetDate);
-      }
-      // Notes picked by hand come last, so a live title from a tag or
-      // type listing wins over the title saved when they were picked.
-      for (const note of set.notes) claim(note.id, note.title, set.targetDate);
+      await eachSetMember(set, objectTags, membersOfType, warnings, (id, title) =>
+        claim(id, title, set.targetDate, set.id),
+      );
     }
 
     for (const [id, entry] of claims) {
@@ -314,6 +380,14 @@ async function gatherLearn(
         group: groupOf(tags),
         targetDate,
         byRule: true,
+        // Nearest date first, so the first is the set it studies toward.
+        ...(entry.sets.length > 0
+          ? {
+              setIds: [...entry.sets]
+                .sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id))
+                .map((s) => s.id),
+            }
+          : {}),
       });
     }
   }

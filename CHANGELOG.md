@@ -8,6 +8,14 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Added
 
+- **See what is in a study set.** Each set has a "show notes" button that
+  lists its notes, with a link to each one in Capacities. It looks up the
+  tags and types and adds the notes you picked by hand, the same way the
+  daily run does. It only reads: nothing is saved and no schedule changes.
+- **Each note in "Learning toward a date" names its set.** The set whose date
+  it studies toward comes first, with "+1 more" when another set also holds
+  it. Rows gain the label the next time a set is saved or the daily run goes.
+
 - **Light, Dark or Auto.** A small switch in the sidebar (at the bottom of the
   page on a phone) lets you pick the theme. Auto still follows the phone or
   computer setting, which is what Yesteryear did before with no way to change
@@ -60,6 +68,9 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Fixed
 
+- A note deleted in Capacities stayed in the study sets that listed it, and
+  every sync put it back into Learn. It now leaves its sets when the run
+  finds it gone, and a row for a deleted note offers "remove".
 - Tag chips showed no keyboard focus, because the ring was drawn on a hidden
   checkbox. The chip now shows it.
 - Every page under `/app/` logged a CSP violation because zod probes for

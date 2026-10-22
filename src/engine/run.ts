@@ -80,6 +80,7 @@ export function prepareLearn(
         today,
         config.learn,
         candidate.byRule === true,
+        candidate.setIds ?? [],
       );
     }
     releaseUnselectedLearn(state, selected, config.recall);

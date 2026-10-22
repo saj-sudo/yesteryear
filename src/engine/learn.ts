@@ -51,10 +51,14 @@ export function ensureLearnScheduled(
   today: LocalDate,
   config: LearnConfig,
   byRule = false,
+  setIds: readonly string[] = [],
 ): LearnItemState {
   const existing = learnState(state, key);
   if (existing) {
     existing.targetDate = targetDate; // the user may have moved the date
+    // Which sets select it can change at any sync, so it is never left stale.
+    if (setIds.length > 0) existing.setIds = [...setIds];
+    else delete existing.setIds;
     // A date moved earlier must not leave the next review after it.
     if (existing.nextDue !== null && existing.nextDue > targetDate) {
       existing.nextDue = addDays(
@@ -68,6 +72,7 @@ export function ensureLearnScheduled(
     mode: 'learn',
     targetDate,
     ...(byRule ? { byRule: true } : {}),
+    ...(setIds.length > 0 ? { setIds: [...setIds] } : {}),
     lastSurfaced: null,
     nextDue: addDays(today, config.minGapDays),
     surfaceCount: 0,

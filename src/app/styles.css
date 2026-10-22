@@ -1230,6 +1230,18 @@ a.note-title {
   box-shadow: var(--shadow);
 }
 
+.set-notes ul {
+  margin: var(--space-2) 0;
+  padding-left: 1.2rem;
+  max-height: 16rem;
+  overflow-y: auto;
+  font-size: 0.88rem;
+}
+
+.set-notes li {
+  margin: 0.15rem 0;
+}
+
 .set-card.passed {
   background: var(--wash);
   box-shadow: none;
@@ -1461,4 +1473,9 @@ li.finder-row {
 
 body:has(.landing) {
   overflow-x: hidden;
+}
+
+.set-chip {
+  margin-left: 0.5rem;
+  vertical-align: middle;
 }

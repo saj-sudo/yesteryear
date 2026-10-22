@@ -69,6 +69,29 @@ export function referencedTagNames(config: YesteryearConfig): string[] {
   return [...names];
 }
 
+/**
+ * Tag name → id for the names the space has. Each name it lacks adds a
+ * warning that lists the tags the space does have.
+ */
+export function resolveTagIds(
+  tags: TagDef[],
+  names: Iterable<string>,
+  warnings: string[],
+): Record<string, string> {
+  const tagIds: Record<string, string> = {};
+  for (const name of names) {
+    const tag = findByName(tags, name);
+    if (tag) {
+      tagIds[name] = tag.id;
+    } else {
+      warnings.push(
+        `Tag "${name}" is not in this space. Its tags are: ${listNames(tags)}.`,
+      );
+    }
+  }
+  return tagIds;
+}
+
 export function resolveSchema(
   config: YesteryearConfig,
   structures: StructureDef[],
@@ -118,16 +141,7 @@ export function resolveSchema(
     }
   }
 
-  for (const name of referencedTagNames(config)) {
-    const tag = findByName(tags, name);
-    if (tag) {
-      tagIds[name] = tag.id;
-    } else {
-      warnings.push(
-        `Tag "${name}" is not in this space. Its tags are: ${listNames(tags)}.`,
-      );
-    }
-  }
+  Object.assign(tagIds, resolveTagIds(tags, referencedTagNames(config), warnings));
 
   return { types, properties, tagIds, warnings };
 }

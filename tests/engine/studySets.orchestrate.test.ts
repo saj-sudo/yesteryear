@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { normalizeConfig } from '../../src/engine/config';
 import { addDays } from '../../src/engine/dates';
 import { runDaily, syncLearn } from '../../src/engine/orchestrate';
-import { StateManager } from '../../src/engine/state';
+import { exportDoc, normalizeDoc, StateManager } from '../../src/engine/state';
 import type { LocalDate, StudySet } from '../../src/engine/types';
 import { FixtureProvider } from '../../src/providers/fixture/fixtureProvider';
 import { seededRng } from '../../src/providers/fixture/generate';
@@ -169,6 +169,43 @@ describe('study sets on the stranger space', () => {
     expect(after?.nextDue).toBe(day(30));
   });
 
+  it('records which sets select a note, nearest date first, and drops a set once it has passed', async () => {
+    const { provider, manager } = await strangers([
+      set({ id: 'set-1', name: 'Midterm', targetDate: day(20), notes: [{ id: 'fn-3', title: 'x' }] }),
+      set({ id: 'set-2', name: 'Final', targetDate: day(60), tags: ['spark'] }), // fn-3 is spark
+    ]);
+    await run(provider, manager, TODAY);
+    expect(learnEntry(manager, 'fn-3')?.setIds).toEqual(['set-1', 'set-2']);
+    // A note only the final selects names only the final.
+    const onlyFinal = Object.keys(manager.current.state.items)
+      .filter((k) => k.endsWith('#learn') && k !== 'obj:fn-3#learn')
+      .map((k) => manager.current.state.items[k])
+      .filter((i) => i?.mode === 'learn');
+    expect(onlyFinal.length).toBeGreaterThan(0);
+    for (const item of onlyFinal) expect(item?.mode === 'learn' && item.setIds).toEqual(['set-2']);
+
+    await run(provider, manager, day(21), 2);
+    expect(learnEntry(manager, 'fn-3')?.setIds).toEqual(['set-2']);
+  });
+
+  it('keeps the set ids through a save and a reload, and loads state saved without them', async () => {
+    const { provider, manager } = await strangers([
+      set({ id: 'set-1', targetDate: day(40), notes: [{ id: 'c-wren', title: 'x' }] }),
+    ]);
+    await run(provider, manager, TODAY);
+    expect(learnEntry(manager, 'c-wren')?.setIds).toEqual(['set-1']);
+
+    const reloaded = normalizeDoc(JSON.parse(exportDoc(manager.current)), nowIso());
+    const item = reloaded.state.items['obj:c-wren#learn'];
+    expect(item?.mode === 'learn' && item.setIds).toEqual(['set-1']);
+
+    // State written before set ids existed has none, and still loads.
+    const legacy = JSON.parse(exportDoc(manager.current)) as { state: { items: Record<string, Record<string, unknown>> } };
+    delete legacy.state.items['obj:c-wren#learn']!['setIds'];
+    const old = normalizeDoc(legacy, nowIso()).state.items['obj:c-wren#learn'];
+    expect(old?.mode === 'learn' && old.setIds).toBeUndefined();
+  });
+
   it('moving a set to a later date moves its notes and keeps their schedule', async () => {
     const { provider, manager } = await strangers([
       set({ id: 'set-1', targetDate: day(30), tags: ['thread'] }),
@@ -306,6 +343,7 @@ describe('study sets on the minimal space', () => {
 
     const later = await run(provider, manager, day(8), 2);
     expect(later.surfaced.some((s) => s.source === 'learn' && s.objectId === noteId)).toBe(true);
+    expect(learnEntry(manager, noteId!)?.setIds).toEqual(['set-1']);
   });
 
   it('a picked note that was deleted leaves its set on the minimal space too', async () => {

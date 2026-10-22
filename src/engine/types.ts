@@ -160,6 +160,11 @@ export interface LearnItemState {
    * notes flagged by hand, which stay until their date passes.
    */
   byRule?: boolean;
+  /**
+   * Ids of the study sets that select the note, nearest date first, so
+   * the first one is the date it studies toward. Absent when no set does.
+   */
+  setIds?: string[];
   lastSurfaced: LocalDate | null;
   nextDue: LocalDate | null;
   surfaceCount: number;
@@ -211,6 +216,8 @@ export interface Candidate {
   targetDate: LocalDate | null;
   /** Learn mode only: selected by a set, tag, type or date property, not flagged by hand. */
   byRule?: boolean;
+  /** Learn mode only: the study sets that select it, nearest date first. */
+  setIds?: string[];
 }
 
 export interface SurfacedItem {
