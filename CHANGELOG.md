@@ -8,6 +8,20 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Added
 
+- **See what is in a study set.** Each set has a "show notes" button that
+  lists its notes, with a link to each one in Capacities. It looks up the
+  tags and types and adds the notes you picked by hand, the same way the
+  daily run does. It only reads: nothing is saved and no schedule changes.
+- **Each note in "Learning toward a date" names its set.** The set whose date
+  it studies toward comes first, with "+1 more" when another set also holds
+  it. Rows gain the label the next time a set is saved or the daily run goes.
+
+- **Light, Dark or Auto.** A small switch in the sidebar (at the bottom of the
+  page on a phone) lets you pick the theme. Auto still follows the phone or
+  computer setting, which is what Yesteryear did before with no way to change
+  it. Your choice stays in this browser and is applied before the first
+  paint, so the page doesn't flash the other theme. The browser bar colour
+  follows it too.
 - **Study sets in Learn.** A set has a name, one date and a selection of
   notes: by tag, by object type, or picked one by one with a search that can
   tick many notes at once. The date belongs to the set, so a note no longer
@@ -23,9 +37,35 @@ All notable changes to Yesteryear are documented here. The format follows
   everything shown. On a touch screen, search and "Pick all shown" still work.
 - The date-property option moved into a collapsed "Dates from a property"
   section on the Learn page.
+- **Add Yesteryear to your home screen.** The site now has a web manifest
+  and app icons, so a phone or desktop browser can install it. It opens
+  straight to Today in its own window. The CSP allows the manifest
+  (`manifest-src 'self'`) and still loads nothing from other origins.
+- A link to yesteryear.dev now shows a preview card (title, description and
+  a picture of the demo Today page) where it's shared.
+- A smoke test in CI opens the built site in Chromium at phone and desktop
+  size and fails on any console error or CSP violation.
 
 ### Changed
 
+- **The landing page is easier to scan.** The opening is three short lines
+  instead of one dense paragraph, Learn is a list, and paragraphs are three
+  sentences at most. The tagline matches the link preview card, and the
+  privacy claim links to the test that checks it. A new section covers the
+  phone view.
+- CONTRIBUTING has a Writing section with the copy rules, which are checked by
+  `tests/build/copy.test.ts` where a machine can check them. The README follows
+  the same rules: shorter paragraphs, lists for parallel facts, and a section on
+  the phone view.
+- **The demo spaces read like real notes.** The Fernweh Field Office had about
+  400 daily notes made from 12 sentences, so the same line came back every few
+  weeks and sometimes twice on one On This Day page. The daily notes now draw
+  from a few hundred lines that follow the seasons, in several shapes: short
+  bullets, task lists, a morning and an evening, and a paragraph, with the
+  odd quote and a link to a person. The space also has 24 field notes instead
+  of 8, including meeting notes, a packing list, book notes and a trip debrief.
+  The nearly empty space (Kitchen Table Notes) got the same treatment. The
+  README screenshots and the link preview card were retaken from the new demo.
 
 - **New look.** A layout that sits comfortably next to Capacities (white and
   warm off-white surfaces, the system font, soft corners, a familiar
@@ -46,6 +86,9 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Fixed
 
+- A note deleted in Capacities stayed in the study sets that listed it, and
+  every sync put it back into Learn. It now leaves its sets when the run
+  finds it gone, and a row for a deleted note offers "remove".
 - Tag chips showed no keyboard focus, because the ring was drawn on a hidden
   checkbox. The chip now shows it.
 - Every page under `/app/` logged a CSP violation because zod probes for

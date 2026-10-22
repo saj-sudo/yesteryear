@@ -5,14 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src https://api.capacities.io; img-src 'self' data:; base-uri 'none'; form-action 'none'"
+      content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src https://api.capacities.io; img-src 'self' data:; manifest-src 'self'; base-uri 'none'; form-action 'none'"
     />
     <title>Yesteryear: resurfacing for Capacities</title>
     <meta
       name="description"
       content="Brings your older Capacities notes back on a schedule, with one unlikely pair a day. Runs entirely in your browser."
     />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Yesteryear" />
+    <meta property="og:title" content="Yesteryear: resurfacing for Capacities" />
+    <meta property="og:description" content="Brings your older Capacities notes back on a schedule, with one unlikely pair a day. Runs entirely in your browser." />
+    <meta property="og:url" content="https://yesteryear.dev/" />
+    <meta property="og:image" content="https://yesteryear.dev/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Yesteryear's Today page on a made-up demo space: four resurfaced notes and an unlikely pair shown as two overlapping prints." />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1b1a1e" media="(prefers-color-scheme: dark)" />
+    <script src="/theme.js"></script>
     <link rel="stylesheet" href="/src/app/styles.css" />
   </head>
   <body>

@@ -1,7 +1,8 @@
 import { addDays, diffDays, monthDayOf, yearOf } from '../../engine/dates';
 import type { LocalDate } from '../../engine/types';
 import type { FullObject, PropertyValue } from '../../engine/provider';
-import { generateDailyNotes, pick } from './generate';
+import { fieldOfficeDay } from './dailyContent';
+import { generateDailyNotes } from './generate';
 import type { FixtureSpace, FixtureObject } from './types';
 
 /**
@@ -73,28 +74,136 @@ const FIELD_NOTE_BODIES: { title: string; blocks: [string, string][] }[] = [
       ['QuoteBlock', 'Buy a full sheet of stamps next time in town.'],
     ],
   },
-];
-
-const DAILY_LINES = [
-  'Walked the ridge line before breakfast. The valley fog was gone by nine.',
-  'Letter from Cordelia, twelve pages, mostly about the lighthouse.',
-  'Mended the tent seam with the waxed thread.',
-  'Read two chapters of the glacier survey and made notes in the margins.',
-  'Ansel thinks the pass will clear early this year.',
-  'Sorted the seed tins for the north terrace. Nothing planted yet.',
-  'Long letter to Wren about the summer schedule.',
-  'The barometer fell all afternoon. Brought the gear in.',
-  'Sketched the cirque from the eastern moraine in charcoal.',
-  'Counted strides on the lake loop: 4,180.',
-  'No plans today. Read by the stove.',
-  'Re-read last spring’s journal. Most of what worried me then never happened.',
-];
-
-const QUOTES = [
-  'Ansel: "Leave the hut by six or not at all."',
-  'Cordelia: "Send the tide tables when you can."',
-  'Note to self: check the stove fuel before every trip.',
-  'Wren: "Pack the heavy things close to your back."',
+  {
+    title: 'Hut stove maintenance',
+    blocks: [
+      ['TextBlock', 'Strip the flue once a month in winter and once in spring. The soot comes off in sheets if you tap the pipe first with a wooden spoon.'],
+      ['TextBlock', 'The door gasket is due. The old one has gone hard and the draught whistles. Order the 12 mm rope; the 10 mm one is too thin.'],
+      ['QuoteBlock', 'Ansel: "A clean flue is half the fuel bill."'],
+    ],
+  },
+  {
+    title: 'Survey call with the office, Tuesday',
+    blocks: [
+      ['TextBlock', 'Present: Wren, Ansel, two people from the survey office, me. Forty minutes, mostly about the north tarn correction.'],
+      ['TextBlock', 'Decided: they will reissue the north sheet in spring. I send the corrected coordinates by the end of the month.'],
+      ['TextBlock', 'Open question: who pays for the reprint. Nobody wanted to answer.'],
+      ['TextBlock', 'Next: confirm the three place name spellings with Cordelia.'],
+    ],
+  },
+  {
+    title: 'Packing list, glacier week',
+    blocks: [
+      ['TextBlock', 'Rope, 40 m and 30 m. Probe, two pickets, crampons, spare straps. Check the straps before leaving the hut.'],
+      ['TextBlock', 'Food for six days plus a day in reserve: oats, lentils, cheese, tinned fish, chocolate. Stove fuel: 450 ml per person.'],
+      ['TextBlock', 'Paper maps in a dry bag, the radio, a spare battery, the logbook and two pencils.'],
+    ],
+  },
+  {
+    title: 'Altimeters, a comparison',
+    blocks: [
+      ['TextBlock', 'The brass altimeter drifts about 30 m over a week of weather. The digital one drifts less but dies in the cold unless it sleeps in my jacket.'],
+      ['TextBlock', 'Calibrate both at the hut door on a clear morning and write the offset on a strip of tape.'],
+      ['QuoteBlock', 'Wren: "Which one do you trust?" Both, at different times of day.'],
+    ],
+  },
+  {
+    title: 'Book notes: The Cartographer’s Apprentice',
+    blocks: [
+      ['TextBlock', 'A novel about a boy who inherits a map shop and learns to read what mapmakers leave out. The best chapters are about erasing a river that no longer exists.'],
+      ['TextBlock', 'Passage worth keeping, chapter 9: the apprentice colours the sea last, because water is the only thing on the map that nobody argues about.'],
+      ['TextBlock', 'Would give it to Wren. She likes books where the work is described accurately.'],
+    ],
+  },
+  {
+    title: 'Lighthouse survey: tide table questions',
+    blocks: [
+      ['TextBlock', 'Cordelia’s tables run six minutes later than mine at low water. Candidate explanations: her clock, the harbour gauge, or the datum we each used.'],
+      ['TextBlock', 'Ask her which datum. Compare three consecutive days before arguing.'],
+      ['TextBlock', 'If the gap holds, the correction table needs a footnote.'],
+    ],
+  },
+  {
+    title: 'Sourdough at altitude',
+    blocks: [
+      ['TextBlock', 'First loaf: crust fine, middle raw. The oven runs cold and the dough rises too fast at 2,100 m.'],
+      ['TextBlock', 'Second loaf: half the starter, a long cold rise overnight in the porch, 40 minutes at the highest setting. Better.'],
+      ['TextBlock', 'Keep the starter by the stove in winter. It sulks in the cold.'],
+    ],
+  },
+  {
+    title: 'Spring order, supplier list',
+    blocks: [
+      ['TextBlock', 'Fuel: 200 litres, delivered to the road end. Ask for the early slot before the pass opens.'],
+      ['TextBlock', 'Tins: fewer than last year. We counted 47 left over.'],
+      ['TextBlock', 'Rope, a new tarp, six D batteries, wax for the skis and a replacement kettle.'],
+      ['TextBlock', 'Payment on delivery. The supplier does not take cheques.'],
+    ],
+  },
+  {
+    title: 'Ideas for the winter write-up',
+    blocks: [
+      ['TextBlock', 'Open with the glacier readings, since they have the cleanest numbers. Put the weather diary in an appendix.'],
+      ['TextBlock', 'Maybe a short chapter on how the hut’s own measurements changed over twenty years. People like seeing a long record.'],
+      ['TextBlock', 'Wren wants shorter chapters and more figures. Start with the figures and write around them.'],
+    ],
+  },
+  {
+    title: 'Route options for the north tarn',
+    blocks: [
+      ['TextBlock', 'West route: shortest, about 3 hours, loose scree for the last 400 m. East route: 4.5 hours, solid ground, one stream crossing.'],
+      ['TextBlock', 'Option three, over the saddle: 5 hours, best views, only in dry weather.'],
+      ['TextBlock', 'Default to the east route for groups. Take the west route when alone and the scree is frozen.'],
+    ],
+  },
+  {
+    title: 'Sledge repair checklist',
+    blocks: [
+      ['TextBlock', 'Runners: check for splits and re-screw the brass strip every autumn. Lashings: replace any that look frayed.'],
+      ['TextBlock', 'Bag: wax it again. Handle: tighten the bolt before the first loaded run.'],
+      ['QuoteBlock', 'Wren: "If it creaks, it will fail on the steep part."'],
+    ],
+  },
+  {
+    title: 'What Cordelia’s letters keep coming back to',
+    blocks: [
+      ['TextBlock', 'The lighthouse, always. Then her sister’s garden, the neighbour’s dog, and whether I am eating well.'],
+      ['TextBlock', 'She writes in the same blue ink and signs off with a different phrase each time. Collect the phrases.'],
+      ['TextBlock', 'Reply soon. It has been five weeks.'],
+    ],
+  },
+  {
+    title: 'Weather rules of thumb',
+    blocks: [
+      ['TextBlock', 'Barometer falling more than 3 hPa in three hours means bring the gear in. A ring around the moon usually means rain within a day.'],
+      ['TextBlock', 'Wind backing from west to south-west is the one to watch. Ansel says the pass tells you before the radio does.'],
+      ['TextBlock', 'Cloud on the peaks in the morning that burns off by ten is usually harmless.'],
+    ],
+  },
+  {
+    title: 'Questions for the survey office',
+    blocks: [
+      ['TextBlock', 'Is the datum on the north sheet the old one or the new one? Who owns the benchmark on the lake road?'],
+      ['TextBlock', 'Can we get a digital copy of the 1998 sheet? Ours has a coffee ring on the tarn.'],
+      ['TextBlock', 'What is the spelling of the third place name: Haverdale or Havardale?'],
+    ],
+  },
+  {
+    title: 'Trip debrief: Tern Ridge, first push',
+    blocks: [
+      ['TextBlock', 'Reached the second marker in six hours, an hour slower than planned. The snow bridge near the marker held, which was luck.'],
+      ['TextBlock', 'What worked: the shorter rope, the early start, the stove in the tent. What needs work: talking to each other when the wind is loud.'],
+      ['TextBlock', 'For the next push: probe every ten steps, carry the spare radio, leave an hour earlier.'],
+    ],
+  },
+  {
+    title: 'Seed tins, north terrace plan',
+    blocks: [
+      ['TextBlock', 'Beans along the south fence, kale in the two raised beds, peas by the door where the wind drops. Potatoes in the lower plot if the frost holds off.'],
+      ['TextBlock', 'Label every tin with the year and the bed. Last year’s mystery tin turned out to be coriander.'],
+      ['TextBlock', 'Start the beans indoors in April. The terrace is too cold before May.'],
+    ],
+  },
 ];
 
 export function buildStrangersSpace(today: LocalDate): FixtureSpace {
@@ -259,20 +368,15 @@ export function buildStrangersSpace(today: LocalDate): FixtureSpace {
   for (const n of [1, 2, 3]) {
     guaranteed.push(diffDays(today, yearsAgo(n, today) as LocalDate));
   }
+  const featured = new Set<string>(guaranteed.map((n) => addDays(today, -n)));
+  const dayText = fieldOfficeDay(0xf1e1d);
   const dailyNotes = generateDailyNotes({
     today,
     spanDays: 1130,
     density: 0.38,
     guaranteedOffsets: guaranteed,
     seed: 0xca11,
-    bodyFor: (_d, noteRng) => {
-      const first = pick(noteRng, DAILY_LINES);
-      let second = pick(noteRng, DAILY_LINES);
-      while (second === first) second = pick(noteRng, DAILY_LINES);
-      const parts = [`- ${first}`, `- ${second}`];
-      if (noteRng() < 0.3) parts.push(`\n> ${pick(noteRng, QUOTES)}`);
-      return parts.join('\n');
-    },
+    bodyFor: (date, noteRng) => dayText({ date, featured: featured.has(date) }, noteRng),
   });
 
   return {

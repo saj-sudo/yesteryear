@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { diffDays, formatLocalDate } from '../../engine/dates';
 import { stopLearning } from '../../engine/learn';
+import { removeNoteFromSets } from '../../engine/studySets';
 import type { PersistedDoc, StructureDef, TagDef } from '../../engine/provider';
 import type { AppData } from '../App';
-import { displayTitle, rowsOf, useTitles } from './scheduleShared';
+import { DELETED_TITLE, displayTitle, rowsOf, useTitles } from './scheduleShared';
 import { StudySets } from './StudySets';
 
 /**
@@ -127,9 +128,21 @@ export function Learn({ data }: { data: AppData }) {
                   const daysLeft = diffDays(target, data.today);
                   const due = row.item.nextDue;
                   const dueIn = due ? diffDays(due, data.today) : null;
+                  // The first set is the one whose date it studies toward.
+                  const setNames = (row.item.setIds ?? [])
+                    .map((id) => config.learn.sets.find((s) => s.id === id)?.name)
+                    .filter((name): name is string => name !== undefined);
                   return (
                     <li key={row.key}>
-                      <span class="queue-title">{displayTitle(titles, row)}</span>
+                      <span class="queue-title">
+                        {displayTitle(titles, row)}
+                        {setNames[0] !== undefined && (
+                          <span class="chip set-chip">
+                            {setNames[0]}
+                            {setNames.length > 1 ? ` +${setNames.length - 1} more` : ''}
+                          </span>
+                        )}
+                      </span>
                       <span class="learn-facts">
                         <span class={`chip learn-chip${dueIn !== null && dueIn <= 0 ? ' due' : ''}`}>
                           {dueIn === null
@@ -144,17 +157,32 @@ export function Learn({ data }: { data: AppData }) {
                         </span>
                       </span>
                       <span class="queue-actions">
-                        <button
-                          class="subtle"
-                          onClick={() =>
-                            change((doc) => {
-                              const item = doc.state.items[row.key];
-                              if (item?.mode === 'learn') item.nextDue = data.today;
-                            })
-                          }
-                        >
-                          review now
-                        </button>
+                        {titles[row.objectId] === DELETED_TITLE ? (
+                          <button
+                            class="subtle"
+                            onClick={() =>
+                              change((doc) => {
+                                // Deleted in Capacities: out of its sets and out of Learn.
+                                removeNoteFromSets(doc.config.learn, row.objectId);
+                                delete doc.state.items[row.key];
+                              })
+                            }
+                          >
+                            remove (deleted in Capacities)
+                          </button>
+                        ) : (
+                          <button
+                            class="subtle"
+                            onClick={() =>
+                              change((doc) => {
+                                const item = doc.state.items[row.key];
+                                if (item?.mode === 'learn') item.nextDue = data.today;
+                              })
+                            }
+                          >
+                            review now
+                          </button>
+                        )}
                         <button
                           class="subtle"
                           onClick={() =>

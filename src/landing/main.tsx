@@ -13,16 +13,25 @@ function Landing() {
     <main class="landing">
       <div class="landing-art" aria-hidden="true" />
       <h1>Yesteryear</h1>
-      <p class="tagline">Resurfacing for Capacities.</p>
+      <p class="tagline">Your older Capacities notes, back on a schedule.</p>
       <p>
         Notes go into Capacities easily and rarely come back out. Yesteryear
-        brings older notes back to you <em>on a cadence</em>. The ones you tag
-        as worth seeing again come back when they are due: a month later, six
-        months later. Notes tied to a real date, like a talk or an exam, come
-        back more often as that date gets closer. Each day you also get one
-        unlikely pair: two notes from different corners of your space, side by
-        side.
+        brings them back.
       </p>
+      <ul>
+        <li>
+          Notes you tag as worth seeing again return when they are due, a month
+          or six months later.
+        </li>
+        <li>
+          Notes with a real date, like a talk or an exam, return more often as
+          it gets closer.
+        </li>
+        <li>
+          Each day you also get an unlikely pair: two notes from different
+          corners of your space, side by side.
+        </li>
+      </ul>
 
       <p>
         <a class="cta" href="/app/">Open Yesteryear</a>
@@ -37,16 +46,25 @@ function Landing() {
       <h2>Study toward a date</h2>
       <p>
         Some notes matter by a certain day, like a talk or an exam. Put them in
-        a study set, choosing them by tag, by object type, or one at a time with
-        a search, and give the set a date. Yesteryear spaces the reviews out,
-        with each gap set at 15% of the time left, so they come closer together
-        as the day gets near. The first review waits at least a week.
+        a study set, pick them by tag, by type or one at a time, and give the
+        set a date.
       </p>
+      <ul>
+        <li>
+          Each review is set at 15% of the time left, so reviews come closer
+          together as the day gets near. The first one waits at least a week.
+        </li>
+        <li>
+          After the date the notes leave Learn. Give the set a new date and they
+          study again, which suits an exam you sit twice.
+        </li>
+        <li>
+          A set lists the notes it holds, and each note in Learn names its set.
+        </li>
+      </ul>
       <p>
-        Sitting the same exam again? Give the set a new date and the same notes
-        study toward it. Learn works on the notes you already have. There are
-        no cards to make and no grades to give: you see the note and answer
-        with a tap. For heavier memorising, Anki is the better tool.
+        There are no cards to make and no grades to give: you see the note and
+        answer with a tap. For heavier memorising, Anki is the better tool.
       </p>
 
       <img
@@ -54,31 +72,36 @@ function Landing() {
         alt="The Learn page in a made-up field office space: two study sets, one counting down to its date and one whose date has passed, and the notes now studying toward a date."
       />
 
-      <h2>No server</h2>
+      <h2>No server, no account, no analytics</h2>
       <p>
-        The site is a set of static files. Your notes go from your browser to
-        Capacities and nowhere else. There's no account to make and no
-        analytics. Access tokens stay in your browser. Your resurfacing
-        history is kept in a page inside your own space, where you can read it
-        or delete it. You can revoke access any time in Capacities.
+        The site is static files. Your notes go from your browser to Capacities
+        and nowhere else, and access tokens stay in your browser. You can
+        revoke access any time in Capacities.
+      </p>
+      <p>
+        A strict Content-Security-Policy blocks every other script, and{' '}
+        <a href="https://github.com/saj-sudo/yesteryear/blob/main/tests/build/csp.test.ts">
+          a test
+        </a>{' '}
+        checks it on each build. Your resurfacing history lives in a page inside
+        your own space, where you can read it or delete it.
       </p>
 
       <h2>Works with the types you already have</h2>
       <p>
         Every Capacities space has its own types, properties and tags, so
-        Yesteryear doesn't assume any. It reads what your space contains and
-        lets you choose: which types are projects or people, which tags mark a
-        note worth seeing again, and whether a whole page or a single
-        paragraph comes back. With nothing set up, it still works from your
-        daily notes.
+        Yesteryear assumes none of them. You choose which types are projects or
+        people, which tags mark a note worth seeing again, and whether a whole
+        page or one paragraph comes back. With nothing set up, it still works
+        from your daily notes.
       </p>
 
-      <h2>Dates help, and so does chance</h2>
+      <h2>Dates bring notes back, and so does chance</h2>
       <p>
-        Birthdays, project dates and what you wrote a year ago today are all
-        here, in On This Day and a calendar of the days you wrote. The daily
-        mix also draws at random, because a date can only bring back notes
-        that already share one.
+        On This Day shows what you wrote on this date in earlier years, and a
+        calendar marks every day you wrote. Birthdays and project dates come
+        back as they approach. The daily mix also draws at random, because a
+        date can only bring back notes that already share one.
       </p>
 
       <img
@@ -89,9 +112,15 @@ function Landing() {
       <h2>No streaks or scores</h2>
       <p>
         Nothing here counts days or marks anything overdue. Skipping a day is
-        fine, and so is never answering. If you turn on the daily note
-        section, a short Resurfaced list appears in the note you already open
-        each morning. Answer it, edit it or leave it.
+        fine, and so is never answering. If you turn on the daily note section,
+        a short Resurfaced list appears in the note you open each morning:
+        answer it or leave it.
+      </p>
+
+      <h2>Works on a phone</h2>
+      <p>
+        The layout fits a narrow screen, and you can add the site to your home
+        screen so it opens on Today. Choose light, dark or automatic.
       </p>
 
       <footer>

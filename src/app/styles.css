@@ -59,8 +59,48 @@
   --radius-lg: 12px;
 }
 
+/* Theme. The system setting decides unless the person chose Light or Dark in
+   the app (data-theme on <html>, set by /theme.js and theme.ts). The two
+   dark blocks below must list the same tokens; tests/build/theme.test.ts
+   fails if they drift. */
+:root {
+  color-scheme: light dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #1b1a1e;
+  --surface: #222125;
+  --wash: #1f1e22;
+  --line: #313035;
+  --line-strong: #3d3c42;
+  --field-border: #76747c;
+  --ink: #ecebef;
+  --ink-soft: #a6a4ab;
+  --charcoal: #ecebef;
+  --on-charcoal: #1b1a1e;
+  --ink1: #7d9be6;
+  --ink2: #f7a072;
+  --ink3: #b6a3d6;
+  --ink1-text: #a6bcf2;
+  --ink2-text: #f9b993;
+  --ink3-text: #cdbbe6;
+  --ink1-tint: #1e2840;
+  --ink2-tint: #3a271d;
+  --ink3-tint: #2c2536;
+  --focus: #a6bcf2;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-lift: 0 12px 36px rgba(0, 0, 0, 0.5);
+  --dots: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1.3px) 0 0 / 6px 6px;
+  --blend: screen;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --bg: #1b1a1e;
     --surface: #222125;
     --wash: #1f1e22;
@@ -392,6 +432,50 @@ a:hover {
   font-size: 0.82rem;
 }
 
+/* Light, Dark or Auto: the same small segmented control as zoom. */
+.theme-choice {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--wash);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  width: fit-content;
+}
+
+.theme-choice button {
+  font-size: 0.78rem;
+  padding: 0.2rem 0.6rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  box-shadow: none;
+  color: var(--ink-soft);
+}
+
+.theme-choice button:hover {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.theme-choice button.on {
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: inset 0 -3px 0 var(--ink2), 0 1px 2px rgba(28, 27, 32, 0.12);
+}
+
+.app-foot .theme-choice {
+  margin-bottom: var(--space-3);
+}
+
+@media (max-width: 720px) {
+  .theme-choice button {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.85rem;
+  }
+}
+
 /* The independence line stays in view on every screen. */
 .disclaimer {
   margin: 0;
@@ -644,8 +728,12 @@ a:hover {
   font-size: 1.15rem;
 }
 
+:root[data-theme='dark'] .pair-side .chip {
+  background: rgba(0, 0, 0, 0.25);
+}
+
 @media (prefers-color-scheme: dark) {
-  .pair-side .chip {
+  :root:not([data-theme='light']) .pair-side .chip {
     background: rgba(0, 0, 0, 0.25);
   }
 }
@@ -1142,6 +1230,18 @@ a.note-title {
   box-shadow: var(--shadow);
 }
 
+.set-notes ul {
+  margin: var(--space-2) 0;
+  padding-left: 1.2rem;
+  max-height: 16rem;
+  overflow-y: auto;
+  font-size: 0.88rem;
+}
+
+.set-notes li {
+  margin: 0.15rem 0;
+}
+
 .set-card.passed {
   background: var(--wash);
   box-shadow: none;
@@ -1365,6 +1465,20 @@ li.finder-row {
   margin: var(--space-6) 0 var(--space-2);
 }
 
+.landing ul {
+  margin: var(--space-2) 0 var(--space-3);
+  padding-left: 1.25rem;
+}
+
+.landing li {
+  margin: 0.45rem 0;
+}
+
+.landing code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+}
+
 .landing footer {
   margin-top: 3rem;
   border-top: 1px solid var(--line);
@@ -1373,4 +1487,9 @@ li.finder-row {
 
 body:has(.landing) {
   overflow-x: hidden;
+}
+
+.set-chip {
+  margin-left: 0.5rem;
+  vertical-align: middle;
 }

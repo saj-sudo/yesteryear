@@ -15,6 +15,7 @@ import {
   type Session,
 } from './session';
 import { Icon } from './components/Icon';
+import { ThemeChoice } from './components/ThemeChoice';
 import { Connect } from './views/Connect';
 import { Heatmap } from './views/Heatmap';
 import { Learn } from './views/Learn';
@@ -188,6 +189,7 @@ export function App() {
             </div>
           )}
           <span class="space-name">{data?.space.title ?? ''}</span>
+          <ThemeChoice />
           <p class="disclaimer">{DISCLAIMER}</p>
         </div>
       </aside>
@@ -233,6 +235,7 @@ export function App() {
           )}
         </main>
         <footer class="app-foot">
+          <ThemeChoice />
           <p class="disclaimer">{DISCLAIMER}</p>
         </footer>
       </div>

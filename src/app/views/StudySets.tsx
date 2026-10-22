@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
-import { formatLocalDate, isLocalDate } from '../../engine/dates';
-import { syncLearn } from '../../engine/orchestrate';
+import { formatLocalDate, isLocalDate, parseDailyNoteTitle } from '../../engine/dates';
+import { listSetMembers, syncLearn, type SetMember } from '../../engine/orchestrate';
 import type { PersistedDoc, StructureDef, TagDef } from '../../engine/provider';
 import { addStudySet, removeStudySet, studySetStatus, updateStudySet } from '../../engine/studySets';
 import type { LocalDate, StudySet, StudySetNote } from '../../engine/types';
@@ -51,6 +51,21 @@ function whenOf(set: StudySet, today: LocalDate): string {
   return `${date} · ${days}d away`;
 }
 
+/** How many notes a set's list shows before it says how many more there are. */
+const NOTES_SHOWN = 100;
+
+interface Viewing {
+  id: string;
+  members: SetMember[] | null;
+  warnings: string[];
+  failed: boolean;
+}
+
+const noteLabel = (title: string): string => {
+  const date = parseDailyNoteTitle(title);
+  return date ? formatLocalDate(date) : title;
+};
+
 const toggleIn = (list: string[], name: string, on: boolean): string[] =>
   on ? [...new Set([...list, name])] : list.filter((x) => x !== name);
 
@@ -75,6 +90,7 @@ export function StudySets(props: {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [viewing, setViewing] = useState<Viewing | null>(null);
 
   const today = data.today;
   const sets = [...data.manager.current.config.learn.sets].sort((a, b) => {
@@ -106,6 +122,21 @@ export function StudySets(props: {
     } finally {
       setBusy(false);
       refresh();
+    }
+  };
+
+  /** Look up what a set holds right now. Only reads; nothing is saved. */
+  const toggleNotes = async (set: StudySet): Promise<void> => {
+    if (viewing?.id === set.id) {
+      setViewing(null);
+      return;
+    }
+    setViewing({ id: set.id, members: null, warnings: [], failed: false });
+    try {
+      const { members, warnings } = await listSetMembers(data.session.provider, set);
+      setViewing((v) => (v?.id === set.id ? { id: set.id, members, warnings, failed: false } : v));
+    } catch {
+      setViewing((v) => (v?.id === set.id ? { id: set.id, members: [], warnings: [], failed: true } : v));
     }
   };
 
@@ -260,6 +291,43 @@ export function StudySets(props: {
           <span class={`chip${passed ? '' : ' learn-chip'}`}>{whenOf(set, today)}</span>
         </div>
         <p class="fineprint">{selectionOf(set)}</p>
+        {viewing?.id === set.id && (
+          <div class="set-notes">
+            {viewing.members === null ? (
+              <p class="fineprint">Looking up the notes…</p>
+            ) : viewing.failed ? (
+              <p class="fineprint">The notes could not be looked up just now.</p>
+            ) : (
+              <>
+                {viewing.warnings.map((w) => (
+                  <p key={w} class="fineprint">
+                    {w}
+                  </p>
+                ))}
+                {viewing.members.length === 0 ? (
+                  <p class="fineprint">Nothing in this set yet.</p>
+                ) : (
+                  <ul>
+                    {viewing.members.slice(0, NOTES_SHOWN).map((m) => (
+                      <li key={m.id}>
+                        <a
+                          href={data.session.provider.deepLink(m.id)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {noteLabel(m.title)}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {viewing.members.length > NOTES_SHOWN && (
+                  <p class="fineprint">and {viewing.members.length - NOTES_SHOWN} more</p>
+                )}
+              </>
+            )}
+          </div>
+        )}
         {passed && !editingDate && (
           <p class="fineprint">
             This date has passed, so the notes left Learn. Give the set a new date to study them
@@ -292,6 +360,9 @@ export function StudySets(props: {
         )}
         {!editingDate && (
           <div class="queue-actions set-actions">
+            <button class="subtle" onClick={() => void toggleNotes(set)}>
+              {viewing?.id === set.id ? 'hide notes' : 'show notes'}
+            </button>
             <button
               class={passed ? 'primary' : 'subtle'}
               onClick={() => setRedate({ id: set.id, value: passed ? '' : set.targetDate })}

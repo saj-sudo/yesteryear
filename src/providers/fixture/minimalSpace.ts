@@ -1,6 +1,7 @@
-import { diffDays, monthDayOf, yearOf } from '../../engine/dates';
+import { addDays, diffDays, monthDayOf, yearOf } from '../../engine/dates';
 import type { LocalDate } from '../../engine/types';
-import { generateDailyNotes, pick } from './generate';
+import { kitchenDay } from './dailyContent';
+import { generateDailyNotes } from './generate';
 import type { FixtureSpace } from './types';
 
 /**
@@ -9,21 +10,14 @@ import type { FixtureSpace } from './types';
  * here with zero configuration; everything else is silently skipped.
  */
 
-const LINES = [
-  'Tried the new bakery on Alder Street. The rye is the real thing.',
-  'Rain all day. Finished the puzzle with the missing corner piece.',
-  'Called home. Dad is naming the chickens after composers now.',
-  'Fixed the wobbling shelf. It only took eleven months of noticing it.',
-  'Started re-reading the sea novel. It is better the second time.',
-  'Long walk, no phone. The heron was back at the weir.',
-];
-
 export function buildMinimalSpace(today: LocalDate): FixtureSpace {
   const guaranteed: number[] = [30, 365];
   for (const n of [1, 2]) {
     const sameDay = `${yearOf(today) - n}-${monthDayOf(today)}` as LocalDate;
     guaranteed.push(diffDays(today, sameDay));
   }
+  const featured = new Set<string>(guaranteed.map((n) => addDays(today, -n)));
+  const dayText = kitchenDay(0x7ab1e);
   return {
     spaceId: 'fixture-minimal',
     title: 'Kitchen Table Notes',
@@ -41,7 +35,7 @@ export function buildMinimalSpace(today: LocalDate): FixtureSpace {
       density: 0.2,
       guaranteedOffsets: guaranteed,
       seed: 0x5eed,
-      bodyFor: (_d, rng) => `- ${pick(rng, LINES)}`,
+      bodyFor: (date, rng) => dayText({ date, featured: featured.has(date) }, rng),
     }),
   };
 }

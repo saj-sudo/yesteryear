@@ -110,6 +110,7 @@ export function normalizeDoc(input: unknown, nowIso: string): PersistedDoc {
         mode: 'learn',
         targetDate: v['targetDate'],
         ...(v['byRule'] === true ? { byRule: true } : {}),
+        ...(setIdsOf(v['setIds']).length > 0 ? { setIds: setIdsOf(v['setIds']) } : {}),
         lastSurfaced: typeof v['lastSurfaced'] === 'string' ? v['lastSurfaced'] : null,
         nextDue: typeof v['nextDue'] === 'string' ? v['nextDue'] : null,
         surfaceCount: typeof v['surfaceCount'] === 'number' ? v['surfaceCount'] : 0,
@@ -283,4 +284,11 @@ export class StateManager {
         'The latest remote copy has been kept.',
     );
   }
+}
+
+/** Study set ids saved on a Learn item; anything else is ignored. */
+function setIdsOf(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.filter((v): v is string => typeof v === 'string' && v.length > 0)
+    : [];
 }
