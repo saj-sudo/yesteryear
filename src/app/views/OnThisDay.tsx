@@ -91,7 +91,7 @@ export function OnThisDay(props: {
           show once there is a past to look back on.
         </p>
       ) : (
-        <div class="year-columns">
+        <div class="year-columns" role="region" aria-label="Years" tabIndex={0}>
           {columns.map((col) => (
             <article class="year-column" key={col.year}>
               <h3>{col.year}</h3>

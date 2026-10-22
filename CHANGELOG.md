@@ -8,6 +8,10 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Added
 
+- The smoke test now runs axe-core (WCAG 2.2 A and AA plus best practices) on
+  the landing page and every demo view, in light and dark, at phone and desktop
+  size, and checks the theme switch with the keyboard. A violation fails the
+  build.
 - **See what is in a study set.** Each set has a "show notes" button that
   lists its notes, with a link to each one in Capacities. It looks up the
   tags and types and adds the notes you picked by hand, the same way the
@@ -86,6 +90,19 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Fixed
 
+- **Accessibility pass.** Axe found and this fixes:
+  - The theme switch is a proper radio group: Tab lands on the selected option,
+    and arrow keys, Home and End move it.
+  - Every page has a level-one heading and headings no longer skip levels. A
+    note's own headings no longer join the page outline.
+  - The calendar is a valid grid with 24px day targets (the dot of ink is the
+    same size), and the strip of years on On This Day scrolls with the keyboard.
+  - The demo notice is a landmark, and notices sit inside the main area.
+  - Links in running text are underlined instead of relying on colour.
+  - Soft grey text in dark mode now reaches 4.5:1 on the blue card in the
+    unlikely pair.
+  - The two buttons under the landing intro no longer crowd each other on a
+    phone.
 - A note deleted in Capacities stayed in the study sets that listed it, and
   every sync put it back into Learn. It now leaves its sets when the run
   finds it gone, and a row for a deleted note offers "remove".

@@ -164,7 +164,7 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
 
   return (
     <section class="settings">
-      <h2>Settings</h2>
+      <h1>Settings</h1>
       <p class="fineprint">
         Everything below is read from your space, using your own object types
         and tags. Every mapping is optional, and “None” always works.
@@ -179,7 +179,7 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
       )}
       {status && <div class="notice">{status}</div>}
 
-      <h3>Object types</h3>
+      <h2 class="sub">Object types</h2>
       {customTypes.length === 0 ? (
         <p class="empty-note">
           No custom types in this space. Daily notes still come back without them.
@@ -194,7 +194,7 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
 
       {config.types.project && (
         <>
-          <h3>Project dates</h3>
+          <h2 class="sub">Project dates</h2>
           <div class="field-row">
             {propertySelect('projectStart', 'Start date', 'project', 'date')}
             {propertySelect('projectTarget', 'Target date', 'project', 'date')}
@@ -232,14 +232,14 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
 
       {config.types.person && (
         <>
-          <h3>People</h3>
+          <h2 class="sub">People</h2>
           <div class="field-row">
             {propertySelect('personBirthday', 'Birthday property', 'person', 'date')}
           </div>
         </>
       )}
 
-      <h3>Resurfacing tags</h3>
+      <h2 class="sub">Resurfacing tags</h2>
       <p class="fineprint">Notes carrying these tags join the Recall rotation.</p>
       {tagToggle(config.recall.tags, (d, name, on) => {
         const set = new Set(d.recall.tags);
@@ -248,7 +248,7 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
         d.recall.tags = [...set];
       })}
 
-      <h3>Granularity</h3>
+      <h2 class="sub">Granularity</h2>
       <div class="field-row">
         <label class="field">
           <span>Resurface</span>
@@ -295,7 +295,7 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
         )}
       </div>
 
-      <h3>Rotation</h3>
+      <h2 class="sub">Rotation</h2>
       <label class="field checkbox">
         <input
           type="checkbox"
@@ -318,7 +318,7 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
           d.rotation.groups = [...set];
         })}
 
-      <h3>Learn mode</h3>
+      <h2 class="sub">Learn mode</h2>
       <label class="field checkbox">
         <input
           type="checkbox"
@@ -364,7 +364,7 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
         </>
       )}
 
-      <h3>Surfaces</h3>
+      <h2 class="sub">Surfaces</h2>
       <label class="field checkbox">
         <input
           type="checkbox"
@@ -448,7 +448,7 @@ export function Settings({ data, onSignOut }: { data: AppData; onSignOut: () => 
 
       {showTransfer && (
         <div class="transfer">
-          <h3>Your data, portable</h3>
+          <h2 class="sub">Your data, portable</h2>
           <p class="fineprint">
             Copy this JSON to keep or move your settings and history. Paste a
             previously exported document below to restore it.

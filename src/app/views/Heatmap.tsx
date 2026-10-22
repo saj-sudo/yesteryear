@@ -61,26 +61,32 @@ export function Heatmap(props: {
       <div class="heat-grid" role="grid" aria-label={`Daily notes in ${year}`}>
         {MONTHS.map((label, m) => (
           <div class="heat-row" key={label} role="row">
-            <span class="heat-month">{label}</span>
+            <span class="heat-month" role="rowheader">
+              {label}
+            </span>
             {Array.from({ length: 31 }, (_, i) => {
               const date = `${year}-${String(m + 1).padStart(2, '0')}-${String(i + 1).padStart(2, '0')}`;
-              if (!isLocalDate(date)) return <span class="heat-cell void" key={i} />;
+              if (!isLocalDate(date)) {
+                return <span class="heat-slot" role="gridcell" aria-hidden="true" key={i} />;
+              }
               const note = props.notes.get(date);
               const isFuture = date > props.today;
-              return note ? (
-                <button
-                  key={i}
-                  class={`heat-cell written${open?.date === date ? ' open' : ''}`}
-                  title={date}
-                  aria-label={`Open ${date}`}
-                  onClick={() => openDay(date, note)}
-                />
-              ) : (
-                <span
-                  key={i}
-                  class={`heat-cell${isFuture ? ' future' : ''}`}
-                  title={date}
-                />
+              return (
+                <span class="heat-slot" role="gridcell" key={i}>
+                  {note ? (
+                    <button
+                      class={`heat-hit${open?.date === date ? ' open' : ''}`}
+                      title={date}
+                      aria-label={`Open ${date}`}
+                      onClick={() => openDay(date, note)}
+                    />
+                  ) : (
+                    <span
+                      class={`heat-cell${isFuture ? ' future' : ''}`}
+                      title={date}
+                    />
+                  )}
+                </span>
               );
             })}
           </div>

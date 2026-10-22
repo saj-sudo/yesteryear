@@ -74,7 +74,7 @@ export function Learn({ data }: { data: AppData }) {
           ◎
         </div>
         <div>
-          <h2>Learn</h2>
+          <h1>Learn</h1>
           <p class="fineprint">
             For notes you want to know by a certain day, like a talk or an exam.
             Each review is scheduled at{' '}
@@ -90,7 +90,7 @@ export function Learn({ data }: { data: AppData }) {
 
       {!config.learn.enabled ? (
         <div class="setup-card">
-          <h3>Learn mode is off</h3>
+          <h2 class="sub">Learn mode is off</h2>
           <p>
             Turn it on to give a few notes a schedule that aims at a date.
             Nothing changes for the rest of your space.
@@ -117,7 +117,7 @@ export function Learn({ data }: { data: AppData }) {
           />
 
           <section class="queue-section">
-            <h3>Learning toward a date</h3>
+            <h2 class="sub">Learning toward a date</h2>
             {learning.length === 0 ? (
               <p class="empty-note">Nothing here yet. Add a study set above.</p>
             ) : (

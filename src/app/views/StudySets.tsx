@@ -287,7 +287,7 @@ export function StudySets(props: {
     return (
       <li key={set.id} class={`set-card${passed ? ' passed' : ''}`}>
         <div class="set-head">
-          <h4>{set.name}</h4>
+          <h3>{set.name}</h3>
           <span class={`chip${passed ? '' : ' learn-chip'}`}>{whenOf(set, today)}</span>
         </div>
         <p class="fineprint">{selectionOf(set)}</p>
@@ -401,7 +401,7 @@ export function StudySets(props: {
   return (
     <section class="study-sets">
       <div class="set-section-head">
-        <h3>Study sets</h3>
+        <h2 class="sub">Study sets</h2>
         {!draft && (
           <button class="primary" onClick={() => setDraft(blank())}>
             New study set
