@@ -119,6 +119,28 @@ describe('study sets on the stranger space', () => {
     expect(learnEntry(manager, 'gone-1')).toBeNull();
   });
 
+  it('a deleted picked note also leaves its set, so it does not come back', async () => {
+    const { provider, manager } = await strangers([
+      set({
+        id: 'set-1',
+        targetDate: day(40),
+        notes: [
+          { id: 'gone-1', title: 'Deleted note' },
+          { id: 'c-wren', title: 'Wren' },
+        ],
+      }),
+    ]);
+    await run(provider, manager, TODAY);
+    await run(provider, manager, day(8), 2);
+
+    expect(manager.current.config.learn.sets[0]?.notes.map((n) => n.id)).toEqual(['c-wren']);
+
+    // A sync after that must not bring the deleted note back into Learn.
+    await syncLearn({ provider, manager, today: day(9) });
+    expect(learnEntry(manager, 'gone-1')).toBeNull();
+    expect(learnEntry(manager, 'c-wren')).not.toBeNull();
+  });
+
   it('a note in two sets studies toward the nearer date, then the later one', async () => {
     const { provider, manager } = await strangers([
       set({ id: 'set-1', name: 'Midterm', targetDate: day(20), notes: [{ id: 'fn-3', title: 'x' }] }),
@@ -284,6 +306,30 @@ describe('study sets on the minimal space', () => {
 
     const later = await run(provider, manager, day(8), 2);
     expect(later.surfaced.some((s) => s.source === 'learn' && s.objectId === noteId)).toBe(true);
+  });
+
+  it('a picked note that was deleted leaves its set on the minimal space too', async () => {
+    const provider = new FixtureProvider(buildMinimalSpace(TODAY));
+    const noteId = provider.dailyNoteIdForDate(addDays(TODAY, -30));
+    const config = normalizeConfig({
+      learn: {
+        enabled: true,
+        sets: [
+          set({
+            id: 'set-1',
+            targetDate: day(50),
+            notes: [
+              { id: noteId!, title: 'A day last month' },
+              { id: 'long-gone', title: 'Deleted note' },
+            ],
+          }),
+        ],
+      },
+    });
+    const manager = await StateManager.open(provider, nowIso, config);
+    await run(provider, manager, TODAY);
+    await run(provider, manager, day(8), 2);
+    expect(manager.current.config.learn.sets[0]?.notes.map((n) => n.id)).toEqual([noteId]);
   });
 
   it('a set that names a tag the space lacks warns and does nothing else', async () => {

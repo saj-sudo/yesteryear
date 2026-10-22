@@ -8,6 +8,9 @@ import type { AppData } from '../App';
 
 export const SHOW_MAX = 40;
 
+/** What a row's title resolves to when its note no longer exists in the space. */
+export const DELETED_TITLE = '(deleted)';
+
 export interface Row {
   key: ItemKey;
   objectId: string;
@@ -55,7 +58,7 @@ export function useTitles(data: AppData, rows: Row[]): Record<string, string> {
       const found: Record<string, string> = {};
       for (const id of wanted) {
         const obj = await data.session.provider.getObject(id);
-        found[id] = obj?.title ?? '(deleted)';
+        found[id] = obj?.title ?? DELETED_TITLE;
         if (cancelled) return;
       }
       setTitles((prev) => ({ ...prev, ...found }));

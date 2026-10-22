@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { diffDays, formatLocalDate } from '../../engine/dates';
 import { stopLearning } from '../../engine/learn';
+import { removeNoteFromSets } from '../../engine/studySets';
 import type { PersistedDoc, StructureDef, TagDef } from '../../engine/provider';
 import type { AppData } from '../App';
-import { displayTitle, rowsOf, useTitles } from './scheduleShared';
+import { DELETED_TITLE, displayTitle, rowsOf, useTitles } from './scheduleShared';
 import { StudySets } from './StudySets';
 
 /**
@@ -144,17 +145,32 @@ export function Learn({ data }: { data: AppData }) {
                         </span>
                       </span>
                       <span class="queue-actions">
-                        <button
-                          class="subtle"
-                          onClick={() =>
-                            change((doc) => {
-                              const item = doc.state.items[row.key];
-                              if (item?.mode === 'learn') item.nextDue = data.today;
-                            })
-                          }
-                        >
-                          review now
-                        </button>
+                        {titles[row.objectId] === DELETED_TITLE ? (
+                          <button
+                            class="subtle"
+                            onClick={() =>
+                              change((doc) => {
+                                // Deleted in Capacities: out of its sets and out of Learn.
+                                removeNoteFromSets(doc.config.learn, row.objectId);
+                                delete doc.state.items[row.key];
+                              })
+                            }
+                          >
+                            remove (deleted in Capacities)
+                          </button>
+                        ) : (
+                          <button
+                            class="subtle"
+                            onClick={() =>
+                              change((doc) => {
+                                const item = doc.state.items[row.key];
+                                if (item?.mode === 'learn') item.nextDue = data.today;
+                              })
+                            }
+                          >
+                            review now
+                          </button>
+                        )}
                         <button
                           class="subtle"
                           onClick={() =>

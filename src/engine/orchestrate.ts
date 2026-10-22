@@ -5,7 +5,7 @@ import { renderSection } from './markdown';
 import { parseResponses } from './parseResponses';
 import type { FullObject, ObjectSummary, Provider, PropertyValue, StructureDef } from './provider';
 import { listNames, referencedTagNames, resolveSchema, type ResolvedSchema } from './resolve';
-import { nearestUpcoming } from './studySets';
+import { nearestUpcoming, removeNoteFromSets } from './studySets';
 import { learnKey, objKey, parseKey, StateManager } from './state';
 import { temporalCandidates, type DailyNoteRef, type PersonInput, type ProjectInput } from './temporal';
 import { chooseDay, finalizeRun, prepareLearn, applyResponses, type CandidatePools } from './run';
@@ -509,6 +509,8 @@ async function computeDay(
       if (!obj) {
         manager.mutate((doc) => {
           delete doc.state.items[candidate.key]; // deleted note: pruned silently (§11)
+          // And out of its sets, or the next sync would pick it up again.
+          removeNoteFromSets(doc.config.learn, candidate.objectId);
         });
         continue;
       }

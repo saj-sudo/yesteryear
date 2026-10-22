@@ -5,6 +5,7 @@ import {
   nearestUpcoming,
   nextStudySetId,
   normalizeStudySets,
+  removeNoteFromSets,
   removeStudySet,
   studySetStatus,
   updateStudySet,
@@ -133,5 +134,26 @@ describe('editing sets', () => {
     expect(learn.sets[0]!.targetDate).toBe('2027-01-15');
     updateStudySet(learn, 'missing', { name: 'x' });
     expect(learn.sets).toHaveLength(1);
+  });
+});
+
+describe('removeNoteFromSets', () => {
+  it('takes a note out of every set that lists it and leaves the rest alone', () => {
+    const learn = defaultConfig().learn;
+    learn.sets = [
+      set({ id: 'set-1', notes: [{ id: 'a', title: 'A' }, { id: 'b', title: 'B' }], tags: ['exam'] }),
+      set({ id: 'set-2', notes: [{ id: 'a', title: 'A' }] }),
+      set({ id: 'set-3', notes: [{ id: 'c', title: 'C' }] }),
+    ];
+    expect(removeNoteFromSets(learn, 'a')).toBe(2);
+    expect(learn.sets.map((s) => s.notes.map((n) => n.id))).toEqual([['b'], [], ['c']]);
+    expect(learn.sets[0]?.tags).toEqual(['exam']);
+  });
+
+  it('does nothing for a note no set lists', () => {
+    const learn = defaultConfig().learn;
+    learn.sets = [set({ notes: [{ id: 'a', title: 'A' }] })];
+    expect(removeNoteFromSets(learn, 'zzz')).toBe(0);
+    expect(learn.sets[0]?.notes).toHaveLength(1);
   });
 });

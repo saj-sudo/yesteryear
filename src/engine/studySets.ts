@@ -127,3 +127,20 @@ export function updateStudySet(
 export function removeStudySet(learn: LearnConfig, id: string): void {
   learn.sets = learn.sets.filter((s) => s.id !== id);
 }
+
+/**
+ * Take a note out of every set that lists it by hand. A note deleted in
+ * the space would otherwise stay in its set for good and be picked up
+ * again by every sync. Returns how many sets listed it.
+ */
+export function removeNoteFromSets(learn: LearnConfig, noteId: string): number {
+  let removed = 0;
+  for (const set of learn.sets) {
+    const kept = set.notes.filter((n) => n.id !== noteId);
+    if (kept.length !== set.notes.length) {
+      set.notes = kept;
+      removed += 1;
+    }
+  }
+  return removed;
+}
