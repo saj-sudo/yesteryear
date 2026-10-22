@@ -196,14 +196,17 @@ export function App() {
 
       <div class="content">
         {session.kind === 'demo' && (
-          <div class="demo-banner">
+          <aside class="demo-banner" aria-label="Demo space">
             Every note here is synthetic, and nothing leaves this tab.
-          </div>
+          </aside>
         )}
-        {loadError && <div class="notice">{loadError}</div>}
-        {ranNote && <div class="notice">{ranNote}</div>}
 
         <main class="app-main">
+          {loadError && <div class="notice">{loadError}</div>}
+          {ranNote && <div class="notice">{ranNote}</div>}
+          {view === 'today' && <h1 class="sr-only">Today</h1>}
+          {view === 'onThisDay' && <h1 class="sr-only">On this day</h1>}
+          {view === 'heatmap' && <h1 class="sr-only">Calendar</h1>}
           {data === null ? (
             <p class="loading">Reading the space…</p>
           ) : view === 'today' ? (

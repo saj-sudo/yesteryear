@@ -44,7 +44,7 @@ export function Preview({ data }: { data: AppData }) {
 
   return (
     <section class="preview">
-      <h2>Preview</h2>
+      <h1>Preview</h1>
       <p class="fineprint">
         What a run right now would bring back. This view never writes to your
         notes.

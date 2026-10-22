@@ -158,7 +158,7 @@ export function Recall({ data }: { data: AppData }) {
     rowActions: (row: Row) => JSX.Element,
   ): JSX.Element => (
     <section class="queue-section">
-      <h3>{name}</h3>
+      <h2 class="sub">{name}</h2>
       {rows.length === 0 ? (
         <p class="empty-note">{empty}</p>
       ) : (
@@ -184,7 +184,7 @@ export function Recall({ data }: { data: AppData }) {
           ↻
         </div>
         <div>
-          <h2>Recall</h2>
+          <h1>Recall</h1>
           <p class="fineprint">
             The main schedule. Notes you want to see again come back at least{' '}
             {config.recall.cooldownDays} days apart, favouring the ones that
@@ -198,7 +198,7 @@ export function Recall({ data }: { data: AppData }) {
 
       {tagCount === 0 && (
         <div class="setup-card">
-          <h3>Give Recall something to work with</h3>
+          <h2 class="sub">Give Recall something to work with</h2>
           <p>
             Daily notes come back on their own. Recall gets more varied when you
             pick a few tags that mark notes worth seeing again, such as an

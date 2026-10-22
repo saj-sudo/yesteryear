@@ -53,7 +53,11 @@ export function Markdown({ text }: { text: string }) {
     if (line.trim() === '') continue;
     const heading = /^(#{1,6})\s+(.*)$/.exec(line);
     if (heading) {
-      blocks.push(<h4 key={key++}>{renderInline(heading[2]!)}</h4>);
+      blocks.push(
+        <p key={key++} class="md-heading">
+          {renderInline(heading[2]!)}
+        </p>,
+      );
     } else if (line.startsWith('> ')) {
       blocks.push(<blockquote key={key++}>{renderInline(line.slice(2))}</blockquote>);
     } else {
