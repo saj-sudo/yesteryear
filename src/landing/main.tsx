@@ -95,6 +95,12 @@ function Landing() {
         page or one paragraph comes back. With nothing set up, it still works
         from your daily notes.
       </p>
+      <p>
+        On your first visit it reads your space and offers what it found, such
+        as &ldquo;Your projects are Project&rdquo; or &ldquo;Birthdays come
+        from Birthday&rdquo;. You tick what looks right, and nothing changes
+        without a tick.
+      </p>
 
       <h2>Dates bring notes back, and so does chance</h2>
       <p>

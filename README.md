@@ -39,13 +39,15 @@ No type ID, property ID or tag name is hardcoded. Yesteryear reads what your spa
 - which status values mean a project is active
 - whether whole pages or single paragraphs come back
 
+On your first visit, Yesteryear reads your types, date and status properties and tags, and offers what it found, such as "Your projects are Project" or "Birthdays come from Birthday". Names it recognises start ticked, and a guess from the shape of a type says so and starts unticked. Nothing changes without a tick, and anything you have already mapped is left alone.
+
 Anything you don't map is skipped. A space with nothing set up still gets On This Day, because every space has daily notes. If a name in your settings is missing from your space, the error says what was missing and lists what your space has.
 
 ## Getting started
 
 1. Open the site and click **Connect to Capacities**, or **Try the demo** first. The demo runs on a made-up space and needs no account.
 2. Approve access and pick which space to share. That choice happens on the Capacities side.
-3. You land on **Today**: the day's resurfaced notes, with an unlikely pair underneath. It works with no setup, because daily notes alone are enough.
+3. The first time, you see what Yesteryear found in your space and tick what looks right. Then you land on **Today**: the day's resurfaced notes, with an unlikely pair underneath. It works with no setup, because daily notes alone are enough.
 4. Each schedule has its own page: **Recall** helps you pick resurfacing tags, and **Learn** turns on with one click and holds your study sets. **Settings** holds the full mapping.
 5. Open **Preview** to see what tomorrow would bring back, before anything is written.
 6. If you like it, turn on the daily note section. On your first visit each day, a `Resurfaced` section is added to that day's note.
@@ -56,7 +58,7 @@ On a phone you can add the site to your home screen so it opens on Today. A swit
 
 One-click connect needs an OAuth client id from Capacities. Until that is in place, or for your own self-hosted build, use a personal token.
 
-1. In the Capacities app, create a token under **Settings → Capacities API** with read and write access.
+1. In the Capacities desktop app, create a token under **Settings → Capacities API → API Tokens** for the space you want to use, with read and write access.
 2. Run the site (`npm install && npm run dev`) and paste the token under **Advanced** on the Connect screen.
 3. The token stays in your browser's storage, so treat it like a password. You can revoke it in the same settings screen at any time.
 
