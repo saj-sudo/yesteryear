@@ -43,11 +43,22 @@ On your first visit, Yesteryear reads your types, date and status properties and
 
 Anything you don't map is skipped. A space with nothing set up still gets On This Day, because every space has daily notes. If a name in your settings is missing from your space, the error says what was missing and lists what your space has.
 
+## What you need in Capacities
+
+Nothing. Daily notes alone are enough to start, and every space has them. A few things in your space make it do more:
+
+- **Projects with dates** bring anniversaries and target-date reminders. In Capacities, open **Settings → Object Types**, choose **+ New Type**, and pick a prebuilt type such as Project, or create your own.
+- **People with a birthday** bring birthday reminders. A type with a date property for the birthday is enough.
+- **Tags** mark the notes worth seeing again. Tag a note in Capacities and it appears under Recall.
+- **A type with no date?** Open the type's settings, choose **Add property**, and add a date.
+
 ## Getting started
 
 1. Open the site and click **Connect to Capacities**, or **Try the demo** first. The demo runs on a made-up space and needs no account.
 2. Approve access and pick which space to share. That choice happens on the Capacities side.
 3. The first time, you see what Yesteryear found in your space and tick what looks right. Then you land on **Today**: the day's resurfaced notes, with an unlikely pair underneath. It works with no setup, because daily notes alone are enough.
+![The first screen on a synthetic space: the projects and people it found, each with a tick and a line about what it is used for.](docs/setup.png)
+
 4. Each schedule has its own page: **Recall** helps you pick resurfacing tags, and **Learn** turns on with one click and holds your study sets. **Settings** holds the full mapping.
 5. Open **Preview** to see what tomorrow would bring back, before anything is written.
 6. If you like it, turn on the daily note section. On your first visit each day, a `Resurfaced` section is added to that day's note.

@@ -19,6 +19,12 @@ All notable changes to Yesteryear are documented here. The format follows
   comes before the first daily run, so what you pick shapes the first set of
   notes. It also shows at the top of Settings until it is used or skipped, and
   nothing is changed without a tick. Anything already mapped is left alone.
+- **Hints in Capacities' words.** A space with no custom types says how to add
+  one (Settings → Object Types → + New Type), a type with no date property says
+  to open its settings and choose Add property, and an empty tag list says to
+  tag a note in Capacities. The README and landing page have a "What you need in
+  Capacities" section with the same steps, and the README shows the first
+  screen.
 - A third demo, "a first run in a new space", shows that first screen.
 - **Pick a range of notes on a touch screen.** In the study set note picker,
   "Pick a range" lets you tap the first note and then the last, and everything

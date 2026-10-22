@@ -102,6 +102,25 @@ function Landing() {
         without a tick.
       </p>
 
+      <h2>What you need in Capacities</h2>
+      <p>
+        Nothing. Daily notes alone are enough to start. Add more to your
+        space, and Yesteryear does more with it.
+      </p>
+      <ul>
+        <li>
+          Projects with dates bring anniversaries and target-date reminders.
+          Open Settings → Object Types in Capacities, choose + New Type, and
+          pick a prebuilt type such as Project.
+        </li>
+        <li>People with a birthday property bring birthday reminders.</li>
+        <li>Tags mark the notes worth seeing again.</li>
+        <li>
+          A type with no date? Open its settings, choose Add property, and add
+          a date.
+        </li>
+      </ul>
+
       <h2>Dates bring notes back, and so does chance</h2>
       <p>
         On This Day shows what you wrote on this date in earlier years, and a

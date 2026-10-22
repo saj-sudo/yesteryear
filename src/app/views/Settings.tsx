@@ -144,6 +144,12 @@ export function Settings({
             </option>
           ))}
         </select>
+        {options.length === 0 && (
+          <small>
+            “{home.title}” has no {propType === 'date' ? 'date' : 'labels'} property yet. In Capacities, open the type’s
+            settings and choose Add property.
+          </small>
+        )}
       </label>
     );
   };
@@ -157,7 +163,9 @@ export function Settings({
     toggle: (draft: YesteryearConfig, name: string, on: boolean) => void,
   ) => (
     <div class="tag-grid">
-      {tags.length === 0 && <p class="empty-note">This space has no tags yet.</p>}
+      {tags.length === 0 && (
+        <p class="empty-note">This space has no tags yet. Tag a note in Capacities and it shows up here.</p>
+      )}
       {tags.map((tag) => {
         const on = selected.includes(tag.name);
         return (
@@ -218,6 +226,8 @@ export function Settings({
       {customTypes.length === 0 ? (
         <p class="empty-note">
           No custom types in this space. Daily notes still come back without them.
+          To bring back birthdays or target dates, add a type in Capacities under Settings → Object Types → + New
+          Type.
         </p>
       ) : (
         <div class="field-row">
