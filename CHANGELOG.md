@@ -8,6 +8,12 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Added
 
+- **Pick a range of notes on a touch screen.** In the study set note picker,
+  "Pick a range" lets you tap the first note and then the last, and everything
+  between is picked. Tapping a range that is all picked already takes it back
+  out, and notes picked in other searches stay. It works with a mouse and the
+  keyboard too. Before, a phone could only tick notes one at a time or pick
+  everything shown, because a drag scrolls the list.
 - The smoke test now runs axe-core (WCAG 2.2 A and AA plus best practices) on
   the landing page and every demo view, in light and dark, at phone and desktop
   size, and checks the theme switch with the keyboard. A violation fails the

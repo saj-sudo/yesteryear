@@ -151,3 +151,26 @@ it('moves the theme choice with the arrow keys and keeps one option in the tab o
   expect(tabbable).toBe(1);
   await page.close();
 });
+
+it('picks a range of notes with two taps on a touch screen', async () => {
+  const page = await browser.newPage({ viewport: VIEWPORTS[0]!, hasTouch: true });
+  await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });
+  await page.getByRole('button', { name: 'Try the demo', exact: true }).click();
+  await page.evaluate(() => {
+    location.hash = '#/learn';
+  });
+  const turnOn = page.getByRole('button', { name: 'Turn on Learn mode' });
+  if (await turnOn.count()) await turnOn.click();
+  await page.getByRole('button', { name: 'New study set' }).click();
+  await page.getByLabel('Search your notes').fill('a');
+  await page.locator('.finder-results li').nth(5).waitFor();
+  await page.getByRole('button', { name: 'Pick a range', exact: true }).tap();
+  await page.getByText('Tap the first note of the range.').waitFor();
+  await page.locator('.finder-results li label').nth(1).tap();
+  await page.getByText(/Tap the last note of the range/).waitFor();
+  await page.locator('.finder-results li label').nth(3).tap();
+  await page.getByRole('heading', { name: /Picked \(3\)/ }).or(page.getByText('Picked (3)')).first().waitFor();
+  expect(await page.locator('.finder-results li input:checked').count()).toBe(3);
+  expect(await page.getByText('Tap the first note of the range.').count()).toBe(0);
+  await page.close();
+});
