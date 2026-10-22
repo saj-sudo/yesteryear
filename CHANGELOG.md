@@ -54,7 +54,9 @@ All notable changes to Yesteryear are documented here. The format follows
   privacy claim links to the test that checks it. A new section covers the
   phone view.
 - CONTRIBUTING has a Writing section with the copy rules, which are checked by
-  `tests/build/copy.test.ts` where a machine can check them.
+  `tests/build/copy.test.ts` where a machine can check them. The README follows
+  the same rules: shorter paragraphs, lists for parallel facts, and a section on
+  the phone view.
 - **The demo spaces read like real notes.** The Fernweh Field Office had about
   400 daily notes made from 12 sentences, so the same line came back every few
   weeks and sometimes twice on one On This Day page. The daily notes now draw
