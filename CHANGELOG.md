@@ -8,6 +8,12 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Added
 
+- **Light, Dark or Auto.** A small switch in the sidebar (at the bottom of the
+  page on a phone) lets you pick the theme. Auto still follows the phone or
+  computer setting, which is what Yesteryear did before with no way to change
+  it. Your choice stays in this browser and is applied before the first
+  paint, so the page doesn't flash the other theme. The browser bar colour
+  follows it too.
 - **Study sets in Learn.** A set has a name, one date and a selection of
   notes: by tag, by object type, or picked one by one with a search that can
   tick many notes at once. The date belongs to the set, so a note no longer
