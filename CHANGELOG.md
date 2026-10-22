@@ -48,6 +48,15 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Changed
 
+- **The demo spaces read like real notes.** The Fernweh Field Office had about
+  400 daily notes made from 12 sentences, so the same line came back every few
+  weeks and sometimes twice on one On This Day page. The daily notes now draw
+  from a few hundred lines that follow the seasons, in several shapes: short
+  bullets, task lists, a morning and an evening, and a paragraph, with the
+  odd quote and a link to a person. The space also has 24 field notes instead
+  of 8, including meeting notes, a packing list, book notes and a trip debrief.
+  The nearly empty space (Kitchen Table Notes) got the same treatment. The
+  README screenshots and the link preview card were retaken from the new demo.
 
 - **New look.** A layout that sits comfortably next to Capacities (white and
   warm off-white surfaces, the system font, soft corners, a familiar
