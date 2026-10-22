@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { formatLocalDate, parseDailyNoteTitle } from '../../engine/dates';
 import type { ObjectSummary, Provider, StructureDef } from '../../engine/provider';
 import type { StudySetNote } from '../../engine/types';
-import { pickRange } from './pickRange';
+import { pickRange, tapRange } from './pickRange';
 
 const SEARCH_LIMIT = 30;
 const BROWSE_LIMIT = 60;
@@ -32,6 +32,9 @@ export function NoteFinder(props: {
   const [typeId, setTypeId] = useState('');
   const [results, setResults] = useState<ObjectSummary[] | null>(null);
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
+  /** "Pick a range" mode: tap the first note, then the last. */
+  const [rangeMode, setRangeMode] = useState(false);
+  const [rangeStart, setRangeStart] = useState<number | null>(null);
   const [box, setBox] = useState<{ left: number; top: number; width: number; height: number } | null>(
     null,
   );
@@ -76,6 +79,8 @@ export function NoteFinder(props: {
             }
             if (cancelled) return;
             anchor.current = null;
+            setRangeMode(false);
+            setRangeStart(null);
             setResults(found);
             setStatus('idle');
           } catch {
@@ -101,6 +106,22 @@ export function NoteFinder(props: {
       if (!pickedIds.has(note.id)) onChange([...picked, { id: note.id, title: note.title }]);
     } else {
       onChange(picked.filter((n) => n.id !== note.id));
+    }
+  };
+
+  const toggleRange = (): void => {
+    setRangeMode((on) => !on);
+    setRangeStart(null);
+  };
+
+  /** A tap on a row while picking a range. */
+  const onRangeTap = (index: number): void => {
+    const step = tapRange(rangeStart, index, picked, shown);
+    setRangeStart(step.start);
+    if (step.start === null) {
+      onChange(step.picked);
+      setRangeMode(false);
+      anchor.current = index;
     }
   };
 
@@ -138,7 +159,7 @@ export function NoteFinder(props: {
      Mouse and pen only: on a touch screen a drag scrolls the list. */
   const onPointerDown = (e: PointerEvent): void => {
     suppressClick.current = false;
-    if (e.pointerType === 'touch' || e.button !== 0) return;
+    if (rangeMode || e.pointerType === 'touch' || e.button !== 0) return;
     const index = rowOf(e.target);
     const note = shown[index];
     if (!note) return;
@@ -253,6 +274,13 @@ export function NoteFinder(props: {
         {status === 'idle' && results !== null && results.length === 0 && (
           <p class="fineprint">No notes found.</p>
         )}
+        {rangeMode && (
+          <p class="fineprint range-status">
+            {rangeStart === null
+              ? 'Tap the first note of the range.'
+              : `Tap the last note of the range. It starts at ${noteLabel(shown[rangeStart]?.title ?? '')}.`}
+          </p>
+        )}
       </div>
 
       {shown.length > 0 && (
@@ -261,9 +289,19 @@ export function NoteFinder(props: {
             <span class="fineprint">
               {shown.length} shown{shown.length >= SEARCH_LIMIT ? ' (narrow it down for more)' : ''}
             </span>
-            <button type="button" class="subtle" onClick={toggleAllShown}>
-              {allShownPicked ? 'Unpick all shown' : 'Pick all shown'}
-            </button>
+            <span class="finder-actions">
+              <button
+                type="button"
+                class="subtle"
+                aria-pressed={rangeMode}
+                onClick={toggleRange}
+              >
+                Pick a range
+              </button>
+              <button type="button" class="subtle" onClick={toggleAllShown}>
+                {allShownPicked ? 'Unpick all shown' : 'Pick all shown'}
+              </button>
+            </span>
           </div>
           <div class="finder-box">
             <ul
@@ -282,7 +320,7 @@ export function NoteFinder(props: {
               onKeyDown={onKeyDown}
             >
               {shown.map((note, i) => (
-                <li key={note.id}>
+                <li key={note.id} class={rangeStart === i ? 'range-start' : ''}>
                   <label class="finder-row">
                     <input
                       type="checkbox"
@@ -292,6 +330,12 @@ export function NoteFinder(props: {
                       }}
                       onChange={(e) => {
                         const on = (e.target as HTMLInputElement).checked;
+                        if (rangeMode) {
+                          // The tap marks a range end, so the box itself stays as it was.
+                          (e.target as HTMLInputElement).checked = pickedIds.has(note.id);
+                          onRangeTap(i);
+                          return;
+                        }
                         if (shiftHeld.current && anchor.current !== null) {
                           onChange(pickRange(picked, shown, anchor.current, i, on));
                         } else {

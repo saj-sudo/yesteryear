@@ -31,3 +31,30 @@ export function pickRange(
   }
   return [...byId.values()];
 }
+
+export interface RangeTap {
+  /** Row where the range starts, or null once it is closed. */
+  start: number | null;
+  picked: StudySetNote[];
+}
+
+/**
+ * One tap in "pick a range" mode, for screens where a drag scrolls the
+ * list. The first tap marks where the range starts. The second tap closes
+ * it: every row from the first to the second is picked, or unpicked when
+ * they were all picked already, so a second pass can undo the first.
+ */
+export function tapRange(
+  start: number | null,
+  index: number,
+  picked: readonly StudySetNote[],
+  shown: readonly Pickable[],
+): RangeTap {
+  if (start === null) return { start: index, picked: [...picked] };
+  const lo = Math.max(0, Math.min(start, index));
+  const hi = Math.min(shown.length - 1, Math.max(start, index));
+  const have = new Set(picked.map((n) => n.id));
+  let allPicked = hi >= lo;
+  for (let i = lo; i <= hi; i += 1) if (!have.has(shown[i]!.id)) allPicked = false;
+  return { start: null, picked: pickRange(picked, shown, start, index, !allPicked) };
+}
