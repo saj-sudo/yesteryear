@@ -137,9 +137,7 @@ export function createSession(): Session | null {
 
   const credential = loadCredential();
   let client: CapacitiesClient | null = null;
-  if (credential?.kind === 'token') {
-    client = new CapacitiesClient({ apiToken: credential.apiToken });
-  } else if (credential?.kind === 'oauth' && CLIENT_ID) {
+  if (credential?.kind === 'oauth' && CLIENT_ID) {
     const { kind, ...tokens } = credential;
     void kind;
     client = new CapacitiesClient({
@@ -177,18 +175,13 @@ export async function connect(): Promise<void> {
   location.assign(url);
 }
 
-/** Store a personal API token and let the caller rebuild the session. */
-export function connectWithToken(apiToken: string): void {
-  saveCredential({ kind: 'token', apiToken });
-}
-
 export function disconnect(): void {
   clearCredential();
 }
 
 /**
  * True when an error means "the connection is gone": revoked access,
- * an expired refresh token, or a revoked/invalid personal token.
+ * or an expired refresh token.
  * Callers clear the credential and show Connect again rather than
  * error-looping (§11).
  */

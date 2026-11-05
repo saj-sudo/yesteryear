@@ -6,6 +6,14 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ## [Unreleased]
 
+### Removed
+
+- **Personal API tokens.** Sign-in is OAuth only, as Capacities asks of public
+  integrations. The "Advanced: connect with a personal API token" section is
+  gone from the Connect screen and the README. A token saved by an earlier
+  build is deleted from browser storage on the next visit, and the visitor sees
+  Connect again. Forks need their own OAuth client id in `.env.local`.
+
 ### Added
 
 - **One-click connect on the hosted site.** Capacities registered the OAuth client
