@@ -67,7 +67,7 @@ On a phone you can add the site to your home screen so it opens on Today. A swit
 
 ### Use it now with a personal token
 
-One-click connect needs an OAuth client id from Capacities. Until that is in place, or for your own self-hosted build, use a personal token.
+The hosted site connects with one click through Capacities' OAuth. For your own self-hosted build without an OAuth client of your own, use a personal token.
 
 1. In the Capacities desktop app, create a token under **Settings → Capacities API → API Tokens** for the space you want to use, with read and write access.
 2. Run the site (`npm install && npm run dev`) and paste the token under **Advanced** on the Connect screen.
@@ -125,7 +125,7 @@ npm install
 VITE_CAPACITIES_CLIENT_ID=<your client id> npm run build   # output in dist/
 ```
 
-- The OAuth `client_id` comes from Capacities. Registration is [by email](https://developers.capacities.io), and you register your own `/callback` URL as the redirect URI.
+- The OAuth `client_id` comes from Capacities. The hosted build's id is committed in `.env.production`. For your own deployment, register your own `/callback` URL as the redirect URI ([by email](https://developers.capacities.io)) and put your id in `.env.local`, which takes priority.
 - The id is public by design (a PKCE public client has no client secret). Without one, the site still serves the demo.
 - On Cloudflare Workers, the `wrangler.jsonc` in the repo serves `dist/` as static assets.
 - Link previews use absolute URLs. Change `og:image` and `og:url` in `index.html` to your own domain.
