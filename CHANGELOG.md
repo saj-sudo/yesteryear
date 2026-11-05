@@ -6,7 +6,21 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ## [Unreleased]
 
+### Removed
+
+- **Personal API tokens.** Sign-in is OAuth only, as Capacities asks of public
+  integrations. The "Advanced: connect with a personal API token" section is
+  gone from the Connect screen and the README. A token saved by an earlier
+  build is deleted from browser storage on the next visit, and the visitor sees
+  Connect again. Forks need their own OAuth client id in `.env.local`.
+
 ### Added
+
+- **One-click connect on the hosted site.** Capacities registered the OAuth client
+  (`capacities_api_yesteryear`), and the hosted build now ships it in
+  `.env.production`. Forks and self-hosted builds set their own id in
+  `.env.local`. Without any id, the Connect screen still offers the demo and the
+  personal-token path.
 
 - **Setup that reads your space.** Yesteryear used to start with nothing mapped,
   so a space with a Project type or a People type did nothing with them until

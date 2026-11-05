@@ -65,14 +65,6 @@ Nothing. Daily notes alone are enough to start, and every space has them. A few 
 
 On a phone you can add the site to your home screen so it opens on Today. A switch in the sidebar (at the bottom of the page on a phone) sets light, dark or automatic.
 
-### Use it now with a personal token
-
-One-click connect needs an OAuth client id from Capacities. Until that is in place, or for your own self-hosted build, use a personal token.
-
-1. In the Capacities desktop app, create a token under **Settings → Capacities API → API Tokens** for the space you want to use, with read and write access.
-2. Run the site (`npm install && npm run dev`) and paste the token under **Advanced** on the Connect screen.
-3. The token stays in your browser's storage, so treat it like a password. You can revoke it in the same settings screen at any time.
-
 ## Answering is optional
 
 You answer in the note itself, and not answering is always fine: the note stays on its normal schedule.
@@ -114,7 +106,7 @@ There are no streaks, counters or reminders anywhere. Leaving everything untouch
 
 ## Built on the official API
 
-Yesteryear uses the official Capacities HTTP API through the official [`@capacities/api`](https://www.npmjs.com/package/@capacities/api) TypeScript SDK, and no internal interfaces of the app, which some community tools depend on. OAuth 2.1 with PKCE is the main sign-in, and the personal token path is for self-hosters and early testing. Using only the official API keeps Yesteryear working as Capacities changes.
+Yesteryear uses the official Capacities HTTP API through the official [`@capacities/api`](https://www.npmjs.com/package/@capacities/api) TypeScript SDK, and no internal interfaces of the app, which some community tools depend on. Sign-in is OAuth 2.1 with PKCE only; personal API tokens are not accepted. Using only the official API keeps Yesteryear working as Capacities changes.
 
 ## Deploying your own
 
@@ -125,7 +117,7 @@ npm install
 VITE_CAPACITIES_CLIENT_ID=<your client id> npm run build   # output in dist/
 ```
 
-- The OAuth `client_id` comes from Capacities. Registration is [by email](https://developers.capacities.io), and you register your own `/callback` URL as the redirect URI.
+- The OAuth `client_id` comes from Capacities. The hosted build's id is committed in `.env.production`. For your own deployment, register your own `/callback` URL as the redirect URI ([by email](https://developers.capacities.io)) and put your id in `.env.local`, which takes priority.
 - The id is public by design (a PKCE public client has no client secret). Without one, the site still serves the demo.
 - On Cloudflare Workers, the `wrangler.jsonc` in the repo serves `dist/` as static assets.
 - Link previews use absolute URLs. Change `og:image` and `og:url` in `index.html` to your own domain.

@@ -1,33 +1,22 @@
-import { useState } from 'preact/hooks';
 import {
   CLIENT_ID,
   connect,
-  connectWithToken,
   startDemo,
   type DemoFlavor,
 } from '../session';
 
 /**
  * The connect screen. Calm, honest, no dead ends: OAuth is the primary
- * flow when configured; a personal API token is the advanced path for
- * self-hosters and early testing; the demo needs nothing at all.
+ * flow, and the only way to connect a real space; the demo needs nothing
+ * at all.
  */
 export function Connect(props: {
   onDemo: (flavor: DemoFlavor) => void;
   onConnected: () => void;
 }) {
-  const [token, setToken] = useState('');
-
   const demo = (flavor: DemoFlavor) => () => {
     startDemo(flavor);
     props.onDemo(flavor);
-  };
-
-  const submitToken = (): void => {
-    const trimmed = token.trim();
-    if (!trimmed) return;
-    connectWithToken(trimmed);
-    props.onConnected();
   };
 
   return (
@@ -55,9 +44,7 @@ export function Connect(props: {
         </>
       ) : (
         <p class="notice">
-          One-click connect isn't set up on this build yet. You can try the
-          demo, or connect your own space with a personal API token under
-          Advanced, further down.
+          Sign-in isn't set up on this build. You can try the demo.
         </p>
       )}
 
@@ -75,31 +62,6 @@ export function Connect(props: {
       </div>
       <p class="fineprint">The demo runs on synthetic notes, entirely in this tab.</p>
 
-      <details class="advanced">
-        <summary>Advanced: connect with a personal API token</summary>
-        <p class="fineprint">
-          In the Capacities desktop app, open Settings → Capacities API → API
-          Tokens and create a token for the space you want to use. Give it read
-          and write access, because Yesteryear keeps its history in a page in
-          that space. Paste it here. The token stays in this browser’s storage,
-          so treat it like a password, and revoke it in the same screen
-          whenever you like.
-        </p>
-        <div class="token-row">
-          <input
-            type="password"
-            placeholder="cap-api-…"
-            value={token}
-            onInput={(e) => setToken((e.target as HTMLInputElement).value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') submitToken();
-            }}
-          />
-          <button onClick={submitToken} disabled={token.trim() === ''}>
-            Connect
-          </button>
-        </div>
-      </details>
     </main>
   );
 }
