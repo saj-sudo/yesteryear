@@ -1,3 +1,5 @@
+import { useEffect } from 'preact/hooks';
+import { loadCredential } from '../../auth/tokens';
 import {
   CLIENT_ID,
   connect,
@@ -14,6 +16,24 @@ export function Connect(props: {
   onDemo: (flavor: DemoFlavor) => void;
   onConnected: () => void;
 }) {
+  // On phones the redirect back from Capacities often finishes in another
+  // tab. When that tab saves the credential, pick it up here too.
+  const { onConnected } = props;
+  useEffect(() => {
+    const check = (): void => {
+      if (loadCredential()) onConnected();
+    };
+    const onVisible = (): void => {
+      if (document.visibilityState === 'visible') check();
+    };
+    window.addEventListener('storage', check);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.removeEventListener('storage', check);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [onConnected]);
+
   const demo = (flavor: DemoFlavor) => () => {
     startDemo(flavor);
     props.onDemo(flavor);
@@ -53,13 +73,18 @@ export function Connect(props: {
         <button class={CLIENT_ID ? '' : 'primary'} onClick={demo('strangers')}>
           Try the demo
         </button>
-        <button class="subtle" onClick={demo('fresh')}>
-          Demo: a first run in a new space
-        </button>
-        <button class="subtle" onClick={demo('minimal')}>
-          Demo: a nearly empty space
-        </button>
       </div>
+      <details class="more-demos">
+        <summary>More demos</summary>
+        <div class="demo-buttons">
+          <button class="subtle" onClick={demo('fresh')}>
+            Demo: a first run in a new space
+          </button>
+          <button class="subtle" onClick={demo('minimal')}>
+            Demo: a nearly empty space
+          </button>
+        </div>
+      </details>
       <p class="fineprint">The demo runs on synthetic notes, entirely in this tab.</p>
 
     </main>

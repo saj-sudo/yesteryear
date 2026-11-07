@@ -167,9 +167,10 @@ export async function connect(): Promise<void> {
     clientId: CLIENT_ID,
     redirectUri: `${location.origin}/callback`,
     storage: {
-      get: (k) => sessionStorage.getItem(k),
-      set: (k, v) => sessionStorage.setItem(k, v),
-      remove: (k) => sessionStorage.removeItem(k),
+      // localStorage, not sessionStorage: see PENDING_TTL_MS in auth/oauth.ts.
+      get: (k) => localStorage.getItem(k),
+      set: (k, v) => localStorage.setItem(k, v),
+      remove: (k) => localStorage.removeItem(k),
     },
   });
   location.assign(url);
