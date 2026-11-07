@@ -152,6 +152,49 @@ it('moves the theme choice with the arrow keys and keeps one option in the tab o
   await page.close();
 });
 
+it('shows exactly one theme choice wherever there is one', async () => {
+  const visible = (page: Page) => page.locator('.theme-choice:visible').count();
+  const go = (page: Page, hash: string) =>
+    page.evaluate((h) => {
+      location.hash = h;
+    }, hash);
+  for (const viewport of VIEWPORTS) {
+    const page = await browser.newPage({ viewport });
+    await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });
+    await page.getByRole('button', { name: 'Try the demo', exact: true }).click();
+    await go(page, '#/settings');
+    await page.getByRole('heading', { name: 'Settings', level: 1 }).waitFor();
+    expect(await visible(page), `${viewport.name} settings`).toBe(1);
+    await go(page, '#/today');
+    await page.waitForTimeout(300);
+    // A phone keeps it in Settings; a wide screen keeps it in the sidebar.
+    expect(await visible(page), `${viewport.name} today`).toBe(viewport.name === 'phone' ? 0 : 1);
+    await page.close();
+  }
+});
+
+it('fits the nav and the calendar on a phone', async () => {
+  const page = await browser.newPage({ viewport: VIEWPORTS[0]! });
+  await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });
+  await page.getByRole('button', { name: 'Try the demo', exact: true }).click();
+  const settings = page.locator('.sidebar nav a', { hasText: 'Settings' });
+  await settings.waitFor();
+  const box = await settings.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.x).toBeGreaterThanOrEqual(0);
+  expect(box!.y).toBeGreaterThanOrEqual(0);
+  expect(box!.x + box!.width).toBeLessThanOrEqual(VIEWPORTS[0]!.width);
+  expect(box!.y + box!.height).toBeLessThanOrEqual(VIEWPORTS[0]!.height);
+  await page.evaluate(() => {
+    location.hash = '#/heatmap';
+  });
+  const grid = page.locator('.heat-grid');
+  await grid.waitFor();
+  const size = await grid.evaluate((el) => ({ scroll: el.scrollWidth, client: el.clientWidth }));
+  expect(size.scroll).toBeLessThanOrEqual(size.client);
+  await page.close();
+});
+
 it('picks a range of notes with two taps on a touch screen', async () => {
   const page = await browser.newPage({ viewport: VIEWPORTS[0]!, hasTouch: true });
   await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });

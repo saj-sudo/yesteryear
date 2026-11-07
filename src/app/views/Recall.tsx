@@ -6,7 +6,7 @@ import type { TagDef } from '../../engine/provider';
 import { learnKey } from '../../engine/state';
 import type { ItemKey, LocalDate } from '../../engine/types';
 import type { AppData } from '../App';
-import { displayTitle, rowsOf, useTitles, type Row } from './scheduleShared';
+import { displayTitle, rowsOf, rowWhen, useTitles, type Row } from './scheduleShared';
 
 /**
  * Recall: the general cadence. No deadline, no memory model: a hard
@@ -166,7 +166,7 @@ export function Recall({ data }: { data: AppData }) {
           {rows.map((row) => (
             <li key={row.key}>
               <span class="queue-title">{displayTitle(titles, row)}</span>
-              <span class="queue-when">{row.when ?? ''}</span>
+              <span class="queue-when">{rowWhen(row)}</span>
               <span class="queue-actions">{rowActions(row)}</span>
             </li>
           ))}

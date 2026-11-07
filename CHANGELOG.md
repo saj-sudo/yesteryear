@@ -16,6 +16,17 @@ All notable changes to Yesteryear are documented here. The format follows
   when you come back to it.
 - **A clearer message when Capacities can't be reached.** A blocked or
   offline token request now says so instead of "Connecting failed".
+- **Easier to use on a phone.** All seven views now show in the menu, four
+  to a row, instead of a row that scrolled off the side. Text is a little
+  larger, and buttons, tags and switches are at least 44px tall. The
+  calendar fits the screen, with each month as a column. Recall shows dates
+  as "Dec 22, 2026". Row actions in Recall and Learn are proper buttons that
+  wrap. Settings opens folded, with the colour theme at the bottom. The
+  landing page shows phone screenshots on a phone.
+- **The "Resurfaced section was added" notice** shows on Today only, and has
+  a Dismiss button.
+- **Preview markers** such as keep, dismiss and retire read as small labels
+  instead of code.
 
 ### Changed
 
