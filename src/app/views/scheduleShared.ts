@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import { formatLocalDate, parseDailyNoteTitle } from '../../engine/dates';
+import { formatLocalDate, isLocalDate, parseDailyNoteTitle } from '../../engine/dates';
 import { parseKey } from '../../engine/state';
 import type { ItemKey, ItemState } from '../../engine/types';
 import type { AppData } from '../App';
@@ -17,6 +17,12 @@ export interface Row {
   blockId: string | null;
   item: ItemState;
   when: string | null;
+}
+
+/** A row's date as people read it ("Dec 22, 2026"), or empty when it has none. */
+export function rowWhen(row: Pick<Row, 'when'>): string {
+  if (row.when === null) return '';
+  return isLocalDate(row.when) ? formatLocalDate(row.when) : row.when;
 }
 
 export function rowsOf(

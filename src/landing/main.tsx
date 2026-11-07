@@ -2,6 +2,19 @@ import { render } from 'preact';
 import todayShot from '../../docs/today.png';
 import calendarShot from '../../docs/calendar.png';
 import learnShot from '../../docs/learn.png';
+import todayPhone from '../../docs/phone-today.png';
+import calendarPhone from '../../docs/phone-calendar.png';
+import learnPhone from '../../docs/phone-learn.png';
+
+/** A screenshot that swaps to a phone-sized one on a narrow screen. */
+function Shot({ wide, phone, alt }: { wide: string; phone: string; alt: string }) {
+  return (
+    <picture>
+      <source media="(max-width: 720px)" srcset={phone} width={824} height={1678} />
+      <img src={wide} alt={alt} width={1280} height={800} loading="lazy" />
+    </picture>
+  );
+}
 
 /**
  * The landing page: what it is, what it looks like, and the privacy
@@ -38,8 +51,9 @@ function Landing() {
         <a class="cta-secondary" href="/app/">Try the demo (no account needed)</a>
       </p>
 
-      <img
-        src={todayShot}
+      <Shot
+        wide={todayShot}
+        phone={todayPhone}
         alt="Today in a made-up field office space: four resurfaced notes with tinted labels, and an unlikely pair shown as two overlapping prints."
       />
 
@@ -67,8 +81,9 @@ function Landing() {
         answer with a tap. For heavier memorising, Anki is the better tool.
       </p>
 
-      <img
-        src={learnShot}
+      <Shot
+        wide={learnShot}
+        phone={learnPhone}
         alt="The Learn page in a made-up field office space: two study sets, one counting down to its date and one whose date has passed, and the notes now studying toward a date."
       />
 
@@ -129,8 +144,9 @@ function Landing() {
         date can only bring back notes that already share one.
       </p>
 
-      <img
-        src={calendarShot}
+      <Shot
+        wide={calendarShot}
+        phone={calendarPhone}
         alt="The calendar: a year of days, with a dot of ink for each day that has a daily note."
       />
 

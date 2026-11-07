@@ -8,6 +8,8 @@ import type { PropertyRole, TypeRole, YesteryearConfig } from '../../engine/type
 import { isBasicStructure } from '../../providers/capacities/constants';
 import type { AppData } from '../App';
 import { MappingSuggestions } from '../components/MappingSuggestions';
+import { SettingsSection } from '../components/SettingsSection';
+import { ThemeChoice } from '../components/ThemeChoice';
 import { readSkipped, saveSkipped } from '../suggestionSkipped';
 
 /**
@@ -222,24 +224,24 @@ export function Settings({
         />
       )}
 
-      <h2 class="sub">Object types</h2>
-      {customTypes.length === 0 ? (
-        <p class="empty-note">
-          No custom types in this space. Daily notes still come back without them.
-          To bring back birthdays or target dates, add a type in Capacities under Settings → Object Types → + New
-          Type.
-        </p>
-      ) : (
-        <div class="field-row">
-          {typeSelect('project', 'Projects', 'For anniversaries and target dates')}
-          {typeSelect('person', 'People', 'For birthdays')}
-          {typeSelect('note', 'Notes', 'Your atomic-note type, if you keep one')}
-        </div>
-      )}
+      <SettingsSection title="Object types" openOnPhone>
+        {customTypes.length === 0 ? (
+          <p class="empty-note">
+            No custom types in this space. Daily notes still come back without them.
+            To bring back birthdays or target dates, add a type in Capacities under Settings → Object Types → + New
+            Type.
+          </p>
+        ) : (
+          <div class="field-row">
+            {typeSelect('project', 'Projects', 'For anniversaries and target dates')}
+            {typeSelect('person', 'People', 'For birthdays')}
+            {typeSelect('note', 'Notes', 'Your atomic-note type, if you keep one')}
+          </div>
+        )}
+      </SettingsSection>
 
       {config.types.project && (
-        <>
-          <h2 class="sub">Project dates</h2>
+        <SettingsSection title="Project dates">
           <div class="field-row">
             {propertySelect('projectStart', 'Start date', 'project', 'date')}
             {propertySelect('projectTarget', 'Target date', 'project', 'date')}
@@ -272,201 +274,211 @@ export function Settings({
               </div>
             </div>
           )}
-        </>
+        </SettingsSection>
       )}
 
       {config.types.person && (
-        <>
-          <h2 class="sub">People</h2>
+        <SettingsSection title="People">
           <div class="field-row">
             {propertySelect('personBirthday', 'Birthday property', 'person', 'date')}
           </div>
-        </>
+        </SettingsSection>
       )}
 
-      <h2 class="sub">Resurfacing tags</h2>
-      <p class="fineprint">Notes carrying these tags join the Recall rotation.</p>
-      {tagToggle(config.recall.tags, (d, name, on) => {
-        const set = new Set(d.recall.tags);
-        if (on) set.add(name);
-        else set.delete(name);
-        d.recall.tags = [...set];
-      })}
-
-      <h2 class="sub">Granularity</h2>
-      <div class="field-row">
-        <label class="field">
-          <span>Resurface</span>
-          <select
-            value={config.granularity.mode}
-            onChange={(e) =>
-              update((d) => {
-                d.granularity.mode =
-                  (e.target as HTMLSelectElement).value === 'block' ? 'block' : 'object';
-              })
-            }
-          >
-            <option value="object">Whole objects</option>
-            <option value="block">Individual blocks</option>
-          </select>
-          <small>Blocks make long pages resurface one paragraph at a time.</small>
-        </label>
-        {config.granularity.mode === 'block' && (
-          <label class="field">
-            <span>Block types</span>
-            <div class="tag-grid">
-              {BLOCK_TYPES.map((bt) => {
-                const on = config.granularity.blockTypes.includes(bt);
-                return (
-                  <label key={bt} class={`tag-chip${on ? ' on' : ''}`}>
-                    <input
-                      type="checkbox"
-                      checked={on}
-                      onChange={(e) =>
-                        update((d) => {
-                          const set = new Set(d.granularity.blockTypes);
-                          if ((e.target as HTMLInputElement).checked) set.add(bt);
-                          else set.delete(bt);
-                          d.granularity.blockTypes = [...set];
-                        })
-                      }
-                    />
-                    {bt}
-                  </label>
-                );
-              })}
-            </div>
-          </label>
-        )}
-      </div>
-
-      <h2 class="sub">Rotation</h2>
-      <label class="field checkbox">
-        <input
-          type="checkbox"
-          checked={config.rotation.enabled}
-          onChange={(e) =>
-            update((d) => {
-              d.rotation.enabled = (e.target as HTMLInputElement).checked;
-            })
-          }
-        />
-        <span>
-          Rotate across tag groups, so one busy area cannot own the queue
-        </span>
-      </label>
-      {config.rotation.enabled &&
-        tagToggle(config.rotation.groups, (d, name, on) => {
-          const set = new Set(d.rotation.groups);
+      <SettingsSection title="Resurfacing tags">
+        <p class="fineprint">Notes carrying these tags join the Recall rotation.</p>
+        {tagToggle(config.recall.tags, (d, name, on) => {
+          const set = new Set(d.recall.tags);
           if (on) set.add(name);
           else set.delete(name);
-          d.rotation.groups = [...set];
+          d.recall.tags = [...set];
         })}
+      </SettingsSection>
 
-      <h2 class="sub">Learn mode</h2>
-      <label class="field checkbox">
-        <input
-          type="checkbox"
-          checked={config.learn.enabled}
-          onChange={(e) =>
-            update((d) => {
-              d.learn.enabled = (e.target as HTMLInputElement).checked;
-            })
-          }
-        />
-        <span>
-          Space selected notes toward a date, using study sets or a date
-          property (for real memorization tooling, use Anki)
-        </span>
-      </label>
-      {config.learn.enabled && (
-        <>
-          <p class="fineprint">
-            Study sets are on the <a href="#/learn">Learn page</a>. Notes with these tags
-            take their date from the property below:
-          </p>
-          {tagToggle(config.learn.assignByTag, (d, name, on) => {
-            const set = new Set(d.learn.assignByTag);
-            if (on) set.add(name);
-            else set.delete(name);
-            d.learn.assignByTag = [...set];
-          })}
+      <SettingsSection title="Granularity">
+        <div class="field-row">
           <label class="field">
-            <span>Target-date property name</span>
-            <input
-              type="text"
-              value={config.learn.targetDateProperty ?? ''}
-              placeholder="e.g. the date property on your flashcard type"
+            <span>Resurface</span>
+            <select
+              value={config.granularity.mode}
               onChange={(e) =>
                 update((d) => {
-                  const v = (e.target as HTMLInputElement).value.trim();
-                  d.learn.targetDateProperty = v || null;
+                  d.granularity.mode =
+                    (e.target as HTMLSelectElement).value === 'block' ? 'block' : 'object';
                 })
               }
-            />
-            <small>Items without a resolvable target date stay in Recall.</small>
+            >
+              <option value="object">Whole objects</option>
+              <option value="block">Individual blocks</option>
+            </select>
+            <small>Blocks make long pages resurface one paragraph at a time.</small>
           </label>
-        </>
-      )}
+          {config.granularity.mode === 'block' && (
+            <label class="field">
+              <span>Block types</span>
+              <div class="tag-grid">
+                {BLOCK_TYPES.map((bt) => {
+                  const on = config.granularity.blockTypes.includes(bt);
+                  return (
+                    <label key={bt} class={`tag-chip${on ? ' on' : ''}`}>
+                      <input
+                        type="checkbox"
+                        checked={on}
+                        onChange={(e) =>
+                          update((d) => {
+                            const set = new Set(d.granularity.blockTypes);
+                            if ((e.target as HTMLInputElement).checked) set.add(bt);
+                            else set.delete(bt);
+                            d.granularity.blockTypes = [...set];
+                          })
+                        }
+                      />
+                      {bt}
+                    </label>
+                  );
+                })}
+              </div>
+            </label>
+          )}
+        </div>
+      </SettingsSection>
 
-      <h2 class="sub">Surfaces</h2>
-      <label class="field checkbox">
-        <input
-          type="checkbox"
-          checked={config.surfaces.dailyNote.enabled}
-          onChange={(e) =>
-            update((d) => {
-              d.surfaces.dailyNote.enabled = (e.target as HTMLInputElement).checked;
-            })
-          }
-        />
-        <span>
-          Write a “{config.surfaces.dailyNote.heading}” section into the daily
-          note on the first visit of the day
-        </span>
-      </label>
-      <div class="field-row">
-        <label class="field">
-          <span>Items per day</span>
-          <input
-            type="number"
-            min={1}
-            max={20}
-            value={config.surfaces.dailyNote.maxItems}
-            onChange={(e) =>
-              update((d) => {
-                d.surfaces.dailyNote.maxItems = Number((e.target as HTMLInputElement).value);
-              })
-            }
-          />
-        </label>
+      <SettingsSection title="Rotation">
         <label class="field checkbox">
           <input
             type="checkbox"
-            checked={config.minimalMode}
+            checked={config.rotation.enabled}
             onChange={(e) =>
               update((d) => {
-                d.minimalMode = (e.target as HTMLInputElement).checked;
+                d.rotation.enabled = (e.target as HTMLInputElement).checked;
               })
             }
           />
-          <span>Minimal mode: exactly one item a day, preferring “on this day”</span>
+          <span>
+            Rotate across tag groups, so one busy area cannot own the queue
+          </span>
         </label>
-        <label class="field">
-          <span>Timezone</span>
+        {config.rotation.enabled &&
+          tagToggle(config.rotation.groups, (d, name, on) => {
+            const set = new Set(d.rotation.groups);
+            if (on) set.add(name);
+            else set.delete(name);
+            d.rotation.groups = [...set];
+          })}
+      </SettingsSection>
+
+      <SettingsSection title="Learn mode">
+        <label class="field checkbox">
           <input
-            type="text"
-            value={config.timezone ?? ''}
-            placeholder={Intl.DateTimeFormat().resolvedOptions().timeZone}
+            type="checkbox"
+            checked={config.learn.enabled}
             onChange={(e) =>
               update((d) => {
-                const v = (e.target as HTMLInputElement).value.trim();
-                d.timezone = v || null;
+                d.learn.enabled = (e.target as HTMLInputElement).checked;
               })
             }
           />
-          <small>Detected from this browser unless overridden.</small>
+          <span>
+            Space selected notes toward a date, using study sets or a date
+            property (for real memorization tooling, use Anki)
+          </span>
         </label>
+        {config.learn.enabled && (
+          <>
+            <p class="fineprint">
+              Study sets are on the <a href="#/learn">Learn page</a>. Notes with these tags
+              take their date from the property below:
+            </p>
+            {tagToggle(config.learn.assignByTag, (d, name, on) => {
+              const set = new Set(d.learn.assignByTag);
+              if (on) set.add(name);
+              else set.delete(name);
+              d.learn.assignByTag = [...set];
+            })}
+            <label class="field">
+              <span>Target-date property name</span>
+              <input
+                type="text"
+                value={config.learn.targetDateProperty ?? ''}
+                placeholder="e.g. the date property on your flashcard type"
+                onChange={(e) =>
+                  update((d) => {
+                    const v = (e.target as HTMLInputElement).value.trim();
+                    d.learn.targetDateProperty = v || null;
+                  })
+                }
+              />
+              <small>Items without a resolvable target date stay in Recall.</small>
+            </label>
+          </>
+        )}
+      </SettingsSection>
+
+      <SettingsSection title="Surfaces">
+        <label class="field checkbox">
+          <input
+            type="checkbox"
+            checked={config.surfaces.dailyNote.enabled}
+            onChange={(e) =>
+              update((d) => {
+                d.surfaces.dailyNote.enabled = (e.target as HTMLInputElement).checked;
+              })
+            }
+          />
+          <span>
+            Write a “{config.surfaces.dailyNote.heading}” section into the daily
+            note on the first visit of the day
+          </span>
+        </label>
+        <div class="field-row">
+          <label class="field">
+            <span>Items per day</span>
+            <input
+              type="number"
+              min={1}
+              max={20}
+              value={config.surfaces.dailyNote.maxItems}
+              onChange={(e) =>
+                update((d) => {
+                  d.surfaces.dailyNote.maxItems = Number((e.target as HTMLInputElement).value);
+                })
+              }
+            />
+          </label>
+          <label class="field checkbox">
+            <input
+              type="checkbox"
+              checked={config.minimalMode}
+              onChange={(e) =>
+                update((d) => {
+                  d.minimalMode = (e.target as HTMLInputElement).checked;
+                })
+              }
+            />
+            <span>Minimal mode: exactly one item a day, preferring “on this day”</span>
+          </label>
+          <label class="field">
+            <span>Timezone</span>
+            <input
+              type="text"
+              value={config.timezone ?? ''}
+              placeholder={Intl.DateTimeFormat().resolvedOptions().timeZone}
+              onChange={(e) =>
+                update((d) => {
+                  const v = (e.target as HTMLInputElement).value.trim();
+                  d.timezone = v || null;
+                })
+              }
+            />
+            <small>Detected from this browser unless overridden.</small>
+          </label>
+        </div>
+      </SettingsSection>
+
+      {/* On a phone the colour theme lives here; a wide screen has it in the sidebar. */}
+      <div class="settings-appearance">
+        <h2 class="sub">Appearance</h2>
+        <ThemeChoice />
       </div>
 
       <div class="settings-actions">

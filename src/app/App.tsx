@@ -223,6 +223,7 @@ export function App() {
                   key={item.view}
                   href={HASH_FOR[item.view]}
                   class={view === item.view ? 'active' : ''}
+                  aria-current={view === item.view ? 'page' : undefined}
                 >
                   <Icon name={item.view} />
                   {item.label}
@@ -255,7 +256,14 @@ export function App() {
 
         <main class="app-main">
           {loadError && <div class="notice">{loadError}</div>}
-          {ranNote && <div class="notice">{ranNote}</div>}
+          {ranNote && view === 'today' && (
+            <div class="notice notice-dismissable">
+              <span>{ranNote}</span>
+              <button type="button" class="subtle" onClick={() => setRanNote(null)}>
+                Dismiss
+              </button>
+            </div>
+          )}
           {view === 'today' && <h1 class="sr-only">Today</h1>}
           {view === 'onThisDay' && <h1 class="sr-only">On this day</h1>}
           {view === 'heatmap' && <h1 class="sr-only">Calendar</h1>}
@@ -310,7 +318,6 @@ export function App() {
           )}
         </main>
         <footer class="app-foot">
-          <ThemeChoice />
           <p class="disclaimer">{DISCLAIMER}</p>
         </footer>
       </div>
