@@ -181,6 +181,7 @@ describe.each(['light', 'dark'] as const)('first run in %s', (colorScheme) => {
   it('offers what the space contains, with no axe violations', async () => {
     const page = await browser.newPage({ viewport: VIEWPORTS[1]!, colorScheme });
     await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });
+    await page.getByText('More demos', { exact: true }).click();
     await page.getByRole('button', { name: FRESH, exact: true }).click();
     await page.getByRole('heading', { name: 'Start with what is in your space' }).waitFor();
     expect(await violationsOn(page)).toEqual([]);
@@ -192,7 +193,8 @@ it('maps what the person ticks, then runs the first day', async () => {
   const page = await browser.newPage({ viewport: VIEWPORTS[1]! });
   const problems = await watch(page);
   await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });
-  await page.getByRole('button', { name: FRESH, exact: true }).click();
+  await page.getByText('More demos', { exact: true }).click();
+    await page.getByRole('button', { name: FRESH, exact: true }).click();
   await page.getByRole('heading', { name: 'Start with what is in your space' }).waitFor();
 
   // Guesses start unticked; a tag that already says "keep" starts ticked.
@@ -218,7 +220,8 @@ it('maps what the person ticks, then runs the first day', async () => {
 it('does not offer the same thing again after it is skipped', async () => {
   const page = await browser.newPage({ viewport: VIEWPORTS[1]! });
   await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });
-  await page.getByRole('button', { name: FRESH, exact: true }).click();
+  await page.getByText('More demos', { exact: true }).click();
+    await page.getByRole('button', { name: FRESH, exact: true }).click();
   await page.getByRole('button', { name: 'Skip for now', exact: true }).click();
   await page.getByRole('heading', { name: 'Start with what is in your space' }).waitFor({ state: 'detached' });
   await page.evaluate(() => {
