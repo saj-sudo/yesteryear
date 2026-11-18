@@ -10,13 +10,18 @@ import { isBasicStructure } from '../providers/capacities/constants';
 import { loadCached, saveCached } from '../storage/cache';
 import { HASH_FOR, useView, type View } from './router';
 import {
+  CLIENT_ID,
+  connect,
   createSession,
   disconnect,
   endDemo,
   isAuthLoss,
+  STALL_MS,
+  suggestsReconnect,
   todayLocal,
   type Session,
 } from './session';
+import { ConnectionTrouble } from './components/ConnectionTrouble';
 import { Icon } from './components/Icon';
 import { MappingSuggestions } from './components/MappingSuggestions';
 import { ThemeChoice } from './components/ThemeChoice';
@@ -97,6 +102,10 @@ export function App() {
   const [session, setSession] = useState<Session | null>(() => createSession());
   const [data, setData] = useState<AppData | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  // Whether the failed load looks like lost or refused access.
+  const [reconnectFirst, setReconnectFirst] = useState(false);
+  // The first load has run past STALL_MS without painting anything.
+  const [stalled, setStalled] = useState(false);
   const [ranNote, setRanNote] = useState<string | null>(null);
   // The first run, held while the person looks at what the space offers to map.
   const [setup, setSetup] = useState<{ suggestion: Suggestion; startRun: () => Promise<void> } | null>(null);
@@ -163,6 +172,7 @@ export function App() {
           setSession(null);
           setData(null);
         } else {
+          setReconnectFirst(suggestsReconnect(err));
           setLoadError(
             'Could not reach Capacities right now. Cached content may still be shown.',
           );
@@ -173,6 +183,18 @@ export function App() {
       cancelled = true;
     };
   }, [session, today]);
+
+  // Nothing in the boot chain has a timeout of its own, so a request that
+  // stalls on a phone would leave "Reading the space…" up for good. After
+  // STALL_MS the recovery card is offered; the load keeps running and
+  // replaces the card if it finishes.
+  const waiting = session !== null && data === null;
+  useEffect(() => {
+    setStalled(false);
+    if (!waiting) return;
+    const timer = setTimeout(() => setStalled(true), STALL_MS);
+    return () => clearTimeout(timer);
+  }, [waiting, session]);
 
   if (!session) {
     return (
@@ -207,8 +229,19 @@ export function App() {
   const signOut = (): void => {
     disconnect();
     setData(null);
+    setLoadError(null);
     setSession(null);
   };
+
+  const retryLoad = (): void => {
+    setLoadError(null);
+    setReconnectFirst(false);
+    setSession(createSession());
+  };
+
+  // The old credential stays until the callback saves the new one, so
+  // backing out of the Capacities consent screen leaves things as they were.
+  const reconnect = (): Promise<void> => connect();
 
   return (
     <div class="app">
@@ -258,7 +291,7 @@ export function App() {
         )}
 
         <main class="app-main">
-          {loadError && <div class="notice">{loadError}</div>}
+          {loadError && data !== null && <div class="notice">{loadError}</div>}
           {ranNote && view === 'today' && (
             <div class="notice notice-dismissable">
               <span>{ranNote}</span>
@@ -270,8 +303,20 @@ export function App() {
           {view === 'today' && <h1 class="sr-only">Today</h1>}
           {view === 'onThisDay' && <h1 class="sr-only">On this day</h1>}
           {view === 'heatmap' && <h1 class="sr-only">Calendar</h1>}
-          {data === null ? (
-            <p class="loading">Reading the space…</p>
+          {data === null && (loadError || stalled) && session.kind === 'live' ? (
+            <ConnectionTrouble
+              stalled={!loadError}
+              reconnectFirst={reconnectFirst}
+              canReconnect={Boolean(CLIENT_ID)}
+              onRetry={retryLoad}
+              onReconnect={reconnect}
+              onDisconnect={signOut}
+            />
+          ) : data === null ? (
+            <>
+              {loadError && <div class="notice">{loadError}</div>}
+              <p class="loading">Reading the space…</p>
+            </>
           ) : view === 'today' ? (
             setup ? (
               <MappingSuggestions
