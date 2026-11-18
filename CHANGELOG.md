@@ -8,6 +8,15 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Fixed
 
+- **A way out when your space won't load.** If the first load from Capacities
+  failed, the app sat on "Reading the space…" with no way to reach Settings
+  or Disconnect. It now shows a card with Try again, Reconnect to Capacities
+  and Disconnect this browser. The same card appears after 20 seconds if the
+  load stalls, and goes away by itself if the load finishes. Refused access
+  (a 403 or a missing scope) leads with Reconnect; an outage or a dropped
+  network leads with Try again. Reconnecting keeps the old sign-in until the
+  new one is saved.
+
 - **Signing in on a phone.** On Android the Capacities consent screen can open
   in a separate tab, and the redirect back landed there without the sign-in
   that was started, so it failed with "does not match". The started sign-in
