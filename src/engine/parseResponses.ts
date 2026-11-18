@@ -10,8 +10,16 @@ import type { ItemResponse, ParsedResponse, YesteryearState } from './types';
  *  - check the box (`- [x]`)            → keep (recall) / got it (learn)
  *  - strike a marker (~~dismiss~~ etc.) → that response
  * Striking wins over the checkbox; among struck markers the most
- * explicit wins (retire > dismiss > keep; missed it > got it).
+ * explicit wins (retire > dismiss > keep; not yet > got it).
  */
+
+/**
+ * Struck markers that mean the `missedIt` response. "not yet" is what
+ * renderSection writes now. The last two are the wording it wrote before,
+ * kept so a daily note written by an earlier build still reads back the
+ * same way. Do not drop them: old notes stay in people's spaces.
+ */
+const NOT_YET_MARKERS = ['not yet', 'notyet', 'missed it', 'missedit'];
 
 /** Slice the section under `## heading` (until the next #/## heading). */
 export function extractSection(markdown: string, heading: string): string | null {
@@ -71,7 +79,7 @@ function parseLines(section: string): LineInfo[] {
 function responseFor(line: LineInfo, learn: boolean): ItemResponse | null {
   const struck = new Set(line.struck);
   if (learn) {
-    if (struck.has('missed it') || struck.has('missedit')) return 'missedIt';
+    if (NOT_YET_MARKERS.some((marker) => struck.has(marker))) return 'missedIt';
     if (struck.has('got it') || struck.has('gotit')) return 'gotIt';
     return line.checked ? 'gotIt' : null;
   }

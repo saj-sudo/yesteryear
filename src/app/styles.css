@@ -1648,7 +1648,7 @@ body:has(.landing) {
     font-size: 14px;
   }
 
-  /* All seven views fit: four to a row, icon above label. */
+  /* Every view in the nav fits: four to a row, icon above label. */
   .sidebar nav {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));

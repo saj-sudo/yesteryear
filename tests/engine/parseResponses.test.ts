@@ -18,7 +18,7 @@ const note = `Some morning writing of my own.
 - [x] **From your notes:** [[Rope teams]]
       \`keep\` · \`dismiss\` · \`retire\`
 - [ ] **Review:** [[Fog instruments]]
-      \`got it\` · ~~\`missed it\`~~
+      \`got it\` · ~~\`not yet\`~~
 
 ## Later
 
@@ -42,6 +42,34 @@ describe('parseResponses', () => {
     expect(parseResponses(note, 'Resurfaced', lastRun)).toEqual([
       { key: 'obj:o1', response: 'dismiss' },
       { key: 'obj:o2', response: 'keep' },
+      { key: 'obj:o3#learn', response: 'missedIt' },
+    ]);
+  });
+
+  it('still reads the marker that notes written before the rename carry', () => {
+    // Until this change the second Learn marker was written as `missed it`.
+    // Those notes stay in people's spaces, so the old word must keep parsing.
+    const before = note.replace('~~`not yet`~~', '~~`missed it`~~');
+    expect(before).toContain('~~`missed it`~~');
+    expect(parseResponses(before, 'Resurfaced', lastRun)).toEqual(
+      parseResponses(note, 'Resurfaced', lastRun),
+    );
+    const bare = `## Resurfaced
+
+- [x] **Review:** [[Fog instruments]] ~~missed it~~
+`;
+    expect(parseResponses(bare, 'Resurfaced', lastRun)).toEqual([
+      { key: 'obj:o3#learn', response: 'missedIt' },
+    ]);
+  });
+
+  it('not yet wins over got it and over a ticked box', () => {
+    const both = `## Resurfaced
+
+- [x] **Review:** [[Fog instruments]]
+      ~~\`got it\`~~ · ~~\`not yet\`~~
+`;
+    expect(parseResponses(both, 'Resurfaced', lastRun)).toEqual([
       { key: 'obj:o3#learn', response: 'missedIt' },
     ]);
   });
@@ -99,8 +127,9 @@ random hand-written thought in the middle
     const rendered = renderSection('Resurfaced', items)!;
     // Untouched section → no responses (silence is a valid response, §8.1).
     expect(parseResponses(rendered, 'Resurfaced', lastRun)).toEqual([]);
-    // Striking in the rendered text works.
-    const struck = rendered.replace('`missed it`', '~~`missed it`~~');
+    // Striking in the rendered text works, with the word the section writes now.
+    expect(rendered).toContain('`got it` · `not yet`');
+    const struck = rendered.replace('`not yet`', '~~`not yet`~~');
     expect(parseResponses(struck, 'Resurfaced', lastRun)).toEqual([
       { key: 'obj:o3#learn', response: 'missedIt' },
     ]);
