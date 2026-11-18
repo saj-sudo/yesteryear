@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { applyLearnResponse } from '../../engine/learn';
+import { RESPONSE_LABELS } from '../../engine/markdown';
 import { gatherPairingPool } from '../../engine/orchestrate';
 import { drawPairing, type Pairing, type PairingCandidate } from '../../engine/pairing';
 import { applyRecallResponse } from '../../engine/recall';
@@ -7,14 +8,6 @@ import { parseKey } from '../../engine/state';
 import type { ItemResponse, SurfacedItem } from '../../engine/types';
 import type { AppData } from '../App';
 import { Markdown } from '../components/Markdown';
-
-const RESPONSE_LABELS: Record<ItemResponse, string> = {
-  keep: 'keep',
-  dismiss: 'dismiss',
-  retire: 'retire',
-  gotIt: 'got it',
-  missedIt: 'missed it',
-};
 
 /**
  * Today (the default view). The core comes first: the day's resurfaced

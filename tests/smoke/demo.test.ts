@@ -173,6 +173,39 @@ it('shows exactly one theme choice wherever there is one', async () => {
   }
 });
 
+it('offers "got it" and "not yet" on a review card', async () => {
+  // The demo always has one review due (the Larkspur survey, src/app/session.ts).
+  const page = await browser.newPage({ viewport: VIEWPORTS[1]! });
+  await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });
+  await page.getByRole('button', { name: 'Try the demo', exact: true }).click();
+  await page.getByRole('button', { name: 'not yet', exact: true }).waitFor();
+  expect(await page.getByRole('button', { name: 'got it', exact: true }).count()).toBe(1);
+  // The no guilt rule in CONTRIBUTING: the word this button used to carry.
+  expect(await page.getByText(/missed/i).count()).toBe(0);
+  await page.close();
+});
+
+it('keeps the calendar out of the nav and reachable by its link', async () => {
+  // One nav list serves the sidebar and the phone menu, so both sizes are checked.
+  for (const viewport of VIEWPORTS) {
+    const page = await browser.newPage({ viewport });
+    await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });
+    await page.getByRole('button', { name: 'Try the demo', exact: true }).click();
+    await page.locator('.sidebar nav a', { hasText: 'Settings' }).waitFor();
+    const labels = await page.locator('.sidebar nav a').allTextContents();
+    expect(labels.map((l) => l.trim()), viewport.name).toEqual([
+      'Today', 'Recall', 'Learn', 'On This Day', 'Preview', 'Settings',
+    ]);
+    expect(await page.locator('.sidebar nav a[href="#/heatmap"]').count(), viewport.name).toBe(0);
+    await page.evaluate(() => {
+      location.hash = '#/heatmap';
+    });
+    await page.getByRole('heading', { name: 'Calendar', level: 1 }).waitFor();
+    await page.locator('.heat-grid').waitFor();
+    await page.close();
+  }
+});
+
 it('fits the nav and the calendar on a phone', async () => {
   const page = await browser.newPage({ viewport: VIEWPORTS[0]! });
   await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });

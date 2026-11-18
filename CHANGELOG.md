@@ -32,6 +32,16 @@ All notable changes to Yesteryear are documented here. The format follows
 
 - **One demo button.** The Connect screen shows "Try the demo"; the other
   demos sit under "More demos".
+- **A review answers "got it" or "not yet".** The second answer used a word
+  that the no guilt rule in CONTRIBUTING bans. Today's review card and the
+  Resurfaced section written to the daily note now say "not yet". A daily
+  note written by an earlier build still reads back the same way, because
+  the old marker counts as "not yet". The state page keeps its field names
+  (`missedIt`, `missedItMultiplier`), so nothing stored needs to change.
+- **The Calendar is out of the menu.** It shows a dot for every day written,
+  which reads as a counter, so the sidebar and the phone menu no longer list
+  it. That leaves six views in the menu. The view itself is unchanged and
+  still opens at `#/heatmap`.
 
 ### Removed
 

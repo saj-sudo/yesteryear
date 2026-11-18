@@ -93,7 +93,7 @@ describe('responses', () => {
     expect(item.mode === 'learn' && item.nextDue).toBe('2026-09-04');
   });
 
-  it('missed it halves the next gap', () => {
+  it('not yet (stored as missedIt) halves the next gap', () => {
     const state = surfacedState();
     applyLearnResponse(state, KEY, 'missedIt', cfg);
     const item = state.items[KEY]!;

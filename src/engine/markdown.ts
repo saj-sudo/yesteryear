@@ -1,4 +1,4 @@
-import type { SurfacedItem, TemporalReason } from './types';
+import type { ItemResponse, SurfacedItem, TemporalReason } from './types';
 
 /**
  * Rendering the Resurfaced section (§8.5). Zero items renders nothing at
@@ -32,8 +32,26 @@ function excerptOf(item: SurfacedItem): string | null {
   return flat.length > EXCERPT_MAX ? `${flat.slice(0, EXCERPT_MAX - 1)}…` : flat;
 }
 
+/**
+ * The word a person reads for each response: on the Today buttons and in
+ * the markers written into the daily note. One table, so the two cannot
+ * drift apart. The second Learn response reads "not yet" because the no
+ * guilt rule in CONTRIBUTING bans the word it used before. `missedIt`
+ * stays as the internal id: it is stored in the state page
+ * (`lastResponse`, `learn.missedItMultiplier`), so renaming it would need
+ * a migration. parseResponses still reads the old marker from notes
+ * written before the change.
+ */
+export const RESPONSE_LABELS: Record<ItemResponse, string> = {
+  keep: 'keep',
+  dismiss: 'dismiss',
+  retire: 'retire',
+  gotIt: 'got it',
+  missedIt: 'not yet',
+};
+
 export const RECALL_MARKERS = '`keep` · `dismiss` · `retire`';
-export const LEARN_MARKERS = '`got it` · `missed it`';
+export const LEARN_MARKERS = `\`${RESPONSE_LABELS.gotIt}\` · \`${RESPONSE_LABELS.missedIt}\``;
 
 /**
  * Render the section, or null when there is nothing to say. The heading

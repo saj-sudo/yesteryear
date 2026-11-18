@@ -32,6 +32,10 @@ import { readSkipped, saveSkipped } from './suggestionSkipped';
 
 const DISCLAIMER = 'Independent community tool. Not affiliated with Capacities.';
 
+// The Calendar view (`#/heatmap`) is left out of the nav on purpose. A dot
+// for every day written reads as a counter, which the no guilt rule in
+// CONTRIBUTING rules out. The view and its route still work for anyone who
+// has the link; the sidebar and the phone menu both render this list.
 const NAV_GROUPS: { label: string | null; items: { view: View; label: string }[] }[] = [
   {
     label: null,
@@ -48,7 +52,6 @@ const NAV_GROUPS: { label: string | null; items: { view: View; label: string }[]
     label: 'Lenses',
     items: [
       { view: 'onThisDay', label: 'On This Day' },
-      { view: 'heatmap', label: 'Calendar' },
       { view: 'preview', label: 'Preview' },
     ],
   },

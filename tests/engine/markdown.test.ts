@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { labelForReason, renderSection } from '../../src/engine/markdown';
+import { labelForReason, renderSection, RESPONSE_LABELS } from '../../src/engine/markdown';
 import type { SurfacedItem } from '../../src/engine/types';
 
 function item(overrides: Partial<SurfacedItem>): SurfacedItem {
@@ -53,7 +53,7 @@ describe('renderSection', () => {
     const md = renderSection('Resurfaced', [
       item({ source: 'learn', label: 'Review' }),
     ])!;
-    expect(md).toContain('`got it` · `missed it`');
+    expect(md).toContain('`got it` · `not yet`');
     expect(md).not.toContain('`retire`');
   });
 
@@ -71,9 +71,30 @@ describe('renderSection', () => {
   });
 
   it('never speaks in guilt', () => {
-    const md = renderSection('Resurfaced', [item({})])!;
+    // Recall and Learn rows both: the Learn markers once carried a banned word.
+    const md = renderSection('Resurfaced', [
+      item({}),
+      item({ key: 'obj:o2#learn', objectId: 'o2', title: 'Fog instruments', source: 'learn', label: 'Review' }),
+    ])!;
     for (const word of ['streak', 'missed', 'overdue', 'behind']) {
       expect(md.toLowerCase()).not.toContain(word);
+    }
+  });
+});
+
+describe('RESPONSE_LABELS', () => {
+  // Today's buttons and the answered state read this table, and the note
+  // markers are built from it, so this is the wording a person sees.
+  it('shows "not yet" for the second Learn response', () => {
+    expect(RESPONSE_LABELS.gotIt).toBe('got it');
+    expect(RESPONSE_LABELS.missedIt).toBe('not yet');
+  });
+
+  it('has no guilt word in any label', () => {
+    for (const label of Object.values(RESPONSE_LABELS)) {
+      for (const word of ['streak', 'missed', 'overdue', 'behind']) {
+        expect(label.toLowerCase()).not.toContain(word);
+      }
     }
   });
 });
