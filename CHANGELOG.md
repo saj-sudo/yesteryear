@@ -8,6 +8,9 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Fixed
 
+- **The theme switch keeps up.** A choice made in the first moments after
+  Settings opened changed the theme and left the switch showing the old
+  option. The switch now updates at once.
 - **A way out when your space won't load.** If the first load from Capacities
   failed, the app sat on "Reading the space…" with no way to reach Settings
   or Disconnect. It now shows a card with Try again, Reconnect to Capacities
@@ -39,6 +42,13 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Changed
 
+- **The state page says "not yet" too.** The stored names `missedIt` and
+  `missedItMultiplier` are now `notYet` and `notYetMultiplier`, so the
+  word the no guilt rule bans is gone from the page in your own space. A
+  page written by an earlier build still loads, and is rewritten under the
+  new names the next time Yesteryear saves. If you keep an old tab open
+  after another tab has saved, the old tab treats the newer answer as
+  unanswered until it is reloaded.
 - **Today opens on a note you can read.** One resurfaced note is set like a
   printed page, with its text at reading size. When the note has a real date
   behind it, its age is the headline ("1 year ago"). The day's other notes
@@ -93,9 +103,8 @@ All notable changes to Yesteryear are documented here. The format follows
 
 - **Undo.** A response can be taken back. The note keeps its place, shows
   what you chose, and offers undo beside it. A screen reader hears both the
-  response and the undo. Undo lasts for the visit: after a reload the note
-  shows what was chosen, and a retired note can still be restored under
-  "What is coming".
+  response and the undo. Undo is still there after a reload, for as long as the
+  note is on Today.
 - **The demo in one click.** "Try the demo" on the landing page opens the
   demo directly. Opening `/app/` still shows the Connect screen.
 - **`npm run shots`** retakes every screenshot and the link preview image

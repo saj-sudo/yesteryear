@@ -213,7 +213,7 @@ export function Settings({
             setConfig(next);
             save(
               next,
-              'Saved. These start showing from the next daily run, and Preview shows what it would bring back.',
+              'Saved. These start showing from the next daily run.',
             );
             onSuggestionApplied?.();
           }}

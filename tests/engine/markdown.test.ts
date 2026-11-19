@@ -87,7 +87,7 @@ describe('RESPONSE_LABELS', () => {
   // markers are built from it, so this is the wording a person sees.
   it('shows "not yet" for the second Learn response', () => {
     expect(RESPONSE_LABELS.gotIt).toBe('got it');
-    expect(RESPONSE_LABELS.missedIt).toBe('not yet');
+    expect(RESPONSE_LABELS.notYet).toBe('not yet');
   });
 
   it('has no guilt word in any label', () => {

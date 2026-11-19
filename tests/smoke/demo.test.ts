@@ -258,6 +258,7 @@ it('takes a response back with undo, and says so to a screen reader', async () =
   await lead.getByRole('button', { name: /^keep/ }).waitFor();
   expect(await lead.getByText('Kept', { exact: true }).count()).toBe(0);
   expect(await page.getByRole('status').filter({ hasText: /^Taken back/ }).count()).toBe(1);
+
   await page.close();
 });
 

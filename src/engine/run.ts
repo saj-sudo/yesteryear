@@ -36,7 +36,7 @@ export function applyResponses(
   config: YesteryearConfig,
 ): void {
   for (const { key, response } of responses) {
-    if (response === 'gotIt' || response === 'missedIt') {
+    if (response === 'gotIt' || response === 'notYet') {
       applyLearnResponse(state, key, response, config.learn);
     } else {
       applyRecallResponse(state, key, response, config.recall);

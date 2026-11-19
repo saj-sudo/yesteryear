@@ -122,11 +122,11 @@ export function applyLearnResponse(
   const item = learnState(state, key);
   if (!item) return;
   item.lastResponse = response;
-  if (response === 'missedIt' && item.lastSurfaced) {
+  if (response === 'notYet' && item.lastSurfaced) {
     const daysUntil = diffDays(item.targetDate, item.lastSurfaced);
     item.nextDue = addDays(
       item.lastSurfaced,
-      learnGapDays(daysUntil, config, config.missedItMultiplier),
+      learnGapDays(daysUntil, config, config.notYetMultiplier),
     );
   }
   // gotIt: the full-ratio gap set at surfacing already stands.

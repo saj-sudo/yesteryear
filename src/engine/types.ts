@@ -74,7 +74,7 @@ export interface LearnConfig {
   targetRatio: number;
   minGapDays: number;
   maxGapDays: number;
-  missedItMultiplier: number;
+  notYetMultiplier: number;
   maxShareOfDailySlots: number;
   revertToRecallAfterTarget: boolean;
 }
@@ -137,7 +137,7 @@ export interface YesteryearConfig {
 export type ItemKey = string;
 
 export type RecallResponse = 'keep' | 'dismiss' | 'retire';
-export type LearnResponse = 'gotIt' | 'missedIt';
+export type LearnResponse = 'gotIt' | 'notYet';
 export type ItemResponse = RecallResponse | LearnResponse;
 
 export interface RecallItemState {

@@ -42,7 +42,7 @@ describe('parseResponses', () => {
     expect(parseResponses(note, 'Resurfaced', lastRun)).toEqual([
       { key: 'obj:o1', response: 'dismiss' },
       { key: 'obj:o2', response: 'keep' },
-      { key: 'obj:o3#learn', response: 'missedIt' },
+      { key: 'obj:o3#learn', response: 'notYet' },
     ]);
   });
 
@@ -59,7 +59,7 @@ describe('parseResponses', () => {
 - [x] **Review:** [[Fog instruments]] ~~missed it~~
 `;
     expect(parseResponses(bare, 'Resurfaced', lastRun)).toEqual([
-      { key: 'obj:o3#learn', response: 'missedIt' },
+      { key: 'obj:o3#learn', response: 'notYet' },
     ]);
   });
 
@@ -70,7 +70,7 @@ describe('parseResponses', () => {
       ~~\`got it\`~~ · ~~\`not yet\`~~
 `;
     expect(parseResponses(both, 'Resurfaced', lastRun)).toEqual([
-      { key: 'obj:o3#learn', response: 'missedIt' },
+      { key: 'obj:o3#learn', response: 'notYet' },
     ]);
   });
 
@@ -131,7 +131,7 @@ random hand-written thought in the middle
     expect(rendered).toContain('`got it` · `not yet`');
     const struck = rendered.replace('`not yet`', '~~`not yet`~~');
     expect(parseResponses(struck, 'Resurfaced', lastRun)).toEqual([
-      { key: 'obj:o3#learn', response: 'missedIt' },
+      { key: 'obj:o3#learn', response: 'notYet' },
     ]);
   });
 });

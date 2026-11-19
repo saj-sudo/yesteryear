@@ -45,10 +45,14 @@ const PATHS: Record<string, JSX.Element> = {
       <circle cx="8" cy="8" r="2" />
     </>
   ),
+  // Three sliders. The old gear had rays like Today's sun, and with only
+  // two items in the nav the pair read as the same icon twice.
   settings: (
     <>
-      <circle cx="8" cy="8" r="2.2" />
-      <path d="M8 1.6v2M8 12.4v2M1.6 8h2M12.4 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M12.5 3.5l-1.4 1.4M4.9 11.1l-1.4 1.4" />
+      <path d="M1.8 4h5.4M10.8 4h3.4M1.8 8h1.6M7 8h7.2M1.8 12h7.4M12.8 12h1.4" />
+      <circle cx="9" cy="4" r="1.8" />
+      <circle cx="5.2" cy="8" r="1.8" />
+      <circle cx="11" cy="12" r="1.8" />
     </>
   ),
 };

@@ -93,9 +93,9 @@ describe('responses', () => {
     expect(item.mode === 'learn' && item.nextDue).toBe('2026-09-04');
   });
 
-  it('not yet (stored as missedIt) halves the next gap', () => {
+  it('not yet halves the next gap', () => {
     const state = surfacedState();
-    applyLearnResponse(state, KEY, 'missedIt', cfg);
+    applyLearnResponse(state, KEY, 'notYet', cfg);
     const item = state.items[KEY]!;
     // 68 days out × 0.15 × 0.5 ≈ 5 → floor 7.
     expect(item.mode === 'learn' && item.nextDue).toBe('2026-09-01');

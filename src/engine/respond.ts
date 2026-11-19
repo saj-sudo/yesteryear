@@ -1,4 +1,5 @@
-import { applyLearnResponse } from './learn';
+import { addDays, diffDays } from './dates';
+import { applyLearnResponse, learnGapDays } from './learn';
 import { applyRecallResponse } from './recall';
 import type {
   ItemKey,
@@ -37,7 +38,7 @@ export function applyResponse(
   config: YesteryearConfig,
 ): ItemSnapshot {
   const before = snapshotItem(state, key);
-  if (response === 'gotIt' || response === 'missedIt') {
+  if (response === 'gotIt' || response === 'notYet') {
     applyLearnResponse(state, key, response, config.learn);
   } else {
     applyRecallResponse(state, key, response, config.recall);
@@ -55,6 +56,30 @@ export function undoResponse(state: YesteryearState, key: ItemKey, before: ItemS
     before.mode === 'learn' && before.setIds
       ? { ...before, setIds: [...before.setIds] }
       : { ...before };
+}
+
+/**
+ * Take back a response when no snapshot is to hand, as after a reload.
+ * Surfacing sets an item's schedule from the day it surfaced and the
+ * config alone (`markRecallSurfaced`, `markLearnSurfaced`), so the
+ * unanswered state can be worked out again from what is stored. It uses
+ * the config as it is now, which is the one difference from a snapshot.
+ */
+export function reopenResponse(state: YesteryearState, key: ItemKey, config: YesteryearConfig): void {
+  const item = state.items[key];
+  if (!item) return;
+  item.lastResponse = null;
+  if (item.mode === 'recall') {
+    item.retired = false;
+    item.nextEligible = item.lastSurfaced
+      ? addDays(item.lastSurfaced, config.recall.cooldownDays)
+      : null;
+  } else if (item.lastSurfaced) {
+    item.nextDue = addDays(
+      item.lastSurfaced,
+      learnGapDays(diffDays(item.targetDate, item.lastSurfaced), config.learn),
+    );
+  }
 }
 
 /**

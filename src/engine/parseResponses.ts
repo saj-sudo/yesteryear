@@ -14,7 +14,7 @@ import type { ItemResponse, ParsedResponse, YesteryearState } from './types';
  */
 
 /**
- * Struck markers that mean the `missedIt` response. "not yet" is what
+ * Struck markers that mean the `notYet` response. "not yet" is what
  * renderSection writes now. The last two are the wording it wrote before,
  * kept so a daily note written by an earlier build still reads back the
  * same way. Do not drop them: old notes stay in people's spaces.
@@ -79,7 +79,7 @@ function parseLines(section: string): LineInfo[] {
 function responseFor(line: LineInfo, learn: boolean): ItemResponse | null {
   const struck = new Set(line.struck);
   if (learn) {
-    if (NOT_YET_MARKERS.some((marker) => struck.has(marker))) return 'missedIt';
+    if (NOT_YET_MARKERS.some((marker) => struck.has(marker))) return 'notYet';
     if (struck.has('got it') || struck.has('gotit')) return 'gotIt';
     return line.checked ? 'gotIt' : null;
   }
