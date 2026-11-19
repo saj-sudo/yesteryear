@@ -37,6 +37,17 @@ export default tseslint.config(
   },
 
   {
+    // Node scripts sit outside the TypeScript project, so they are linted
+    // without type information.
+    files: ['scripts/**/*.mjs'],
+    ...tseslint.configs.disableTypeChecked,
+    languageOptions: {
+      ...tseslint.configs.disableTypeChecked.languageOptions,
+      globals: globals.node,
+    },
+  },
+
+  {
     // The fixture provider implements an async-iterable Provider surface;
     // async generators that satisfy that interface need no await of their own.
     files: ['src/providers/fixture/**/*.ts'],

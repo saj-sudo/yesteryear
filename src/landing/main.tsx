@@ -1,9 +1,7 @@
 import { render } from 'preact';
 import todayShot from '../../docs/today.png';
-import calendarShot from '../../docs/calendar.png';
 import learnShot from '../../docs/learn.png';
 import todayPhone from '../../docs/phone-today.png';
-import calendarPhone from '../../docs/phone-calendar.png';
 import learnPhone from '../../docs/phone-learn.png';
 
 /** A screenshot that swaps to a phone-sized one on a narrow screen. */
@@ -48,20 +46,20 @@ function Landing() {
 
       <p>
         <a class="cta" href="/app/">Open Yesteryear</a>
-        <a class="cta-secondary" href="/app/">Try the demo (no account needed)</a>
+        <a class="cta-secondary" href="/app/?demo">Try the demo (no account needed)</a>
       </p>
 
       <Shot
         wide={todayShot}
         phone={todayPhone}
-        alt="Today in a made-up field office space: four resurfaced notes with tinted labels, and an unlikely pair shown as two overlapping prints."
+        alt="Today in a made-up field office space: one resurfaced note set as a printed page, the day’s other notes beside it, and an unlikely pair shown as two overlapping prints."
       />
 
       <h2>Study toward a date</h2>
       <p>
         Some notes matter by a certain day, like a talk or an exam. Put them in
         a study set, pick them by tag, by type or one at a time, and give the
-        set a date.
+        set a date. This is off until you turn it on in Settings.
       </p>
       <ul>
         <li>
@@ -69,11 +67,11 @@ function Landing() {
           together as the day gets near. The first one waits at least a week.
         </li>
         <li>
-          After the date the notes leave Learn. Give the set a new date and they
+          After the date the reviews stop. Give the set a new date and the notes
           study again, which suits an exam you sit twice.
         </li>
         <li>
-          A set lists the notes it holds, and each note in Learn names its set.
+          A set lists the notes it holds, and each note being studied names its set.
         </li>
       </ul>
       <p>
@@ -84,7 +82,7 @@ function Landing() {
       <Shot
         wide={learnShot}
         phone={learnPhone}
-        alt="The Learn page in a made-up field office space: two study sets, one counting down to its date and one whose date has passed, and the notes now studying toward a date."
+        alt="The study sets page in a made-up field office space: two study sets, one counting down to its date and one whose date has passed, and the notes now studying toward a date."
       />
 
       <h2>No server, no account, no analytics</h2>
@@ -138,17 +136,10 @@ function Landing() {
 
       <h2>Dates bring notes back, and so does chance</h2>
       <p>
-        On This Day shows what you wrote on this date in earlier years, and a
-        calendar marks every day you wrote. Birthdays and project dates come
-        back as they approach. The daily mix also draws at random, because a
+        Today shows what you wrote on this date in earlier years, under the
+        pair. Birthdays and project dates come back as they approach. The daily mix also draws at random, because a
         date can only bring back notes that already share one.
       </p>
-
-      <Shot
-        wide={calendarShot}
-        phone={calendarPhone}
-        alt="The calendar: a year of days, with a dot of ink for each day that has a daily note."
-      />
 
       <h2>No streaks or scores</h2>
       <p>

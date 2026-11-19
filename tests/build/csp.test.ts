@@ -17,6 +17,8 @@ const REQUIRED_CSP = [
   "default-src 'none'",
   "script-src 'self'",
   "connect-src https://api.capacities.io",
+  // The note typeface is served from this site, and from nowhere else.
+  "font-src 'self'",
 ];
 
 describe.each([...sourcePages, ...distPages])('%s', (page) => {
@@ -42,5 +44,26 @@ describe.each([...sourcePages, ...distPages])('%s', (page) => {
       const url = match[1]!;
       expect(url, `external reference in ${page}`).not.toMatch(/^(https?:)?\/\//);
     }
+  });
+});
+
+describe('the stylesheet', () => {
+  const css = readFileSync(join(root, 'src/app/styles.css'), 'utf8');
+
+  it('loads fonts and images only from this site', () => {
+    const urls = [...css.matchAll(/url\(\s*['"]?([^'")]+)['"]?\s*\)/g)].map((m) => m[1]!);
+    expect(urls.length).toBeGreaterThan(0);
+    for (const url of urls) {
+      expect(url, `external reference in styles.css`).toMatch(/^\/(?!\/)/);
+    }
+  });
+
+  it('ships every font file it names, with its licence', () => {
+    const fonts = [...css.matchAll(/url\(\s*['"]?(\/fonts\/[^'")]+)/g)].map((m) => m[1]!);
+    expect(fonts.length).toBeGreaterThan(0);
+    for (const font of fonts) {
+      expect(existsSync(join(root, 'public', font)), font).toBe(true);
+    }
+    expect(existsSync(join(root, 'public/fonts/OFL.txt'))).toBe(true);
   });
 });

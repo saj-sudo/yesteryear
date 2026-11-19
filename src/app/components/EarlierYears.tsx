@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
-import { addDays, formatLocalDate, isLocalDate, monthDayOf, yearOf } from '../../engine/dates';
+import { addDays, isLocalDate, monthDayOf, yearOf } from '../../engine/dates';
 import type { DailyNoteRef } from '../../engine/temporal';
 import type { LocalDate } from '../../engine/types';
-import { Markdown } from '../components/Markdown';
+import { Markdown } from './Markdown';
 
 /**
- * On This Day (§9.1, the default view): today's date across every past
- * year, one column per year, most recent first. Empty years render as
- * empty: the gaps are part of the picture.
+ * The same day in earlier years: the daily note written on this date in
+ * each past year that has one, most recent first. It sits under the pair
+ * on Today. The arrows walk to neighbouring days. Years with nothing
+ * written are left out, so the section never reads as a tally of gaps.
  */
 
 const MONTHS = [
@@ -19,7 +20,7 @@ function prettyDay(date: LocalDate): string {
   return `${MONTHS[Number(date.slice(5, 7)) - 1]} ${Number(date.slice(8))}`;
 }
 
-export function OnThisDay(props: {
+export function EarlierYears(props: {
   today: LocalDate;
   notes: Map<string, DailyNoteRef>;
   getMarkdown: (id: string) => Promise<string | null>;
@@ -29,34 +30,24 @@ export function OnThisDay(props: {
   const [day, setDay] = useState<LocalDate>(props.today);
   const [bodies, setBodies] = useState<Record<string, string | null>>({});
 
-  const years = useMemo(() => {
-    const noteYears = [...props.notes.keys()].map((d) => Number(d.slice(0, 4)));
-    if (noteYears.length === 0) return [];
-    const first = Math.min(...noteYears);
-    const current = yearOf(day);
-    const out: number[] = [];
-    for (let y = current; y >= first; y -= 1) out.push(y);
+  const entries = useMemo(() => {
+    const out: { year: number; note: DailyNoteRef }[] = [];
+    const first = Math.min(...[...props.notes.keys()].map((d) => Number(d.slice(0, 4))));
+    for (let year = yearOf(props.today); year >= first; year -= 1) {
+      const date = `${year}-${monthDayOf(day)}`;
+      if (!isLocalDate(date) || date >= props.today) continue;
+      const note = props.notes.get(date);
+      if (note) out.push({ year, note });
+    }
     return out;
-  }, [props.notes, day]);
-
-  const columns = useMemo(
-    () =>
-      years.map((year) => {
-        const date = `${year}-${monthDayOf(day)}`;
-        const note = isLocalDate(date) ? props.notes.get(date) ?? null : null;
-        return { year, date, note };
-      }),
-    [years, day, props.notes],
-  );
+  }, [props.notes, props.today, day]);
 
   useEffect(() => {
     let cancelled = false;
-    for (const col of columns) {
-      if (col.note && bodies[col.note.id] === undefined) {
-        void props.getMarkdown(col.note.id).then((md) => {
-          if (!cancelled) {
-            setBodies((prev) => ({ ...prev, [col.note!.id]: md }));
-          }
+    for (const entry of entries) {
+      if (bodies[entry.note.id] === undefined) {
+        void props.getMarkdown(entry.note.id).then((md) => {
+          if (!cancelled) setBodies((prev) => ({ ...prev, [entry.note.id]: md }));
         });
       }
     }
@@ -64,61 +55,52 @@ export function OnThisDay(props: {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [columns]);
+  }, [entries]);
+
+  if (props.notes.size === 0) return null;
 
   return (
-    <section class="on-this-day">
-      <header class="day-nav">
-        <button aria-label="Previous day" onClick={() => setDay(addDays(day, -1))}>
-          ←
-        </button>
-        <h2>
-          {prettyDay(day)}
+    <section class="earlier" aria-labelledby="earlier-heading">
+      <header class="earlier-head">
+        <h2 id="earlier-heading">{prettyDay(day)} in earlier years</h2>
+        <div class="earlier-nav">
           {day !== props.today && (
-            <button class="subtle today-btn" onClick={() => setDay(props.today)}>
+            <button class="quiet" onClick={() => setDay(props.today)}>
               back to today
             </button>
           )}
-        </h2>
-        <button aria-label="Next day" onClick={() => setDay(addDays(day, 1))}>
-          →
-        </button>
+          <button class="quiet step" aria-label="Previous day" onClick={() => setDay(addDays(day, -1))}>
+            ←
+          </button>
+          <button class="quiet step" aria-label="Next day" onClick={() => setDay(addDays(day, 1))}>
+            →
+          </button>
+        </div>
       </header>
 
-      {columns.length === 0 ? (
-        <p class="empty-note">
-          No daily notes found in this space yet. Yesteryear will have more to
-          show once there is a past to look back on.
-        </p>
+      {entries.length === 0 ? (
+        <p class="empty-note">Nothing was written on this day in earlier years.</p>
       ) : (
-        <div class="year-columns" role="region" aria-label="Years" tabIndex={0}>
-          {columns.map((col) => (
-            <article class="year-column" key={col.year}>
-              <h3>{col.year}</h3>
-              {col.note ? (
-                <>
-                  {props.isDemo ? (
-                    <span class="note-title">{formatLocalDate(col.date as LocalDate)}</span>
-                  ) : (
-                    <a
-                      class="note-title"
-                      href={props.deepLink(col.note.id)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {formatLocalDate(col.date as LocalDate)}
-                    </a>
-                  )}
-                  {bodies[col.note.id] === undefined ? (
-                    <p class="loading">…</p>
-                  ) : bodies[col.note.id] ? (
-                    <Markdown text={bodies[col.note.id]!} />
-                  ) : (
-                    <p class="empty-note">(no content)</p>
-                  )}
-                </>
+        <div class="earlier-list">
+          {entries.map(({ year, note }) => (
+            <article class="earlier-year" key={year}>
+              <h3>
+                {props.isDemo ? (
+                  year
+                ) : (
+                  <a href={props.deepLink(note.id)} target="_blank" rel="noreferrer">
+                    {year}
+                  </a>
+                )}
+              </h3>
+              {bodies[note.id] === undefined ? (
+                <p class="loading">…</p>
+              ) : bodies[note.id] ? (
+                <div class="note-text">
+                  <Markdown text={bodies[note.id]!} />
+                </div>
               ) : (
-                <p class="empty-note">nothing written</p>
+                <p class="empty-note">(no content)</p>
               )}
             </article>
           ))}

@@ -13,7 +13,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 // Run `npm run build` first, then `npm run smoke`.
 
 const root = join(import.meta.dirname, '..', '..');
-const VIEWS = ['#/today', '#/on-this-day', '#/heatmap', '#/recall', '#/learn', '#/preview', '#/settings'];
+// Today, Today with the "what is coming" sheet open, the study sets page, Settings.
+const VIEWS = ['#/today', '#/coming', '#/learn', '#/settings'];
 const VIEWPORTS = [
   { name: 'phone', width: 390, height: 844 },
   { name: 'desktop', width: 1280, height: 800 },
@@ -137,6 +138,10 @@ it('moves the theme choice with the arrow keys and keeps one option in the tab o
   const page = await browser.newPage({ viewport: VIEWPORTS[1]! });
   await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });
   await page.getByRole('button', { name: 'Try the demo', exact: true }).click();
+  await page.evaluate(() => {
+    location.hash = '#/settings';
+  });
+  await page.getByRole('heading', { name: 'Settings', level: 1 }).waitFor();
   const radio = (name: string) => page.getByRole('radio', { name, exact: true });
   await radio('Auto').focus();
   await page.keyboard.press('ArrowRight');
@@ -152,80 +157,138 @@ it('moves the theme choice with the arrow keys and keeps one option in the tab o
   await page.close();
 });
 
-it('shows exactly one theme choice wherever there is one', async () => {
+const enterDemo = async (page: Page): Promise<void> => {
+  await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });
+  await page.getByRole('button', { name: 'Try the demo', exact: true }).click();
+  await page.locator('.lead .note-text').waitFor();
+};
+
+const go = (page: Page, hash: string): Promise<void> =>
+  page.evaluate((h) => {
+    location.hash = h;
+  }, hash);
+
+it('keeps the theme choice in Settings, once, at every size', async () => {
   const visible = (page: Page) => page.locator('.theme-choice:visible').count();
-  const go = (page: Page, hash: string) =>
-    page.evaluate((h) => {
-      location.hash = h;
-    }, hash);
   for (const viewport of VIEWPORTS) {
     const page = await browser.newPage({ viewport });
-    await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });
-    await page.getByRole('button', { name: 'Try the demo', exact: true }).click();
+    await enterDemo(page);
+    expect(await visible(page), `${viewport.name} today`).toBe(0);
     await go(page, '#/settings');
     await page.getByRole('heading', { name: 'Settings', level: 1 }).waitFor();
     expect(await visible(page), `${viewport.name} settings`).toBe(1);
-    await go(page, '#/today');
-    await page.waitForTimeout(300);
-    // A phone keeps it in Settings; a wide screen keeps it in the sidebar.
-    expect(await visible(page), `${viewport.name} today`).toBe(viewport.name === 'phone' ? 0 : 1);
     await page.close();
   }
 });
 
-it('offers "got it" and "not yet" on a review card', async () => {
-  // The demo always has one review due (the Larkspur survey, src/app/session.ts).
+it('never says "missed", on Today, the study sets page or Settings', async () => {
+  // The no guilt rule in CONTRIBUTING: the word a review button used to carry.
   const page = await browser.newPage({ viewport: VIEWPORTS[1]! });
-  await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });
-  await page.getByRole('button', { name: 'Try the demo', exact: true }).click();
-  await page.getByRole('button', { name: 'not yet', exact: true }).waitFor();
-  expect(await page.getByRole('button', { name: 'got it', exact: true }).count()).toBe(1);
-  // The no guilt rule in CONTRIBUTING: the word this button used to carry.
-  expect(await page.getByText(/missed/i).count()).toBe(0);
+  await enterDemo(page);
+  for (const view of VIEWS) {
+    await go(page, view);
+    await page.waitForTimeout(300);
+    expect(await page.getByText(/missed|overdue|streak/i).count(), view).toBe(0);
+  }
   await page.close();
 });
 
-it('keeps the calendar out of the nav and reachable by its link', async () => {
-  // One nav list serves the sidebar and the phone menu, so both sizes are checked.
+it('has two destinations, and old links still land on Today', async () => {
+  // One nav list serves the top bar and the phone's bottom bar, so both sizes are checked.
   for (const viewport of VIEWPORTS) {
     const page = await browser.newPage({ viewport });
-    await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });
-    await page.getByRole('button', { name: 'Try the demo', exact: true }).click();
-    await page.locator('.sidebar nav a', { hasText: 'Settings' }).waitFor();
-    const labels = await page.locator('.sidebar nav a').allTextContents();
-    expect(labels.map((l) => l.trim()), viewport.name).toEqual([
-      'Today', 'Recall', 'Learn', 'On This Day', 'Preview', 'Settings',
-    ]);
-    expect(await page.locator('.sidebar nav a[href="#/heatmap"]').count(), viewport.name).toBe(0);
-    await page.evaluate(() => {
-      location.hash = '#/heatmap';
-    });
-    await page.getByRole('heading', { name: 'Calendar', level: 1 }).waitFor();
-    await page.locator('.heat-grid').waitFor();
+    await enterDemo(page);
+    const labels = await page.locator('.mainnav a').allTextContents();
+    expect(labels.map((l) => l.trim()), viewport.name).toEqual(['Today', 'Settings']);
+    for (const old of ['#/on-this-day', '#/preview', '#/heatmap']) {
+      await go(page, old);
+      await page.getByRole('heading', { name: 'Today', level: 1 }).waitFor();
+      await page.locator('.lead').waitFor();
+    }
     await page.close();
   }
 });
 
-it('fits the nav and the calendar on a phone', async () => {
+it('fits the bottom bar on a phone', async () => {
   const page = await browser.newPage({ viewport: VIEWPORTS[0]! });
-  await page.goto(`${base}/app/`, { waitUntil: 'networkidle' });
-  await page.getByRole('button', { name: 'Try the demo', exact: true }).click();
-  const settings = page.locator('.sidebar nav a', { hasText: 'Settings' });
-  await settings.waitFor();
-  const box = await settings.boundingBox();
-  expect(box).not.toBeNull();
-  expect(box!.x).toBeGreaterThanOrEqual(0);
-  expect(box!.y).toBeGreaterThanOrEqual(0);
-  expect(box!.x + box!.width).toBeLessThanOrEqual(VIEWPORTS[0]!.width);
-  expect(box!.y + box!.height).toBeLessThanOrEqual(VIEWPORTS[0]!.height);
-  await page.evaluate(() => {
-    location.hash = '#/heatmap';
-  });
-  const grid = page.locator('.heat-grid');
-  await grid.waitFor();
-  const size = await grid.evaluate((el) => ({ scroll: el.scrollWidth, client: el.clientWidth }));
-  expect(size.scroll).toBeLessThanOrEqual(size.client);
+  await enterDemo(page);
+  for (const name of ['Today', 'Settings']) {
+    const box = await page.locator('.mainnav a', { hasText: name }).boundingBox();
+    expect(box, name).not.toBeNull();
+    expect(box!.x).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(VIEWPORTS[0]!.width);
+    expect(box!.y + box!.height).toBeLessThanOrEqual(VIEWPORTS[0]!.height);
+    expect(box!.height).toBeGreaterThanOrEqual(44);
+  }
   await page.close();
+});
+
+// The two measures of success from docs/design-redesign-plan.md that a
+// browser can check.
+it('shows note text inside the first screen on a 390 by 844 phone', async () => {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  await enterDemo(page);
+  const text = await page.locator('.lead .note-text').boundingBox();
+  const bar = await page.locator('.mainnav').boundingBox();
+  expect(text!.y).toBeGreaterThan(0);
+  // Above the bottom bar, with at least two lines of it showing.
+  expect(text!.y + 60).toBeLessThan(bar!.y);
+  expect((await page.locator('.lead .note-text').innerText()).trim().length).toBeGreaterThan(40);
+  await page.close();
+});
+
+it('keeps the pair above the fold on a 1440 by 900 desktop', async () => {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await enterDemo(page);
+  await page.locator('.pairing').waitFor();
+  const pair = await page.locator('.pairing').boundingBox();
+  expect(pair!.y + 120).toBeLessThan(900);
+  await page.close();
+});
+
+it('takes a response back with undo, and says so to a screen reader', async () => {
+  const page = await browser.newPage({ viewport: VIEWPORTS[0]! });
+  await enterDemo(page);
+  const lead = page.locator('.lead');
+  await lead.getByRole('button', { name: /^keep/ }).click();
+  await lead.getByText('Kept', { exact: true }).waitFor();
+  expect(await lead.getByRole('button', { name: /^keep/ }).count()).toBe(0);
+  expect(await page.getByRole('status').filter({ hasText: /^Kept: .+ Undo is available\.$/ }).count()).toBe(1);
+  await lead.getByRole('button', { name: /^undo/ }).click();
+  await lead.getByRole('button', { name: /^keep/ }).waitFor();
+  expect(await lead.getByText('Kept', { exact: true }).count()).toBe(0);
+  expect(await page.getByRole('status').filter({ hasText: /^Taken back/ }).count()).toBe(1);
+  await page.close();
+});
+
+it('opens what is coming as a sheet, and Escape closes it', async () => {
+  for (const viewport of VIEWPORTS) {
+    const page = await browser.newPage({ viewport });
+    await enterDemo(page);
+    await page.getByRole('link', { name: 'What is coming', exact: true }).click();
+    const sheet = page.getByRole('dialog', { name: 'What is coming' });
+    await sheet.waitFor();
+    await sheet.getByRole('heading', { name: 'Scheduled next' }).waitFor();
+    await page.keyboard.press('Escape');
+    await sheet.waitFor({ state: 'hidden' });
+    // The close event follows the dialog closing, and puts the address back.
+    await page.waitForFunction(() => location.hash === '#/today');
+    await page.close();
+  }
+});
+
+it('goes from the landing page into the demo in one click', async () => {
+  const page = await browser.newPage({ viewport: VIEWPORTS[1]! });
+  const problems = await watch(page);
+  await page.goto(`${base}/`, { waitUntil: 'networkidle' });
+  await page.getByRole('link', { name: /Try the demo/ }).click();
+  await page.locator('.lead .note-text').waitFor();
+  await page.getByText('Every note here is made up, and nothing leaves this tab.').waitFor();
+  expect(await page.evaluate(() => location.search)).toBe('');
+  // The demo writes to a made-up note, so it has nothing to announce.
+  expect(await page.getByText(/was added to your daily note/).count()).toBe(0);
+  await page.close();
+  expect(problems).toEqual([]);
 });
 
 it('picks a range of notes with two taps on a touch screen', async () => {
@@ -235,7 +298,7 @@ it('picks a range of notes with two taps on a touch screen', async () => {
   await page.evaluate(() => {
     location.hash = '#/learn';
   });
-  const turnOn = page.getByRole('button', { name: 'Turn on Learn mode' });
+  const turnOn = page.getByRole('button', { name: 'Turn it on', exact: true });
   if (await turnOn.count()) await turnOn.click();
   await page.getByRole('button', { name: 'New study set' }).click();
   await page.getByLabel('Search your notes').fill('a');

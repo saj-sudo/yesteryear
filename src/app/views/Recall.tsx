@@ -158,7 +158,7 @@ export function Recall({ data }: { data: AppData }) {
     rowActions: (row: Row) => JSX.Element,
   ): JSX.Element => (
     <section class="queue-section">
-      <h2 class="sub">{name}</h2>
+      <h3 class="sub">{name}</h3>
       {rows.length === 0 ? (
         <p class="empty-note">{empty}</p>
       ) : (
@@ -179,26 +179,21 @@ export function Recall({ data }: { data: AppData }) {
 
   return (
     <section class="recall-view">
-      <header class="view-head">
-        <div class="view-head-icon recall-tint" aria-hidden="true">
-          ↻
-        </div>
-        <div>
-          <h1>Recall</h1>
-          <p class="fineprint">
-            The main schedule. Notes you want to see again come back at least{' '}
-            {config.recall.cooldownDays} days apart, favouring the ones that
-            have waited longest, with{' '}
-            {Math.round(config.recall.randomShare * 100)}% picked at random.
-            There are no deadlines or scores, and skipping is fine.
-          </p>
-        </div>
+      <header class="sheet-head">
+        <h2 id="coming-heading">What is coming</h2>
+        <p class="fineprint">
+          Notes you want to see again come back at least{' '}
+          {config.recall.cooldownDays} days apart, favouring the ones that
+          have waited longest, with{' '}
+          {Math.round(config.recall.randomShare * 100)}% picked at random.
+          There are no deadlines or scores, and skipping is fine.
+        </p>
       </header>
       {saveError && <div class="notice">{saveError}</div>}
 
       {tagCount === 0 && (
         <div class="setup-card">
-          <h2 class="sub">Give Recall something to work with</h2>
+          <h3 class="sub">Give Recall something to work with</h3>
           <p>
             Daily notes come back on their own. Recall gets more varied when you
             pick a few tags that mark notes worth seeing again, such as an

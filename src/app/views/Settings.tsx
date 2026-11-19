@@ -367,7 +367,7 @@ export function Settings({
           })}
       </SettingsSection>
 
-      <SettingsSection title="Learn mode">
+      <SettingsSection title="Study toward a date">
         <label class="field checkbox">
           <input
             type="checkbox"
@@ -379,14 +379,15 @@ export function Settings({
             }
           />
           <span>
-            Space selected notes toward a date, using study sets or a date
-            property (for real memorization tooling, use Anki)
+            Review chosen notes on a schedule that tightens as a date gets
+            close, using study sets or a date property. Review notes join
+            Today when this is on. For memorization tooling, use Anki.
           </span>
         </label>
         {config.learn.enabled && (
           <>
             <p class="fineprint">
-              Study sets are on the <a href="#/learn">Learn page</a>. Notes with these tags
+              Study sets are on the <a href="#/learn">study sets page</a>. Notes with these tags
               take their date from the property below:
             </p>
             {tagToggle(config.learn.assignByTag, (d, name, on) => {
@@ -475,7 +476,6 @@ export function Settings({
         </div>
       </SettingsSection>
 
-      {/* On a phone the colour theme lives here; a wide screen has it in the sidebar. */}
       <div class="settings-appearance">
         <h2 class="sub">Appearance</h2>
         <ThemeChoice />

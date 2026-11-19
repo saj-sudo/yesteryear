@@ -70,7 +70,25 @@ export function endDemo(): void {
   }
 }
 
+/**
+ * `/app/?demo` starts the demo in one step, which is how the landing page
+ * links to it. The parameter is taken off the address straight away, so a
+ * reload or a shared link does not carry it.
+ */
+function demoFromAddress(): void {
+  try {
+    const url = new URL(location.href);
+    if (!url.searchParams.has('demo')) return;
+    if (!activeDemo()) startDemo('strangers');
+    url.searchParams.delete('demo');
+    history.replaceState(null, '', url.pathname + url.search + url.hash);
+  } catch {
+    // no address to read (tests, odd embeds): the gate still offers the demo
+  }
+}
+
 export function createSession(): Session | null {
+  demoFromAddress();
   const demo = activeDemo();
   if (demo) {
     const today = todayLocal(null);
@@ -78,8 +96,9 @@ export function createSession(): Session | null {
     const provider = new FixtureProvider(space);
     if (demo === 'strangers') {
       // The demo starts as a user would be after onboarding: the invented
-      // schema mapped, tags picked, the daily-note surface on, and Learn
-      // mode mid-flight so its cadence is visible from the first visit.
+      // schema mapped, tags picked and the daily-note surface on. Studying
+      // toward a date is off, as it is for everyone until they turn it on,
+      // with two sets ready so turning it on in Settings shows it mid-flight.
       const doc = emptyDoc(
         normalizeConfig({
           types: { project: 'Expedition', person: 'Correspondent', note: 'Field Note' },
@@ -93,7 +112,7 @@ export function createSession(): Session | null {
           recall: { tags: ['spark', 'keeper', 'thread'], tagWeights: { spark: 1.5 } },
           rotation: { enabled: true, groupBy: 'tag', groups: ['spark', 'thread'] },
           learn: {
-            enabled: true,
+            enabled: false,
             // One set aiming ahead, and one whose date has passed, so the
             // "study again with a new date" prompt is visible too.
             sets: [
