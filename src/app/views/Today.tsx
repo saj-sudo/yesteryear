@@ -31,7 +31,7 @@ const ANSWERED: Record<ItemResponse, string> = {
   dismiss: 'Dismissed',
   retire: 'Retired',
   gotIt: 'Got it',
-  missedIt: 'Not yet',
+  notYet: 'Not yet',
 };
 
 /** A response given in this visit, with what undo needs to take it back. */
@@ -229,7 +229,7 @@ export function Today({ data, comingOpen }: { data: AppData; comingOpen: boolean
   const responses = (item: SurfacedItem) => {
     const answer = given[item.key];
     const options: ItemResponse[] =
-      item.source === 'learn' ? ['gotIt', 'missedIt'] : ['keep', 'dismiss', 'retire'];
+      item.source === 'learn' ? ['gotIt', 'notYet'] : ['keep', 'dismiss', 'retire'];
     return (
       <div class="responses">
         {answer ? (

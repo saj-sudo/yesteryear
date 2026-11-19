@@ -59,6 +59,35 @@ describe('normalizeDoc / import / export', () => {
     expect(round).toEqual(doc);
   });
 
+  it('reads a Learn response stored under its older name, and writes the new one', () => {
+    // Until the rename, "not yet" was stored as `missedIt`, in both places below.
+    const key = `${objKey('o1')}#learn`;
+    const old = {
+      config: { learn: { enabled: true, missedItMultiplier: 0.3 } },
+      state: {
+        version: 1,
+        updatedAt: NOW,
+        items: {
+          [key]: {
+            mode: 'learn', targetDate: '2026-10-01', lastSurfaced: '2026-08-20',
+            nextDue: '2026-08-27', surfaceCount: 2, lastResponse: 'missedIt',
+          },
+        },
+        groupLastSurfaced: {},
+        lastRunDate: '2026-08-20',
+        lastRunItems: [],
+      },
+    };
+    const doc = importDoc(JSON.stringify(old), NOW);
+    expect(doc.state.items[key]).toMatchObject({ lastResponse: 'notYet', nextDue: '2026-08-27' });
+    expect(doc.config.learn.notYetMultiplier).toBe(0.3);
+
+    // Written whole under the new names: the old ones are gone from the page.
+    const written = exportDoc(doc);
+    expect(written).not.toMatch(/missed/i);
+    expect(importDoc(written, NOW)).toEqual(doc);
+  });
+
   it('drops unrecognizable items instead of crashing', () => {
     const doc = normalizeDoc(
       {

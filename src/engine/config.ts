@@ -38,7 +38,7 @@ export function defaultConfig(): YesteryearConfig {
       targetRatio: 0.15,
       minGapDays: 7,
       maxGapDays: 90,
-      missedItMultiplier: 0.5,
+      notYetMultiplier: 0.5,
       maxShareOfDailySlots: 0.5,
       revertToRecallAfterTarget: true,
     },
@@ -186,7 +186,13 @@ export function normalizeConfig(input: unknown): YesteryearConfig {
       targetRatio: clamp(num(learn['targetRatio'], d.learn.targetRatio), 0.01, 1),
       minGapDays: clamp(num(learn['minGapDays'], d.learn.minGapDays), 1, 365),
       maxGapDays: clamp(num(learn['maxGapDays'], d.learn.maxGapDays), 1, 3650),
-      missedItMultiplier: clamp(num(learn['missedItMultiplier'], d.learn.missedItMultiplier), 0.01, 1),
+      // Read under its older name too, so a config saved by an earlier build
+      // keeps its value. It is written back under the new name.
+      notYetMultiplier: clamp(
+        num(learn['notYetMultiplier'], num(learn['missedItMultiplier'], d.learn.notYetMultiplier)),
+        0.01,
+        1,
+      ),
       maxShareOfDailySlots: clamp(
         num(learn['maxShareOfDailySlots'], d.learn.maxShareOfDailySlots),
         0,

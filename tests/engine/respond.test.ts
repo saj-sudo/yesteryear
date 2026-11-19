@@ -54,7 +54,7 @@ describe.each(SPACES)('undo on $name', ({ build, config }) => {
     const state = manager.current.state;
     for (const item of report.surfaced) {
       const responses: ItemResponse[] =
-        item.source === 'learn' ? ['gotIt', 'missedIt'] : ['keep', 'dismiss', 'retire'];
+        item.source === 'learn' ? ['gotIt', 'notYet'] : ['keep', 'dismiss', 'retire'];
       for (const response of responses) {
         const untouched = structuredClone(state);
         const before = applyResponse(state, item.key, response, manager.current.config);

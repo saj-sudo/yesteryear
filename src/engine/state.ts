@@ -3,6 +3,7 @@ import type { PersistedDoc, SaveResult, StateStore } from './provider';
 import type {
   ItemKey,
   ItemState,
+  LearnResponse,
   YesteryearConfig,
   YesteryearState,
 } from './types';
@@ -67,6 +68,19 @@ export function emptyDoc(config: YesteryearConfig, nowIso: string): PersistedDoc
 }
 
 /**
+ * A stored Learn response. The second one was stored under an older name
+ * until the rename to `notYet`; that name is still read, so a state page
+ * written by an earlier build loads unchanged, and it is written back
+ * under the new name on the next save.
+ */
+const LEGACY_NOT_YET = 'missedIt';
+
+function learnResponseOf(value: unknown): LearnResponse | null {
+  if (value === 'gotIt' || value === 'notYet') return value;
+  return value === LEGACY_NOT_YET ? 'notYet' : null;
+}
+
+/**
  * Accept any imported/parsed document and return a valid one. Config runs
  * through normalizeConfig; state items with unrecognizable keys or shapes
  * are dropped rather than crashing (§8.6 spirit: forgiving everywhere).
@@ -114,10 +128,7 @@ export function normalizeDoc(input: unknown, nowIso: string): PersistedDoc {
         lastSurfaced: typeof v['lastSurfaced'] === 'string' ? v['lastSurfaced'] : null,
         nextDue: typeof v['nextDue'] === 'string' ? v['nextDue'] : null,
         surfaceCount: typeof v['surfaceCount'] === 'number' ? v['surfaceCount'] : 0,
-        lastResponse:
-          v['lastResponse'] === 'gotIt' || v['lastResponse'] === 'missedIt'
-            ? v['lastResponse']
-            : null,
+        lastResponse: learnResponseOf(v['lastResponse']),
       };
     }
   }

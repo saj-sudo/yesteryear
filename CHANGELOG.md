@@ -39,6 +39,13 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Changed
 
+- **The state page says "not yet" too.** The stored names `missedIt` and
+  `missedItMultiplier` are now `notYet` and `notYetMultiplier`, so the
+  word the no guilt rule bans is gone from the page in your own space. A
+  page written by an earlier build still loads, and is rewritten under the
+  new names the next time Yesteryear saves. If you keep an old tab open
+  after another tab has saved, the old tab treats the newer answer as
+  unanswered until it is reloaded.
 - **Today opens on a note you can read.** One resurfaced note is set like a
   printed page, with its text at reading size. When the note has a real date
   behind it, its age is the headline ("1 year ago"). The day's other notes

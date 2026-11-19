@@ -36,22 +36,21 @@ function excerptOf(item: SurfacedItem): string | null {
  * The word a person reads for each response: on the Today buttons and in
  * the markers written into the daily note. One table, so the two cannot
  * drift apart. The second Learn response reads "not yet" because the no
- * guilt rule in CONTRIBUTING bans the word it used before. `missedIt`
- * stays as the internal id: it is stored in the state page
- * (`lastResponse`, `learn.missedItMultiplier`), so renaming it would need
- * a migration. parseResponses still reads the old marker from notes
- * written before the change.
+ * guilt rule in CONTRIBUTING bans the word it used before. The stored
+ * names follow it (`notYet`, `learn.notYetMultiplier`); state.ts and
+ * config.ts still read the older names, and parseResponses still reads
+ * the old marker from notes written before the change.
  */
 export const RESPONSE_LABELS: Record<ItemResponse, string> = {
   keep: 'keep',
   dismiss: 'dismiss',
   retire: 'retire',
   gotIt: 'got it',
-  missedIt: 'not yet',
+  notYet: 'not yet',
 };
 
 export const RECALL_MARKERS = '`keep` · `dismiss` · `retire`';
-export const LEARN_MARKERS = `\`${RESPONSE_LABELS.gotIt}\` · \`${RESPONSE_LABELS.missedIt}\``;
+export const LEARN_MARKERS = `\`${RESPONSE_LABELS.gotIt}\` · \`${RESPONSE_LABELS.notYet}\``;
 
 /**
  * Render the section, or null when there is nothing to say. The heading

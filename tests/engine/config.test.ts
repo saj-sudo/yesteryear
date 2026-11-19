@@ -36,6 +36,15 @@ describe('normalizeConfig', () => {
     expect(normalizeConfig('garbage')).toEqual(defaultConfig());
   });
 
+  it('reads the not-yet multiplier under its older name, and prefers the new one', () => {
+    expect(normalizeConfig({ learn: { missedItMultiplier: 0.25 } }).learn.notYetMultiplier).toBe(0.25);
+    expect(
+      normalizeConfig({ learn: { missedItMultiplier: 0.25, notYetMultiplier: 0.4 } }).learn.notYetMultiplier,
+    ).toBe(0.4);
+    expect(normalizeConfig({}).learn.notYetMultiplier).toBe(0.5);
+    expect(JSON.stringify(normalizeConfig({ learn: { missedItMultiplier: 0.25 } }))).not.toMatch(/missed/i);
+  });
+
   it('preserves user values and merges the rest', () => {
     const cfg = normalizeConfig({
       spaceId: 'abc',

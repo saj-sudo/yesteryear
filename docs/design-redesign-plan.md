@@ -102,8 +102,9 @@ From the code audit of 2026-11-18: a CSS skeleton for "Reading the space…"; fo
 `--text-xs` token raised to it; `viewport-fit=cover` and safe-area padding; every screenshot and
 `public/og.png` retaken from the demo, with a script in the repo so it can be done again.
 
-Open from the fix: the stored names `missedIt` and `missedItMultiplier` are readable in the
-person's own state page. Renaming them needs a read-both, write-new migration.
+Open from the fix, now done: the stored names `missedIt` and `missedItMultiplier` were readable
+in the person's own state page. They are `notYet` and `notYetMultiplier`, with the older names
+still read and the new ones written.
 
 ## Stages and status
 
@@ -113,7 +114,8 @@ person's own state page. Renaming them needs a read-both, write-new migration.
 | Fix first: "not yet", Calendar out of the nav | Merged | pull request 13 | 2026-11-18 |
 | Mockup | Published | https://claude.ai/artifact/SUdDFbSwWTmFeLPW9FSN8v | 2026-11-19 |
 | Saj picks a direction | Done. See "What Saj picked" below | | 2026-11-19 |
-| Build and pull request | Pull request open | pull request 15 | 2026-11-19 |
+| Build and pull request | Merged | pull request 15 | 2026-11-19 |
+| Rename of the stored "not yet" names | Done on its branch, pull request not opened yet | | 2026-11-19 |
 
 ## What Saj picked (2026-11-19)
 
@@ -144,7 +146,6 @@ Calls made in the build that the mockup did not settle:
 
 Still open after the build:
 
-- Renaming the stored names `missedIt` and `missedItMultiplier` (see the finish items).
 - Farview: no shared token changed value, so nothing was mirrored. The print look (paper,
   grain, Literata) is Yesteryear's own.
 
