@@ -230,6 +230,12 @@ export interface SurfacedItem {
   /** Human label, e.g. "From 1 year ago" or "Birthday in 3 days". */
   label: string;
   group: string | null;
+  /**
+   * The date basis, when the item came up because of a date. It lets a view
+   * show an age ("3 years ago") without reading the clock. Absent on items
+   * rebuilt from state, which keeps only the key and title.
+   */
+  reason?: TemporalReason | null;
 }
 
 /** A parsed user response from yesterday's Resurfaced section (§8.6). */

@@ -42,9 +42,7 @@ Seen in the demo space on yesteryear.dev and in `docs/*.png`, 2026-11-18.
 - The Calendar came out of the navigation, because a dot for every day written reads as a
   counter. The view and its route still work. Whether it is deleted is decided on the mockup.
 
-Still showing the old wording or the old nav, until the screens are retaken in the build stage:
-`public/og.png`, `docs/today.png`, `docs/phone-today.png`, and the other `docs/*.png` that show
-the sidebar. The landing page and README still describe the calendar as a feature.
+The screens that still showed the old wording and the old nav were retaken in the build stage.
 
 ## Proposal (what the mockup will show)
 
@@ -112,10 +110,43 @@ person's own state page. Renaming them needs a read-both, write-new migration.
 | Stage | State | Link | Date |
 |---|---|---|---|
 | Review of the running app | Done | this file | 2026-11-18 |
-| Fix first: "not yet", Calendar out of the nav | Pull request open | see the repo's pull requests | 2026-11-18 |
-| Mockup | Not started. Yesteryear is fourth in the order | | |
-| Saj picks a direction | Waiting on the mockup | | |
-| Build and pull request | Not started | | |
+| Fix first: "not yet", Calendar out of the nav | Merged | pull request 13 | 2026-11-18 |
+| Mockup | Published | https://claude.ai/artifact/SUdDFbSwWTmFeLPW9FSN8v | 2026-11-19 |
+| Saj picks a direction | Done. See "What Saj picked" below | | 2026-11-19 |
+| Build and pull request | Pull request open | pull request 15 | 2026-11-19 |
+
+## What Saj picked (2026-11-19)
+
+- Ink treatment A, the quiet one. Note typeface: Literata.
+- Preview and the Calendar removed.
+- On This Day folded into Today. Recall as a sheet opened from Today.
+- Learn behind a setting, off by default.
+- The "Resurfaced section was added" notice hidden in the demo.
+- The landing page's demo link goes straight into the demo.
+
+## What the build did, against the measures
+
+- Note text inside the first screen on a 390 by 844 phone: yes, it starts at about 227px.
+  Before, the first note text was at 1,494px.
+- Two destinations in the navigation: yes, Today and Settings. Before, six.
+- The pair above the fold on a 1440 by 900 desktop: yes, it starts at about 545px. It was
+  already above the fold before, at 455px, so this one is "kept", not "gained".
+- The smoke suite is green, and it now checks the first and third measures on every run.
+
+Calls made in the build that the mockup did not settle:
+
+- Capacities gives no created date for a note. The age headline shows only for a note with a
+  real date behind it (a daily note lookback, an anniversary). Other notes use their label.
+- The lead note is one that has text to read, preferring one with an age.
+- The demo starts with studying toward a date turned off, like every new space.
+- Undo lasts for the visit. After a reload the note shows what was chosen, with no undo.
+- The colour theme switch lives in Settings at every size.
+
+Still open after the build:
+
+- Renaming the stored names `missedIt` and `missedItMultiplier` (see the finish items).
+- Farview: no shared token changed value, so nothing was mirrored. The print look (paper,
+  grain, Literata) is Yesteryear's own.
 
 ## Starting a session on this build
 

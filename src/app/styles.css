@@ -1,11 +1,13 @@
-/* Yesteryear: Capacities-native structure with two riso inks.
-   The surfaces, sans, radii and sidebar rhythm sit comfortably next to
-   Capacities; the colour comes from two inks, blue and apricot, printed
-   slightly off register. Where they overprint they make a third colour,
-   a muted plum, used for Learn. Flat inks are for fills; text in an ink
-   colour uses the darker --ink*-text tokens so it passes AA.
+/* Yesteryear: two riso inks on a printed page.
+   The colour comes from two inks, blue and apricot, printed slightly off
+   register. Where they overprint they make a third colour, a muted plum,
+   used for studying toward a date. Note text is set in Literata on a
+   paper tone, and the app's own controls stay in the system sans. Flat
+   inks are for fills; text in an ink colour uses the darker --ink*-text
+   tokens so it passes AA.
    Sibling of Farview: same token names, type scale, spacing and radii;
-   different inks. Nothing here counts, scores or scolds. */
+   different inks, and the print look here is Yesteryear's own.
+   Nothing here counts, scores or scolds. */
 
 :root {
   /* Surfaces and text. */
@@ -39,9 +41,18 @@
   --dots: radial-gradient(rgba(28, 27, 32, 0.12) 1px, transparent 1.3px) 0 0 / 6px 6px;
   --blend: multiply;
 
+  /* The printed page: paper under a note, the two sheets of the pair at
+     full strength, and a little grain. */
+  --paper: #f6f2ea;
+  --pair1: #f9c3a6;
+  --pair2: #b9c8ea;
+  --grain: url('/art/grain.svg');
+
   /* Shared with Farview. */
   --font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  /* Note text. Literata, served from this site (SIL Open Font License). */
+  --note: 'Literata', Georgia, 'Times New Roman', serif;
   --text-xs: 0.78rem;
   --text-sm: 0.88rem;
   --text-md: 1rem;
@@ -99,6 +110,10 @@
   --shadow-lift: 0 12px 36px rgba(0, 0, 0, 0.5);
   --dots: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1.3px) 0 0 / 6px 6px;
   --blend: screen;
+  --paper: #26242a;
+  --pair1: #5e3521;
+  --pair2: #24376a;
+  --grain: url('/art/grain-light.svg');
 }
 
 @media (prefers-color-scheme: dark) {
@@ -127,7 +142,47 @@
     --shadow-lift: 0 12px 36px rgba(0, 0, 0, 0.5);
     --dots: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1.3px) 0 0 / 6px 6px;
     --blend: screen;
+    --paper: #26242a;
+    --pair1: #5e3521;
+    --pair2: #24376a;
+    --grain: url('/art/grain-light.svg');
   }
+}
+
+@font-face {
+  font-family: 'Literata';
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url('/fonts/literata-latin-ext-wght-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Literata';
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url('/fonts/literata-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Literata';
+  font-style: italic;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url('/fonts/literata-latin-ext-wght-italic.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Literata';
+  font-style: italic;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url('/fonts/literata-latin-wght-italic.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 * {
@@ -328,38 +383,40 @@ a:hover {
   margin-top: 1.5rem;
 }
 
-/* ---------- app shell: sidebar + content ---------- */
+/* ---------- app shell: a top bar, the page, a footer ---------- */
 
 .app {
   display: flex;
-  min-height: 100vh;
-}
-
-.sidebar {
-  flex: 0 0 13rem;
-  display: flex;
   flex-direction: column;
-  gap: var(--space-5);
-  padding: var(--space-4) var(--space-3);
-  border-right: 1px solid var(--line);
-  background: var(--wash);
-  position: sticky;
-  top: 0;
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
-.sidebar .brand {
+/* Two destinations. On a wide screen they sit in the top bar; on a phone
+   they are one bar at the bottom (see the phones block at the end). */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0.6rem max(var(--space-6), env(safe-area-inset-right, 0px)) 0.6rem
+    max(var(--space-6), env(safe-area-inset-left, 0px));
+  padding-top: max(0.6rem, env(safe-area-inset-top, 0px));
+  border-bottom: 1px solid var(--line);
+  background: var(--wash);
+}
+
+.brand {
   font-weight: 700;
   color: var(--ink);
   font-size: 1.05rem;
   letter-spacing: -0.01em;
-  padding: 0.2rem 0.55rem;
   display: flex;
   align-items: center;
   gap: 0.55rem;
+  min-height: 2.2rem;
 }
 
-.sidebar .brand:hover {
+.brand:hover {
   text-decoration: none;
 }
 
@@ -373,87 +430,63 @@ a:hover {
   flex: 0 0 auto;
 }
 
-.sidebar nav {
+.mainnav {
   display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
+  gap: 0.25rem;
+  margin-left: var(--space-5);
 }
 
-.nav-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-.nav-group-label {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  padding: 0 0.55rem 0.25rem;
-}
-
-.sidebar nav a {
-  color: var(--ink-soft);
-  padding: 0.35rem 0.55rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.93rem;
+.mainnav a {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-}
-
-/* Each view's icon is printed in one of the inks: cadences in blue,
-   lenses in apricot, Learn in the overprint. */
-.sidebar nav a .icon {
-  flex: 0 0 auto;
-  color: var(--ink2);
-}
-
-.nav-group:nth-child(2) a:nth-of-type(1) .icon {
-  color: var(--ink1);
-}
-
-.nav-group:nth-child(2) a:nth-of-type(2) .icon {
-  color: var(--ink3);
-}
-
-.nav-group:last-child a .icon {
+  gap: 0.45rem;
+  min-height: 2.2rem;
+  padding: 0 0.8rem;
+  border-radius: var(--radius-sm);
   color: var(--ink-soft);
+  font-size: 0.93rem;
 }
 
-.sidebar nav a:hover {
-  background: rgba(28, 27, 32, 0.05);
+.mainnav a .icon {
+  flex: 0 0 auto;
+  color: var(--ink2-text);
+}
+
+.mainnav a:hover {
+  background: var(--line);
   text-decoration: none;
 }
 
-.sidebar nav a.active {
+.mainnav a.active {
   background: var(--ink2-tint);
   color: var(--ink);
   font-weight: 600;
 }
 
-.sidebar-foot {
-  margin-top: auto;
+.topbar-space {
+  margin-left: auto;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: 0 0.55rem;
+  align-items: baseline;
+  gap: var(--space-4);
+  min-width: 0;
 }
 
 .demo-badge {
   display: flex;
-  gap: 0.4rem;
+  gap: 0.5rem;
   align-items: baseline;
   font-size: 0.82rem;
   color: var(--ink1-text);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .space-name {
   color: var(--ink-soft);
   font-size: 0.82rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Light, Dark or Auto: the same small segmented control as zoom. */
@@ -468,7 +501,7 @@ a:hover {
 }
 
 .theme-choice button {
-  font-size: 0.78rem;
+  font-size: var(--text-xs);
   padding: 0.2rem 0.6rem;
   border: 0;
   border-radius: var(--radius-sm);
@@ -500,12 +533,14 @@ a:hover {
 .disclaimer {
   margin: 0;
   color: var(--ink-soft);
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   line-height: 1.4;
 }
 
 .app-foot {
-  display: none;
+  padding: var(--space-4) max(var(--space-6), env(safe-area-inset-right, 0px)) var(--space-4)
+    max(var(--space-6), env(safe-area-inset-left, 0px));
+  border-top: 1px solid var(--line);
 }
 
 .content {
@@ -518,148 +553,239 @@ a:hover {
   color: var(--ink);
   font-size: 0.85rem;
   text-align: center;
-  padding: 0.5rem 1.5rem;
+  padding: 0.35rem 1.5rem;
   background: var(--dots), var(--ink2-tint);
   border-bottom: 1px solid var(--line);
 }
 
-.content > .notice {
-  margin: var(--space-3) var(--space-6) 0;
-}
-
 .app-main {
-  padding: var(--space-5) var(--space-6);
+  padding: var(--space-5) max(var(--space-6), env(safe-area-inset-right, 0px)) var(--space-6)
+    max(var(--space-6), env(safe-area-inset-left, 0px));
   max-width: 72rem;
   margin: 0 auto;
 }
 
-/* On phone the nav sits above the content: the group labels go, the
-   order stays. The grid itself is in the phones block at the end. */
-@media (max-width: 720px) {
-  .app {
-    flex-direction: column;
-  }
-  .sidebar {
-    flex: none;
-    height: auto;
-    position: static;
-    gap: var(--space-2);
-    border-right: none;
-    border-bottom: 1px solid var(--line);
-    padding: var(--space-3) var(--space-4) var(--space-2);
-  }
-  .nav-group {
-    display: contents;
-  }
-  .nav-group-label {
-    display: none;
-  }
-  .sidebar-foot {
-    display: none;
-  }
-  .content > .notice {
-    margin: var(--space-3) var(--space-4) 0;
-  }
-  .app-main {
-    padding: var(--space-4);
-  }
-  .app-foot {
-    display: block;
-    padding: var(--space-4);
-    border-top: 1px solid var(--line);
-  }
-}
-
-/* ---------- today: mix + pairing ---------- */
-
-.today h2 {
-  margin-bottom: 0.2rem;
-}
-
-.mix-list {
-  list-style: none;
-  margin: 0.75rem 0 0;
-  padding: 0;
+/* While the space is being read: the shape of the page that is coming. */
+.skeleton {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
   gap: 0.8rem;
+  max-width: 46rem;
+  animation: skeleton-breathe 1.6s ease-in-out infinite alternate;
 }
 
-/* Each item prints a thin band of its source's ink along the top. */
-.mix-item {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  padding: 0.85rem 1rem;
-  box-shadow: var(--shadow), inset 0 3px 0 var(--ink2);
+.skeleton-page {
+  height: 14rem;
+  background: var(--paper);
+  border-top: 3px solid var(--line-strong);
 }
 
-.mix-item.src-recall {
-  box-shadow: var(--shadow), inset 0 3px 0 var(--ink1);
+.skeleton-line {
+  height: 0.9rem;
+  border-radius: 4px;
+  background: var(--line);
 }
 
-.mix-item.src-learn {
-  box-shadow: var(--shadow), inset 0 3px 0 var(--ink3);
+.skeleton-line.short {
+  width: 60%;
 }
 
-/* The source reads like a Capacities type: a tinted pill. */
-.mix-label {
-  display: inline-block;
-  font-size: var(--text-xs);
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-  padding: 0.1rem 0.5rem;
-  margin-bottom: 0.45rem;
-  background: var(--ink2-tint);
-  color: var(--ink2-text);
+@keyframes skeleton-breathe {
+  from { opacity: 1; }
+  to { opacity: 0.55; }
 }
 
-.src-recall .mix-label {
-  background: var(--ink1-tint);
-  color: var(--ink1-text);
-}
-
-.src-learn .mix-label {
-  background: var(--ink3-tint);
-  color: var(--ink3-text);
-}
-
-.mix-item .note-title {
-  font-size: 1.02rem;
-}
-
-.mix-excerpt {
+/* A text button with no box: responses, undo, draw again, the day arrows. */
+button.quiet {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  min-height: 2rem;
   color: var(--ink-soft);
   font-size: var(--text-sm);
-  margin: 0.4rem 0 0;
+  text-decoration: underline;
+  text-decoration-color: var(--field-border);
+  text-underline-offset: 4px;
 }
 
-.mix-responses {
-  display: flex;
-  gap: 0.35rem;
-  margin-top: 0.55rem;
-  flex-wrap: wrap;
-}
-
-.mix-response {
-  font-size: var(--text-xs);
-  padding: 0.15rem 0.6rem;
-  border-radius: var(--radius-sm);
-  box-shadow: none;
-  color: var(--ink-soft);
-}
-
-.mix-response:hover:not(:disabled) {
+button.quiet:hover:not(:disabled) {
+  background: none;
   color: var(--ink);
 }
 
-.mix-answered {
+@media (max-width: 720px) {
+  .topbar {
+    padding-left: max(var(--space-4), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--space-4), env(safe-area-inset-right, 0px));
+  }
+
+  .space-name {
+    display: none;
+  }
+
+  .app-main {
+    padding: var(--space-4) max(var(--space-4), env(safe-area-inset-right, 0px)) var(--space-5)
+      max(var(--space-4), env(safe-area-inset-left, 0px));
+  }
+
+  .app-foot {
+    padding-left: max(var(--space-4), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--space-4), env(safe-area-inset-right, 0px));
+  }
+}
+
+
+/* ---------- today: a note, the day's stack, the pair, earlier years ---------- */
+
+.today {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.today > * {
+  min-width: 0;
+  margin: 0;
+}
+
+.today h2 {
+  margin: 0;
+  font-family: var(--note);
+  font-weight: 500;
+  font-size: var(--text-lg);
+  letter-spacing: 0;
+}
+
+.today-first {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.today-first.alone {
+  grid-template-columns: minmax(0, 46rem);
+}
+
+/* Note text is set in the note face, at reading size. */
+.note-text {
+  font-family: var(--note);
+  font-size: 1.2rem;
+  line-height: 1.55;
+}
+
+.note-text .md {
+  font-size: inherit;
+}
+
+.note-text .md > :first-child {
+  margin-top: 0;
+}
+
+.note-text .md > :last-child {
+  margin-bottom: 0;
+}
+
+.note-text .md p {
+  margin: 0.6rem 0;
+}
+
+/* The lead note: a printed page. Paper, one ink rule, a little grain. */
+.lead {
+  position: relative;
+  background: var(--paper);
+  border-top: 3px solid var(--ink1);
+  padding: 1.5rem 2rem 0.8rem;
+}
+
+.lead::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+.lead > * {
+  position: relative;
+  z-index: 1;
+}
+
+.kicker {
+  margin: 0;
   font-size: var(--text-xs);
   font-weight: 600;
+  color: var(--ink2-text);
+}
+
+.src-recall .kicker {
   color: var(--ink1-text);
-  background: var(--ink1-tint);
-  border-radius: var(--radius-sm);
-  padding: 0.15rem 0.6rem;
+}
+
+.src-learn .kicker {
+  color: var(--ink3-text);
+}
+
+.today .lead-headline {
+  margin: 0.2rem 0 0.5rem;
+  font-size: clamp(2.3rem, 5vw, 3.3rem);
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  color: var(--ink1-text);
+}
+
+.today .lead-headline.plain {
+  margin-top: 0;
+  font-size: var(--text-xl);
+  line-height: 1.15;
+}
+
+.lead-title,
+.stack-title {
+  margin: 0;
+}
+
+.lead-title {
+  margin-bottom: 0.6rem;
+}
+
+.lead-title .note-title,
+.stack-title .note-title {
+  margin: 0;
+}
+
+.responses {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.1rem 1.1rem;
+  margin-top: 0.6rem;
+}
+
+.answered {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.stack ul {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+}
+
+.stack-item {
+  border-top: 1px solid var(--line-strong);
+  padding: 0.7rem 0 0.25rem;
+}
+
+.stack-line {
+  margin: 0.1rem 0 0;
+  font-family: var(--note);
+  color: var(--ink-soft);
+}
+
+.stack .responses {
+  margin-top: 0.15rem;
 }
 
 .learn-draft {
@@ -687,138 +813,195 @@ a:hover {
   padding: 0.25rem 0.5rem;
 }
 
-.pairing-head {
+/* The unlikely pair: two sheets, one in each ink. Where they cross, the
+   inks overprint into a third colour (multiply on paper, screen in the
+   dark). The text stays clear of the overlap. */
+.pair-head,
+.earlier-head {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
   flex-wrap: wrap;
-  margin-top: 2.5rem;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 var(--space-4);
+  margin-bottom: 0.75rem;
 }
 
-.pairing-head h2 {
-  margin: 0 0 0.2rem;
-}
-
-/* The unlikely pair: two prints, one in each ink, laid slightly across
-   each other the way two sheets land on a desk. */
 .pairing {
-  display: flex;
-  align-items: flex-start;
-  margin: 1.25rem 0 2.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
 .pair-side {
-  flex: 1 1 0;
-  min-width: 0;
-  position: relative;
-  background: var(--ink2-tint);
-  border-radius: 4px;
-  padding: 1.4rem 1.6rem 1.6rem;
-  transform: rotate(-1.1deg);
-  mix-blend-mode: var(--blend);
+  padding: 1.5rem 4rem 2rem 2rem;
+  background: var(--pair1);
+  transform: rotate(-0.8deg);
 }
 
 .pair-side + .pair-side {
-  background: var(--ink1-tint);
-  transform: rotate(1.2deg) translate(-0.6rem, 1.2rem);
+  margin: 1.1rem 0 0 -2.75rem;
+  padding: 1.5rem 2rem 2rem 4.5rem;
+  background: var(--pair2);
+  mix-blend-mode: var(--blend);
+  transform: rotate(0.7deg);
 }
 
 .pair-meta {
   display: flex;
-  gap: 0.35rem;
   flex-wrap: wrap;
-  margin: 0.35rem 0 0.6rem;
+  gap: 0.6rem;
+  margin: -0.2rem 0 0.5rem;
+  font-size: var(--text-xs);
 }
 
-.pair-side .chip {
-  background: rgba(255, 255, 255, 0.6);
+.pair-side .note-text {
+  font-size: 1.12rem;
+}
+
+.pair-side a.note-title,
+.pair-side .wikilink {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+.pair-side .md blockquote {
   color: var(--ink);
 }
 
-.pair-side .note-title {
-  font-size: 1.15rem;
-}
-
-:root[data-theme='dark'] .pair-side .chip {
-  background: rgba(0, 0, 0, 0.25);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .pair-side .chip {
-    background: rgba(0, 0, 0, 0.25);
-  }
-}
-
-@media (max-width: 720px) {
-  .pairing {
-    flex-direction: column;
-  }
-  .pair-side {
-    flex: 1 1 auto;
-    width: 100%;
-  }
-  .pair-side + .pair-side {
-    transform: rotate(1deg) translate(0.3rem, -0.4rem);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pair-side,
-  .pair-side + .pair-side {
-    transform: none;
-  }
-  .pair-side + .pair-side {
-    margin-left: 0.6rem;
-  }
-}
-
-/* ---------- on this day ---------- */
-
-.day-nav {
+/* The same day in earlier years. */
+.earlier-nav {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.day-nav h2 {
-  margin: 0;
+.earlier-nav .step {
+  min-width: 2rem;
+  font-size: 1.1rem;
+  text-decoration: none;
 }
 
-.today-btn {
-  font-size: 0.8rem;
-  vertical-align: middle;
+.earlier-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--space-5) var(--space-6);
 }
 
-.year-columns {
-  display: flex;
-  gap: 0.9rem;
-  overflow-x: auto;
-  align-items: flex-start;
-  padding: 1rem 0 1.5rem;
-}
-
-.year-column {
-  flex: 0 0 18rem;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  padding: 0.9rem 1.1rem;
-  min-height: 8rem;
-  box-shadow: var(--shadow);
-}
-
-.year-column h3 {
-  margin: 0 0 0.5rem;
-  display: inline-block;
+.earlier-year h3 {
+  margin: 0 0 0.4rem;
+  font-family: var(--note);
+  font-weight: 500;
+  font-size: var(--text-xl);
+  letter-spacing: 0;
   color: var(--ink2-text);
-  background: var(--ink2-tint);
-  border-radius: var(--radius-sm);
-  padding: 0.05rem 0.5rem;
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.04em;
 }
+
+.earlier-year h3 a {
+  color: inherit;
+}
+
+.earlier .note-text {
+  font-size: 1.08rem;
+}
+
+a.button,
+.app-main a.button {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 1.1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+a.button:hover {
+  background: var(--wash);
+  text-decoration: none;
+}
+
+/* "What is coming": the schedule, as a sheet over Today. */
+dialog.sheet {
+  width: min(46rem, 100%);
+  max-width: 100%;
+  max-height: 85vh;
+  max-height: 85dvh;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  color: var(--ink);
+  box-shadow: var(--shadow-lift);
+}
+
+dialog.sheet::backdrop {
+  background: rgba(28, 27, 32, 0.45);
+}
+
+.sheet-body {
+  padding: var(--space-4) var(--space-5) var(--space-5);
+}
+
+.sheet-close {
+  float: right;
+  min-height: var(--tap);
+}
+
+.sheet-head h2 {
+  margin: 0.4rem 0 0.3rem;
+  font-family: var(--note);
+  font-weight: 500;
+  font-size: var(--text-xl);
+  letter-spacing: 0;
+}
+
+.sheet-head {
+  margin-bottom: var(--space-4);
+}
+
+@media (max-width: 720px) {
+  .today {
+    gap: var(--space-5);
+  }
+
+  .today-first {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+  }
+
+  .lead {
+    padding: 1.1rem 1.25rem 0.5rem;
+  }
+
+  .note-text {
+    font-size: 1.14rem;
+  }
+
+  .pairing {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pair-side {
+    margin-right: 0.9rem;
+    padding: 1.25rem 1.4rem 2.6rem;
+  }
+
+  .pair-side + .pair-side {
+    margin: -1.6rem 0 0 0.9rem;
+    padding: 2.4rem 1.4rem 1.5rem;
+  }
+
+  dialog.sheet {
+    margin: auto 0 0;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .sheet-body {
+    padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 
 .note-title {
   font-weight: 650;
@@ -870,135 +1053,6 @@ a.note-title {
   -webkit-box-decoration-break: clone;
 }
 
-@media (max-width: 720px) {
-  .year-columns {
-    flex-direction: column;
-  }
-  .year-column {
-    flex: 1 1 auto;
-    width: 100%;
-  }
-}
-
-/* ---------- calendar ---------- */
-
-.heatmap-head {
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.year-picker {
-  display: flex;
-  gap: 2px;
-  padding: 2px;
-  flex-wrap: wrap;
-  background: var(--wash);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-}
-
-.year-picker button {
-  text-decoration: none;
-  border: 0;
-  background: none;
-  box-shadow: none;
-  border-radius: var(--radius-sm);
-  padding: 0.2rem 0.75rem;
-  color: var(--ink-soft);
-}
-
-.year-picker .active {
-  background: var(--surface);
-  color: var(--ink);
-  font-weight: 600;
-  box-shadow: inset 0 -3px 0 var(--ink2), 0 1px 2px rgba(28, 27, 32, 0.12);
-}
-
-.heat-grid {
-  overflow-x: auto;
-  padding: 0.75rem 0;
-}
-
-.heat-row {
-  display: flex;
-  align-items: center;
-}
-
-.heat-month {
-  width: 2.6rem;
-  flex: 0 0 auto;
-  font-size: 0.72rem;
-  color: var(--ink-soft);
-}
-
-/* Each day sits in a 24px slot, the smallest comfortable target. The dot of
-   ink inside stays 14px. */
-.heat-slot {
-  width: 24px;
-  height: 24px;
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* A day you wrote is one dot of ink. Days you did not are plain paper:
-   no score, no gaps called out. */
-.heat-cell {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--wash);
-  border: 1px solid var(--line);
-}
-
-.heat-hit {
-  position: relative;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: none;
-  box-shadow: none;
-  cursor: pointer;
-}
-
-.heat-hit::after {
-  content: '';
-  position: absolute;
-  inset: 5px;
-  border-radius: 50%;
-  background: var(--ink1);
-  border: 1px solid var(--ink1);
-  transition: transform 100ms ease;
-}
-
-.heat-hit:hover:not(:disabled)::after {
-  transform: scale(1.25);
-}
-
-.heat-hit.open {
-  outline: 2px solid var(--focus);
-  box-shadow: 2px 1px 0 var(--ink2);
-}
-
-.heat-cell.future {
-  background: transparent;
-  border-color: transparent;
-}
-
-.heat-detail {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  padding: 1rem 1.25rem;
-  max-width: 40rem;
-  box-shadow: var(--shadow);
-}
-
 /* ---------- queue ---------- */
 
 .queue-section {
@@ -1036,17 +1090,6 @@ a.note-title {
   gap: 0.3rem;
 }
 
-/* ---------- preview ---------- */
-
-.preview-card {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  padding: 1rem 1.25rem;
-  max-width: 44rem;
-  box-shadow: var(--shadow);
-}
-
 /* ---------- settings ---------- */
 
 .settings {
@@ -1074,9 +1117,9 @@ a.note-title {
   text-decoration: underline;
 }
 
-/* A wide screen keeps the colour theme in the sidebar. */
+/* The colour theme is chosen here, at every size. */
 .settings-appearance {
-  display: none;
+  margin: var(--space-5) 0;
 }
 
 .field-row {
@@ -1670,32 +1713,48 @@ body:has(.landing) {
     font-size: 14px;
   }
 
-  /* Every view in the nav fits: four to a row, icon above label. */
-  .sidebar nav {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 2px;
-    overflow: visible;
+  /* The two destinations are one bar at the bottom, clear of the home
+     indicator. The page leaves room for it. */
+  .app {
+    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
   }
 
-  .sidebar nav a {
+  .mainnav {
+    position: fixed;
+    z-index: 20;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px)
+      env(safe-area-inset-left, 0px);
+    background: var(--bg);
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .mainnav a {
     flex-direction: column;
     justify-content: center;
     gap: 0.15rem;
-    min-height: var(--tap);
-    padding: 0.3rem 0.15rem;
+    min-height: 3.5rem;
+    padding: 0;
+    border-radius: 0;
     font-size: var(--text-xs);
     line-height: 1.2;
-    text-align: center;
-    white-space: normal;
+  }
+
+  .mainnav a.active {
+    background: none;
+    box-shadow: inset 0 3px 0 var(--ink2);
   }
 
   button.subtle,
+  button.quiet,
   .tag-chip,
-  .mix-response,
   .theme-choice button,
-  .year-picker button,
-  .today-btn,
   .finder-actions button,
   .settings-actions button,
   .demo-buttons button {
@@ -1753,10 +1812,6 @@ body:has(.landing) {
     list-style: none;
   }
 
-  .settings-appearance {
-    display: block;
-  }
-
   input[type='checkbox'] {
     width: 20px;
     height: 20px;
@@ -1767,9 +1822,8 @@ body:has(.landing) {
     align-items: center;
   }
 
-  .mix-response {
-    font-size: var(--text-sm);
-    padding: 0.2rem 0.85rem;
+  .earlier-nav .step {
+    min-width: var(--tap);
   }
 
   /* Row actions become small outlined buttons, and wrap onto a new line. */
@@ -1785,32 +1839,5 @@ body:has(.landing) {
     border-radius: var(--radius);
     padding: 0.2rem 0.85rem;
     color: var(--ink);
-  }
-
-  /* The year fits the width by turning on its side: each month is a
-     column and the days run down it, so every day keeps a 24px target.
-     The markup still reads month by month. */
-  .heat-grid {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    grid-template-rows: repeat(32, auto);
-    grid-auto-flow: column;
-    overflow-x: visible;
-  }
-
-  .heat-row {
-    display: contents;
-  }
-
-  .heat-month {
-    width: auto;
-    text-align: center;
-    font-size: var(--text-xs);
-    padding-bottom: var(--space-1);
-  }
-
-  .heat-slot {
-    width: auto;
-    height: 25px;
   }
 }

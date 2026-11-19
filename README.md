@@ -4,7 +4,7 @@
 
 **Your older Capacities notes, back on a schedule.**
 
-![Today in the synthetic Fernweh Field Office demo: four resurfaced notes with tinted source labels, and an unlikely pair shown as two overlapping prints in blue and apricot. A banner at the top says every note is made up.](docs/today.png)
+![Today in the made-up Fernweh Field Office demo: one resurfaced note set as a printed page with its text readable, the day's other notes beside it, and an unlikely pair shown as two overlapping prints in blue and apricot. A banner at the top says every note is made up.](docs/today.png)
 
 > **Disclaimer:** Yesteryear is an independent community tool. It is not
 > affiliated with, endorsed by, or sponsored by Capacities. Capacities is a
@@ -15,7 +15,7 @@ Notes go into Capacities easily and rarely come back out. Yesteryear reads your 
 - Notes you tag as worth seeing again return when they are due, a month or six months later.
 - Notes tied to a real date, like a talk or an exam, return more often as it gets closer.
 - Each day you also get one unlikely pair: two notes from different corners of your space, side by side.
-- Date views are extra ways to look back: on this day across the years, birthdays and project dates.
+- Dates are extra ways to look back: the same day in earlier years, birthdays and project dates.
 
 The daily mix draws partly at random, because a calendar can only bring back notes that already share a date.
 
@@ -41,7 +41,7 @@ No type ID, property ID or tag name is hardcoded. Yesteryear reads what your spa
 
 On your first visit, Yesteryear reads your types, date and status properties and tags, and offers what it found, such as "Your projects are Project" or "Birthdays come from Birthday". Names it recognises start ticked, and a guess from the shape of a type says so and starts unticked. Nothing changes without a tick, and anything you have already mapped is left alone.
 
-Anything you don't map is skipped. A space with nothing set up still gets On This Day, because every space has daily notes. If a name in your settings is missing from your space, the error says what was missing and lists what your space has.
+Anything you don't map is skipped. A space with nothing set up still gets the same day in earlier years, because every space has daily notes. If a name in your settings is missing from your space, the error says what was missing and lists what your space has.
 
 ## What you need in Capacities
 
@@ -49,21 +49,21 @@ Nothing. Daily notes alone are enough to start, and every space has them. A few 
 
 - **Projects with dates** bring anniversaries and target-date reminders. In Capacities, open **Settings → Object Types**, choose **+ New Type**, and pick a prebuilt type such as Project, or create your own.
 - **People with a birthday** bring birthday reminders. A type with a date property for the birthday is enough.
-- **Tags** mark the notes worth seeing again. Tag a note in Capacities and it appears under Recall.
+- **Tags** mark the notes worth seeing again. Tag a note in Capacities and it joins the schedule, listed under **What is coming** on Today.
 - **A type with no date?** Open the type's settings, choose **Add property**, and add a date.
 
 ## Getting started
 
 1. Open the site and click **Connect to Capacities**, or **Try the demo** first. The demo runs on a made-up space and needs no account.
 2. Approve access and pick which space to share. That choice happens on the Capacities side.
-3. The first time, you see what Yesteryear found in your space and tick what looks right. Then you land on **Today**: the day's resurfaced notes, with an unlikely pair underneath. It works with no setup, because daily notes alone are enough.
+3. The first time, you see what Yesteryear found in your space and tick what looks right. Then you land on **Today**: one resurfaced note you can read, the day's other notes, an unlikely pair, and the same day in earlier years. It works with no setup, because daily notes alone are enough.
 ![The first screen on a synthetic space: the projects and people it found, each with a tick and a line about what it is used for.](docs/setup.png)
 
-4. Each schedule has its own page: **Recall** helps you pick resurfacing tags, and **Learn** turns on with one click and holds your study sets. **Settings** holds the full mapping.
-5. Open **Preview** to see what tomorrow would bring back, before anything is written.
+4. There are two pages. **What is coming**, at the foot of Today, lists the schedule and helps you pick resurfacing tags. **Settings** holds the full mapping and the switch for studying toward a date.
+5. A response can be taken back: the note keeps its place, shows what you chose, and offers undo.
 6. If you like it, turn on the daily note section. On your first visit each day, a `Resurfaced` section is added to that day's note.
 
-On a phone you can add the site to your home screen so it opens on Today. A switch in the sidebar (at the bottom of the page on a phone) sets light, dark or automatic.
+On a phone you can add the site to your home screen so it opens on Today. A switch in Settings sets light, dark or automatic.
 
 ## Answering is optional
 
@@ -96,13 +96,11 @@ Learn is for the few notes you want to know well before a known date, like a tal
 - The gap between reviews is 0.15 times the days remaining, with limits, so reviews come closer together as the date gets near. The first review is always delayed a little.
 - When a date passes, the set's notes leave Learn and go back to Recall if they carry a Recall tag. Give the set a new date and the same notes study again, which suits an exam you sit more than once.
 - **Show notes** on a set lists what it holds right now, and each note in Learn names the set it studies toward.
-- A note can also take its own date from a date property, or be flagged from the Recall page with a date of its own.
+- A note can also take its own date from a date property, or be flagged from **What is coming** with a date of its own.
 
 Learn stays small: no cloze deletions and no grading ladders. For real memorisation, use [Anki](https://apps.ankiweb.net/). Learn exists for notes you already have, because moving notes into Anki is a chore of its own.
 
 There are no streaks, counters or reminders anywhere. Leaving everything untouched is a normal state.
-
-![The calendar: a year of days in the demo space, with a dot of ink for each day that has a daily note.](docs/calendar.png)
 
 ## Built on the official API
 

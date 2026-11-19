@@ -69,12 +69,15 @@ export function Learn({ data }: { data: AppData }) {
 
   return (
     <section class="learn-view">
+      <p class="fineprint">
+        <a href="#/settings">Back to Settings</a>
+      </p>
       <header class="view-head">
         <div class="view-head-icon learn-tint" aria-hidden="true">
           ◎
         </div>
         <div>
-          <h1>Learn</h1>
+          <h1>Study toward a date</h1>
           <p class="fineprint">
             For notes you want to know by a certain day, like a talk or an exam.
             Each review is scheduled at{' '}
@@ -90,7 +93,7 @@ export function Learn({ data }: { data: AppData }) {
 
       {!config.learn.enabled ? (
         <div class="setup-card">
-          <h2 class="sub">Learn mode is off</h2>
+          <h2 class="sub">Studying toward a date is off</h2>
           <p>
             Turn it on to give a few notes a schedule that aims at a date.
             Nothing changes for the rest of your space.
@@ -103,7 +106,7 @@ export function Learn({ data }: { data: AppData }) {
               })
             }
           >
-            Turn on Learn mode
+            Turn it on
           </button>
         </div>
       ) : (
@@ -231,7 +234,7 @@ export function Learn({ data }: { data: AppData }) {
             )}
             <p class="fineprint">
               To study a single note toward a date of its own, use “learn this” on any row in{' '}
-              <a href="#/recall">Recall</a>.
+              <a href="#/coming">What is coming</a>.
             </p>
           </details>
         </>

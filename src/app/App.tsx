@@ -24,46 +24,19 @@ import {
 import { ConnectionTrouble } from './components/ConnectionTrouble';
 import { Icon } from './components/Icon';
 import { MappingSuggestions } from './components/MappingSuggestions';
-import { ThemeChoice } from './components/ThemeChoice';
 import { Connect } from './views/Connect';
-import { Heatmap } from './views/Heatmap';
 import { Learn } from './views/Learn';
-import { OnThisDay } from './views/OnThisDay';
-import { Preview } from './views/Preview';
-import { Recall } from './views/Recall';
 import { Settings } from './views/Settings';
 import { Today } from './views/Today';
 import { readSkipped, saveSkipped } from './suggestionSkipped';
 
 const DISCLAIMER = 'Independent community tool. Not affiliated with Capacities.';
 
-// The Calendar view (`#/heatmap`) is left out of the nav on purpose. A dot
-// for every day written reads as a counter, which the no guilt rule in
-// CONTRIBUTING rules out. The view and its route still work for anyone who
-// has the link; the sidebar and the phone menu both render this list.
-const NAV_GROUPS: { label: string | null; items: { view: View; label: string }[] }[] = [
-  {
-    label: null,
-    items: [{ view: 'today', label: 'Today' }],
-  },
-  {
-    label: 'Cadences',
-    items: [
-      { view: 'recall', label: 'Recall' },
-      { view: 'learn', label: 'Learn' },
-    ],
-  },
-  {
-    label: 'Lenses',
-    items: [
-      { view: 'onThisDay', label: 'On This Day' },
-      { view: 'preview', label: 'Preview' },
-    ],
-  },
-  {
-    label: null,
-    items: [{ view: 'settings', label: 'Settings' }],
-  },
+// Two destinations. What used to be Recall opens from Today as a sheet,
+// and the study sets page opens from Settings, so neither is listed here.
+const NAV: { view: View; label: string }[] = [
+  { view: 'today', label: 'Today' },
+  { view: 'settings', label: 'Settings' },
 ];
 
 export interface AppData {
@@ -154,7 +127,8 @@ export function App() {
           });
           if (cancelled) return;
           setData({ session, space, manager, notes, today, report });
-          if (report.wrote) {
+          // The demo writes to a made-up note, so there is nothing to report.
+          if (report.wrote && session.kind !== 'demo') {
             setRanNote('Today’s Resurfaced section was added to your daily note.');
           }
         };
@@ -243,56 +217,52 @@ export function App() {
   // backing out of the Capacities consent screen leaves things as they were.
   const reconnect = (): Promise<void> => connect();
 
+  // The sheet and the study sets page sit under one of the two destinations.
+  const section: View = view === 'coming' ? 'today' : view === 'learn' ? 'settings' : view;
+
   return (
     <div class="app">
-      <aside class="sidebar">
+      <header class="topbar">
         <a class="brand" href="#/today">
           <span class="brand-mark" aria-hidden="true" />
           Yesteryear
         </a>
-        <nav>
-          {NAV_GROUPS.map((group, gi) => (
-            <div class="nav-group" key={gi}>
-              {group.label && <span class="nav-group-label">{group.label}</span>}
-              {group.items.map((item) => (
-                <a
-                  key={item.view}
-                  href={HASH_FOR[item.view]}
-                  class={view === item.view ? 'active' : ''}
-                  aria-current={view === item.view ? 'page' : undefined}
-                >
-                  <Icon name={item.view} />
-                  {item.label}
-                </a>
-              ))}
-            </div>
+        <nav class="mainnav" aria-label="Main">
+          {NAV.map((item) => (
+            <a
+              key={item.view}
+              href={HASH_FOR[item.view]}
+              class={section === item.view ? 'active' : ''}
+              aria-current={view === item.view ? 'page' : undefined}
+            >
+              <Icon name={item.view} />
+              {item.label}
+            </a>
           ))}
         </nav>
-        <div class="sidebar-foot">
+        <div class="topbar-space">
+          <span class="space-name">{data?.space.title ?? ''}</span>
           {session.kind === 'demo' && (
-            <div class="demo-badge">
-              <span>Demo space</span>
-              <button class="subtle" onClick={exitDemo}>
+            <span class="demo-badge">
+              Demo space
+              <button class="quiet" onClick={exitDemo}>
                 exit
               </button>
-            </div>
+            </span>
           )}
-          <span class="space-name">{data?.space.title ?? ''}</span>
-          <ThemeChoice />
-          <p class="disclaimer">{DISCLAIMER}</p>
         </div>
-      </aside>
+      </header>
 
       <div class="content">
         {session.kind === 'demo' && (
           <aside class="demo-banner" aria-label="Demo space">
-            Every note here is synthetic, and nothing leaves this tab.
+            Every note here is made up, and nothing leaves this tab.
           </aside>
         )}
 
         <main class="app-main">
           {loadError && data !== null && <div class="notice">{loadError}</div>}
-          {ranNote && view === 'today' && (
+          {ranNote && section === 'today' && (
             <div class="notice notice-dismissable">
               <span>{ranNote}</span>
               <button type="button" class="subtle" onClick={() => setRanNote(null)}>
@@ -300,9 +270,7 @@ export function App() {
               </button>
             </div>
           )}
-          {view === 'today' && <h1 class="sr-only">Today</h1>}
-          {view === 'onThisDay' && <h1 class="sr-only">On this day</h1>}
-          {view === 'heatmap' && <h1 class="sr-only">Calendar</h1>}
+          {section === 'today' && <h1 class="sr-only">Today</h1>}
           {data === null && (loadError || stalled) && session.kind === 'live' ? (
             <ConnectionTrouble
               stalled={!loadError}
@@ -315,9 +283,14 @@ export function App() {
           ) : data === null ? (
             <>
               {loadError && <div class="notice">{loadError}</div>}
-              <p class="loading">Reading the space…</p>
+              <div class="skeleton" role="status">
+                <span class="sr-only">Reading the space…</span>
+                <div class="skeleton-page" />
+                <div class="skeleton-line" />
+                <div class="skeleton-line short" />
+              </div>
             </>
-          ) : view === 'today' ? (
+          ) : section === 'today' ? (
             setup ? (
               <MappingSuggestions
                 suggestion={setup.suggestion}
@@ -327,30 +300,10 @@ export function App() {
                 onSkip={() => finishSetup(null)}
               />
             ) : (
-              <Today data={data} />
+              <Today data={data} comingOpen={view === 'coming'} />
             )
-          ) : view === 'onThisDay' ? (
-            <OnThisDay
-              today={data.today}
-              notes={data.notes}
-              getMarkdown={(id) => data.session.provider.getObjectMarkdown(id)}
-              deepLink={(id) => data.session.provider.deepLink(id)}
-              isDemo={session.kind === 'demo'}
-            />
-          ) : view === 'heatmap' ? (
-            <Heatmap
-              today={data.today}
-              notes={data.notes}
-              getMarkdown={(id) => data.session.provider.getObjectMarkdown(id)}
-              deepLink={(id) => data.session.provider.deepLink(id)}
-              isDemo={session.kind === 'demo'}
-            />
-          ) : view === 'recall' ? (
-            <Recall data={data} />
           ) : view === 'learn' ? (
             <Learn data={data} />
-          ) : view === 'preview' ? (
-            <Preview data={data} />
           ) : (
             <Settings
               data={data}
