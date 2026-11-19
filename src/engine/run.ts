@@ -175,6 +175,7 @@ export function finalizeRun(
       source: candidate.source,
       label: labelFor(candidate, today),
       group: candidate.group,
+      reason: candidate.temporalReason,
     };
   });
 
