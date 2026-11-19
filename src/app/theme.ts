@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 
 /**
  * Light, Dark, or follow the system. The choice is kept in this browser
@@ -62,5 +62,13 @@ export function useTheme(): [ThemeChoice, (choice: ThemeChoice) => void] {
       listeners.delete(setChoice);
     };
   }, []);
-  return [choice, setTheme];
+  // Set this component's own state directly as well. The listener above is
+  // only registered after the first paint, so a choice made in the first
+  // moments after the switch appears would otherwise change the theme and
+  // leave the switch showing the old option.
+  const choose = useCallback((next: ThemeChoice): void => {
+    setChoice(next);
+    setTheme(next);
+  }, []);
+  return [choice, choose];
 }

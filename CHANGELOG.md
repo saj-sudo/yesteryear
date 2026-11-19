@@ -8,6 +8,9 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Fixed
 
+- **The theme switch keeps up.** A choice made in the first moments after
+  Settings opened changed the theme and left the switch showing the old
+  option. The switch now updates at once.
 - **A way out when your space won't load.** If the first load from Capacities
   failed, the app sat on "Reading the space…" with no way to reach Settings
   or Disconnect. It now shows a card with Try again, Reconnect to Capacities
