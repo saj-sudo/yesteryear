@@ -2,7 +2,13 @@ import { useEffect, useMemo, useState } from 'preact/hooks';
 import { RESPONSE_LABELS } from '../../engine/markdown';
 import { gatherPairingPool } from '../../engine/orchestrate';
 import { drawPairing, type Pairing, type PairingCandidate } from '../../engine/pairing';
-import { ageOf, applyResponse, undoResponse, type ItemSnapshot } from '../../engine/respond';
+import {
+  ageOf,
+  applyResponse,
+  reopenResponse,
+  undoResponse,
+  type ItemSnapshot,
+} from '../../engine/respond';
 import { parseKey } from '../../engine/state';
 import type { ItemResponse, SurfacedItem } from '../../engine/types';
 import type { AppData } from '../App';
@@ -38,7 +44,8 @@ const ANSWERED: Record<ItemResponse, string> = {
 interface Given {
   response: ItemResponse;
   /** Filled in by the mutation, again on every conflict replay. Absent for
-   *  a response recorded on an earlier visit, which cannot be undone here. */
+   *  a response recorded on an earlier visit, which undo works out again
+   *  from the stored schedule (`reopenResponse`). */
   snap: { before: ItemSnapshot } | null;
 }
 
@@ -132,10 +139,12 @@ export function Today({ data, comingOpen }: { data: AppData; comingOpen: boolean
   };
 
   const undo = (item: SurfacedItem): void => {
-    const snap = given[item.key]?.snap;
-    if (!snap) return;
+    const answer = given[item.key];
+    if (!answer) return;
+    const { snap } = answer;
     data.manager.mutate((doc) => {
-      undoResponse(doc.state, item.key, snap.before);
+      if (snap) undoResponse(doc.state, item.key, snap.before);
+      else reopenResponse(doc.state, item.key, doc.config);
     });
     setGiven((prev) => {
       const next = { ...prev };
@@ -235,11 +244,9 @@ export function Today({ data, comingOpen }: { data: AppData; comingOpen: boolean
         {answer ? (
           <>
             <span class="answered">{ANSWERED[answer.response]}</span>
-            {answer.snap && (
-              <button class="quiet" onClick={() => undo(item)}>
-                undo<span class="sr-only">: {item.title}</span>
-              </button>
-            )}
+            <button class="quiet" onClick={() => undo(item)}>
+              undo<span class="sr-only">: {item.title}</span>
+            </button>
           </>
         ) : (
           options.map((response) => (

@@ -103,9 +103,8 @@ All notable changes to Yesteryear are documented here. The format follows
 
 - **Undo.** A response can be taken back. The note keeps its place, shows
   what you chose, and offers undo beside it. A screen reader hears both the
-  response and the undo. Undo lasts for the visit: after a reload the note
-  shows what was chosen, and a retired note can still be restored under
-  "What is coming".
+  response and the undo. Undo is still there after a reload, for as long as the
+  note is on Today.
 - **The demo in one click.** "Try the demo" on the landing page opens the
   demo directly. Opening `/app/` still shows the Connect screen.
 - **`npm run shots`** retakes every screenshot and the link preview image

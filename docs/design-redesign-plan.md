@@ -141,7 +141,8 @@ Calls made in the build that the mockup did not settle:
   real date behind it (a daily note lookback, an anniversary). Other notes use their label.
 - The lead note is one that has text to read, preferring one with an age.
 - The demo starts with studying toward a date turned off, like every new space.
-- Undo lasts for the visit. After a reload the note shows what was chosen, with no undo.
+- Undo is still offered after a reload. It works the unanswered state out again from the stored
+  schedule.
 - The colour theme switch lives in Settings at every size.
 
 Still open after the build:

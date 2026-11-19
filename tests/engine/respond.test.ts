@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { normalizeConfig } from '../../src/engine/config';
 import { runDaily } from '../../src/engine/orchestrate';
-import { ageOf, applyResponse, snapshotItem, undoResponse } from '../../src/engine/respond';
+import { ageOf, applyResponse, reopenResponse, snapshotItem, undoResponse } from '../../src/engine/respond';
 import { emptyState, objKey, StateManager } from '../../src/engine/state';
 import type { ItemResponse, LocalDate, YesteryearConfig } from '../../src/engine/types';
 import { FixtureProvider } from '../../src/providers/fixture/fixtureProvider';
@@ -61,6 +61,24 @@ describe.each(SPACES)('undo on $name', ({ build, config }) => {
         expect(state.items[item.key]?.lastResponse).toBe(response);
         undoResponse(state, item.key, before);
         expect(state).toEqual(untouched);
+      }
+    }
+  });
+
+  it('works the unanswered state out again when there is no snapshot, as after a reload', async () => {
+    const provider = new FixtureProvider(build(TODAY));
+    const manager = await StateManager.open(provider, nowIso, config);
+    const report = await runDaily({ provider, manager, today: TODAY, rng: seededRng(3) });
+
+    const state = manager.current.state;
+    for (const item of report.surfaced) {
+      const responses: ItemResponse[] =
+        item.source === 'learn' ? ['gotIt', 'notYet'] : ['keep', 'dismiss', 'retire'];
+      for (const response of responses) {
+        const untouched = structuredClone(state);
+        applyResponse(state, item.key, response, manager.current.config);
+        reopenResponse(state, item.key, manager.current.config);
+        expect(state, `${item.title}: ${response}`).toEqual(untouched);
       }
     }
   });
