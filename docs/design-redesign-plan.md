@@ -113,7 +113,7 @@ person's own state page. Renaming them needs a read-both, write-new migration.
 | Fix first: "not yet", Calendar out of the nav | Merged | pull request 13 | 2026-11-18 |
 | Mockup | Published | https://claude.ai/artifact/SUdDFbSwWTmFeLPW9FSN8v | 2026-11-19 |
 | Saj picks a direction | Done. See "What Saj picked" below | | 2026-11-19 |
-| Build and pull request | Pull request open | see the repo's pull requests | 2026-11-19 |
+| Build and pull request | Pull request open | pull request 15 | 2026-11-19 |
 
 ## What Saj picked (2026-11-19)
 
