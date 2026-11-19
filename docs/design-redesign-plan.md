@@ -112,9 +112,9 @@ person's own state page. Renaming them needs a read-both, write-new migration.
 | Stage | State | Link | Date |
 |---|---|---|---|
 | Review of the running app | Done | this file | 2026-11-18 |
-| Fix first: "not yet", Calendar out of the nav | Pull request open | see the repo's pull requests | 2026-11-18 |
-| Mockup | Not started. Yesteryear is fourth in the order | | |
-| Saj picks a direction | Waiting on the mockup | | |
+| Fix first: "not yet", Calendar out of the nav | Merged | pull request 13 | 2026-11-18 |
+| Mockup | Published | https://claude.ai/artifact/SUdDFbSwWTmFeLPW9FSN8v | 2026-11-19 |
+| Saj picks a direction | Waiting on Saj: ink treatment, note typeface, and each "what would move" item | | |
 | Build and pull request | Not started | | |
 
 ## Starting a session on this build
