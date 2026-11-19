@@ -15,6 +15,7 @@ npm test         # Vitest, runs entirely against made-up fixtures
 npm run dev      # Vite dev server
 npm run build    # tsc --noEmit + production build
 npm run smoke    # after a build: the built site in Chromium
+npm run shots    # after a build: retake every screenshot from the demo
 ```
 
 Node 18 or newer (the SDK's minimum). You don't need an OAuth client id for development. Without `VITE_CAPACITIES_CLIENT_ID`, the app runs in demo mode against the built-in fixture spaces, which is how most of it was built.

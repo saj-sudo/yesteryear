@@ -39,6 +39,31 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Changed
 
+- **Today opens on a note you can read.** One resurfaced note is set like a
+  printed page, with its text at reading size. When the note has a real date
+  behind it, its age is the headline ("1 year ago"). The day's other notes
+  follow as a short stack with one line of text each. Capacities gives no
+  created date for a note, so a note with no date keeps its label as the
+  headline.
+- **Two destinations: Today and Settings.** On a phone they are one bar at
+  the bottom, clear of the home indicator. The two-row menu is gone.
+- **The pair has the full width**, in two inks that overprint where the
+  sheets cross.
+- **The same day in earlier years sits under the pair.** It was the On This
+  Day page. The arrows still walk to neighbouring days. Years with nothing
+  written are left out.
+- **"What is coming" opens from Today as a sheet.** It was the Recall page,
+  with the same actions: bring forward, retire, learn this, restore.
+- **Studying toward a date is behind a setting**, off until you turn it on
+  under Settings. Its page opens from there. The demo starts with it off.
+- **Note text is set in Literata**, served from this site under the SIL Open
+  Font License. The Content-Security-Policy gains `font-src 'self'`, and the
+  CSP test checks that no font or image in the stylesheet comes from
+  anywhere else.
+- **The "Resurfaced section was added" notice** no longer shows in the demo,
+  where the note it names is made up.
+- **While the space loads**, a quiet outline of the page shows in place of
+  the "Reading the space…" line.
 - **One demo button.** The Connect screen shows "Try the demo"; the other
   demos sit under "More demos".
 - **A review answers "got it" or "not yet".** The second answer used a word
@@ -54,6 +79,10 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Removed
 
+- **Preview is gone.** It repeated Today.
+- **The Calendar is gone.** A dot for every day written reads as a counter.
+- Old links to `#/preview`, `#/heatmap` and `#/on-this-day` open Today, and
+  `#/recall` opens "What is coming".
 - **Personal API tokens.** Sign-in is OAuth only, as Capacities asks of public
   integrations. The "Advanced: connect with a personal API token" section is
   gone from the Connect screen and the README. A token saved by an earlier
@@ -62,6 +91,15 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ### Added
 
+- **Undo.** A response can be taken back. The note keeps its place, shows
+  what you chose, and offers undo beside it. A screen reader hears both the
+  response and the undo. Undo lasts for the visit: after a reload the note
+  shows what was chosen, and a retired note can still be restored under
+  "What is coming".
+- **The demo in one click.** "Try the demo" on the landing page opens the
+  demo directly. Opening `/app/` still shows the Connect screen.
+- **`npm run shots`** retakes every screenshot and the link preview image
+  from the demo space.
 - **One-click connect on the hosted site.** Capacities registered the OAuth client
   (`capacities_api_yesteryear`), and the hosted build now ships it in
   `.env.production`. Forks and self-hosted builds set their own id in
