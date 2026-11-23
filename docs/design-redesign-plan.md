@@ -115,7 +115,7 @@ still read and the new ones written.
 | Mockup | Published | https://claude.ai/artifact/SUdDFbSwWTmFeLPW9FSN8v | 2026-11-19 |
 | Saj picks a direction | Done. See "What Saj picked" below | | 2026-11-19 |
 | Build and pull request | Merged | pull request 15 | 2026-11-19 |
-| Rename of the stored "not yet" names | Pull request open | pull request 16 | 2026-11-19 |
+| Rename of the stored "not yet" names | Merged | pull request 16 | 2026-11-19 |
 
 ## What Saj picked (2026-11-19)
 
