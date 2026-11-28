@@ -103,6 +103,9 @@ export interface SurfacesConfig {
   browser: {
     enabled: boolean;
     defaultView: string;
+    /** Today asks what you remember of a Recall or Review note before
+     *  showing its text (retrieval practice). Skippable, off by default. */
+    recallFirst: boolean;
   };
 }
 

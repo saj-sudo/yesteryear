@@ -6,6 +6,15 @@ All notable changes to Yesteryear are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **Recall first.** A setting under Surfaces. When it is on, Today shows a
+  Recall or Review note's title and asks what you remember before showing the
+  text. One tap shows the note, answer or not, and what you typed sits above
+  it. Trying to recall a note helps it stick more than rereading it (Roediger
+  and Karpicke 2006). On-this-day, birthday and target-date notes are shown
+  straight away. Off by default; nothing you type is saved.
+
 ### Fixed
 
 - **The theme switch keeps up.** A choice made in the first moments after

@@ -419,6 +419,22 @@ export function Settings({
         <label class="field checkbox">
           <input
             type="checkbox"
+            checked={config.surfaces.browser.recallFirst}
+            onChange={(e) =>
+              update((d) => {
+                d.surfaces.browser.recallFirst = (e.target as HTMLInputElement).checked;
+              })
+            }
+          />
+          <span>
+            Recall first: on Today, show a resurfaced note's title and ask what
+            you remember before showing the text. One tap shows it, answer or
+            not. On-this-day notes are shown straight away.
+          </span>
+        </label>
+        <label class="field checkbox">
+          <input
+            type="checkbox"
             checked={config.surfaces.dailyNote.enabled}
             onChange={(e) =>
               update((d) => {

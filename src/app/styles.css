@@ -767,6 +767,35 @@ button.quiet:hover:not(:disabled) {
   font-weight: 600;
 }
 
+/* Recall first: the question sits where the note text will be. */
+.recall-first {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+  margin: 0.2rem 0 0.4rem;
+}
+
+.recall-first-ask {
+  font-size: var(--text-sm);
+}
+
+.recall-first textarea {
+  width: 100%;
+  font: inherit;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  resize: vertical;
+}
+
+.recalled {
+  margin: 0 0 0.6rem;
+  padding-left: 0.7rem;
+  border-left: 2px solid var(--line-strong);
+}
+
 .stack ul {
   list-style: none;
   margin: 0.5rem 0 0;
@@ -1840,4 +1869,9 @@ body:has(.landing) {
     padding: 0.2rem 0.85rem;
     color: var(--ink);
   }
+}
+
+.recall-first-line {
+  font-family: inherit;
+  font-size: var(--text-sm);
 }

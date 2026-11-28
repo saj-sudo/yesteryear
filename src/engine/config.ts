@@ -64,6 +64,7 @@ export function defaultConfig(): YesteryearConfig {
       browser: {
         enabled: true,
         defaultView: 'onThisDay',
+        recallFirst: false,
       },
     },
   };
@@ -229,6 +230,7 @@ export function normalizeConfig(input: unknown): YesteryearConfig {
       browser: {
         enabled: bool(browser['enabled'], d.surfaces.browser.enabled),
         defaultView: str(browser['defaultView'], d.surfaces.browser.defaultView),
+        recallFirst: bool(browser['recallFirst'], d.surfaces.browser.recallFirst),
       },
     },
   };

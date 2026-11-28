@@ -16,6 +16,7 @@ import { ComingSheet } from '../components/ComingSheet';
 import { EarlierYears } from '../components/EarlierYears';
 import { Markdown } from '../components/Markdown';
 import { HASH_FOR } from '../router';
+import { asksFirst } from './recallFirst';
 
 /**
  * Today (the default view). It opens on one resurfaced note, set like a
@@ -112,6 +113,9 @@ export function Today({ data, comingOpen }: { data: AppData; comingOpen: boolean
   // Note text by object id: undefined while loading, null when there is none.
   const [bodies, setBodies] = useState<Record<string, string | null>>({});
   const [announcement, setAnnouncement] = useState('');
+  // Recall first: which notes have been shown this visit, and what was typed.
+  const [revealed, setRevealed] = useState<Record<string, true>>({});
+  const [recalled, setRecalled] = useState<Record<string, string>>({});
   const [given, setGiven] = useState<Record<string, Given>>(() => {
     // Reflect responses already recorded (an earlier visit today, or the note).
     const out: Record<string, Given> = {};
@@ -275,6 +279,19 @@ export function Today({ data, comingOpen }: { data: AppData; comingOpen: boolean
   const rest = surfaced.filter((item) => item !== lead);
   const leadText = lead ? textOf(lead) : null;
   const leadAge = lead ? ageOf(lead.reason) : null;
+  const asks = (item: SurfacedItem): boolean =>
+    asksFirst(item, {
+      enabled: data.manager.current.config.surfaces.browser.recallFirst,
+      revealed: Boolean(revealed[item.key]),
+      answered: Boolean(given[item.key]),
+      hasText: Boolean(textOf(item)),
+    });
+  const leadAsks = lead !== null && asks(lead);
+  const leadRecalled = lead ? (recalled[lead.key] ?? '').trim() : '';
+  const reveal = (item: SurfacedItem): void => {
+    setRevealed((prev) => ({ ...prev, [item.key]: true }));
+    setAnnouncement(`Showing ${item.title}.`);
+  };
 
   return (
     <section class="today">
@@ -303,10 +320,35 @@ export function Today({ data, comingOpen }: { data: AppData; comingOpen: boolean
               <h2 class="lead-headline plain">{lead.label}</h2>
             )}
             <p class="lead-title">{title(lead)}</p>
-            {leadText ? (
-              <div class="note-text">
-                <Markdown text={clip(leadText, LEAD_LIMIT)} />
+            {leadAsks ? (
+              <div class="recall-first">
+                <label class="recall-first-ask" for="recall-first-input">
+                  What do you remember about this note? One sentence is enough.
+                </label>
+                <textarea
+                  id="recall-first-input"
+                  rows={2}
+                  value={recalled[lead.key] ?? ''}
+                  onInput={(e) => {
+                    const value = (e.target as HTMLTextAreaElement).value;
+                    setRecalled((prev) => ({ ...prev, [lead.key]: value }));
+                  }}
+                />
+                <button class="quiet" onClick={() => reveal(lead)}>
+                  Show the note
+                </button>
               </div>
+            ) : leadText ? (
+              <>
+                {leadRecalled && (
+                  <p class="recalled">
+                    <span class="kicker">You remembered</span> {leadRecalled}
+                  </p>
+                )}
+                <div class="note-text">
+                  <Markdown text={clip(leadText, LEAD_LIMIT)} />
+                </div>
+              </>
             ) : (
               <p class="empty-note">This note has no text of its own.</p>
             )}
@@ -323,7 +365,16 @@ export function Today({ data, comingOpen }: { data: AppData; comingOpen: boolean
                     <li key={item.key} class={`stack-item src-${item.source}`}>
                       <p class="kicker">{item.label}</p>
                       <p class="stack-title">{title(item)}</p>
-                      {text && <p class="stack-line">{firstLine(text)}</p>}
+                      {text && asks(item) ? (
+                        <p class="stack-line recall-first-line">
+                          What do you remember about it?{' '}
+                          <button class="quiet" onClick={() => reveal(item)}>
+                            show<span class="sr-only">: {item.title}</span>
+                          </button>
+                        </p>
+                      ) : (
+                        text && <p class="stack-line">{firstLine(text)}</p>
+                      )}
                       {responses(item)}
                     </li>
                   );
